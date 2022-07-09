@@ -1,0 +1,39 @@
+.home-wrapper {
+  display: flex;
+  height: 100%;
+}
+
+#side-contents {
+  flex: 1;
+  background-color: #ccc;
+  height: 100%;
+}
+
+#main-contents {
+  flex: 3;
+}
+
+.current-path-text {
+  margin: 15px;
+}
+
+.list-item-text {
+  user-select: none;
+}
+
+.list-item:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.back {
+  background-color: rgba(0, 0, 0, 0.1);
+}
+
+.back:hover {
+  background-color: rgba(0, 0, 0, 0.3);
+}
+
+.back-text {
+}
+.back-text:hover {
+}
