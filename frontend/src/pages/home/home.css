@@ -20,20 +20,3 @@
 .list-item-text {
   user-select: none;
 }
-
-.list-item:hover {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
-.back {
-  background-color: rgba(0, 0, 0, 0.1);
-}
-
-.back:hover {
-  background-color: rgba(0, 0, 0, 0.3);
-}
-
-.back-text {
-}
-.back-text:hover {
-}

@@ -1,7 +1,8 @@
 import { ArrowBack, Folder, InsertDriveFile } from "@mui/icons-material";
 import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useQuery } from "react-query";
+import { ContextMenu } from "../../components/home/ContextMenu";
 import { slieceEndFileName } from "../../utils/slice";
 import "./home.css";
 
@@ -20,9 +21,14 @@ export const Home = () => {
   const dirPath = param.get("path");
   const [path, setPath] = useState<string>(dirPath || "/");
   const prevPath = path.slice(0, path.lastIndexOf("/"));
+  const dirs = path.split("/");
 
   const moveDir = (newPath: string) => {
     location.href = `http://localhost:3000/?path=${newPath}`;
+  };
+
+  const openMyContextMenu = (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
   };
 
   const query = useQuery(["path", { path }], async () => {
@@ -59,51 +65,66 @@ export const Home = () => {
       <main id="main-contents">
         <List>
           {!isHome && items.length > 0 ? (
-            <ListItem
-              className="list-item back"
-              onClick={() => moveDir(prevPath)}
-            >
+            <ListItem onClick={() => moveDir(prevPath)} button>
               <ListItemIcon>
                 <ArrowBack />
               </ListItemIcon>
               <ListItemText className="list-item-text" primary="戻る" />
             </ListItem>
           ) : null}
-          <div className="current-path-text">現在のパス : {path}</div>
+          <div className="current-path-text">
+            現在のパス :{" "}
+            {dirs.map((dir, index) => {
+              return (
+                <React.Fragment key={dir}>
+                  <span className="" style={{ color: "royalblue" }}>
+                    {dir}
+                  </span>
+                  <span className="" style={{ color: "rgba(0,0,0,0.5)" }}>
+                    {index > 0 && index + 1 !== dirs.length ? " ▶︎ " : null}
+                  </span>
+                </React.Fragment>
+              );
+            })}
+          </div>
           {items.map((item) => {
             if (item.type === "dir") {
               return (
+                <ContextMenu key={item.path}>
+                  <ListItem
+                    onContextMenu={openMyContextMenu}
+                    onDoubleClick={() => moveDir(item.path)}
+                    className="list-item"
+                    button
+                  >
+                    <ListItemIcon>
+                      <Folder />
+                    </ListItemIcon>
+                    <ListItemText
+                      className="list-item-text"
+                      primary={slieceEndFileName(item.path)}
+                    />
+                  </ListItem>
+                </ContextMenu>
+              );
+            }
+            return (
+              <ContextMenu key={item.path}>
                 <ListItem
-                  key={item.path}
-                  onContextMenu={() => console.log("右クリック : dir")}
-                  onDoubleClick={() => moveDir(item.path)}
+                  onContextMenu={openMyContextMenu}
+                  onDoubleClick={() => console.log("ダブルクリック: file")}
                   className="list-item"
+                  button
                 >
                   <ListItemIcon>
-                    <Folder />
+                    <InsertDriveFile />
                   </ListItemIcon>
                   <ListItemText
                     className="list-item-text"
                     primary={slieceEndFileName(item.path)}
                   />
                 </ListItem>
-              );
-            }
-            return (
-              <ListItem
-                key={item.path}
-                onContextMenu={() => console.log("右クリック : file")}
-                onDoubleClick={() => console.log("ダブルクリック: file")}
-                className="list-item"
-              >
-                <ListItemIcon>
-                  <InsertDriveFile />
-                </ListItemIcon>
-                <ListItemText
-                  className="list-item-text"
-                  primary={slieceEndFileName(item.path)}
-                />
-              </ListItem>
+              </ContextMenu>
             );
           })}
         </List>
