@@ -30,7 +30,9 @@ export const Home = () => {
     location.href = `${import.meta.env.VITE_CLIENT_URL}/?path=${newPath}`;
   };
 
-  const openMyContextMenu = (event: React.MouseEvent<HTMLElement>) => {
+  const openMyContextMenu: React.MouseEventHandler<HTMLDivElement> = (
+    event: React.MouseEvent<HTMLElement>
+  ) => {
     event.preventDefault();
   };
 
