@@ -5,6 +5,7 @@ import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { ContextMenu } from "../../components/home/ContextMenu";
 import { NewMenu } from "../../components/home/NewMenu";
+import { LoadingSpinner } from "../../components/misc/LoadingSpinner";
 import { slieceEndFileName } from "../../utils/slice";
 import "./home.css";
 
@@ -26,7 +27,7 @@ export const Home = () => {
   const dirs = path.split("/");
 
   const moveDir = (newPath: string) => {
-    location.href = `http://localhost:3000/?path=${newPath}`;
+    location.href = `${import.meta.env.VITE_CLIENT_URL}/?path=${newPath}`;
   };
 
   const openMyContextMenu = (event: React.MouseEvent<HTMLElement>) => {
@@ -34,16 +35,28 @@ export const Home = () => {
   };
 
   const query = useQuery(["path", { path }], async () => {
-    const res = await fetch(`http://localhost:8000/?path=${path}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const res = await fetch(
+      `${import.meta.env.VITE_SERVER_URL}/?path=${path}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     await res.json().then((data) => {
       setIsHome(data.ishome);
       const parseData = JSON.parse(data.items) as Storage["items"];
-
+      const currentDir = parseData[0].path.slice(
+        0,
+        parseData[0].path.lastIndexOf("/")
+      );
+      setPath(currentDir);
+      if (dirPath === null) {
+        location.href = `${
+          import.meta.env.VITE_CLIENT_URL
+        }/?path=${currentDir}`;
+      }
       setItems(
         parseData.map((item) => {
           return {
@@ -56,7 +69,7 @@ export const Home = () => {
   });
 
   if (query.isLoading) {
-    return <div>...ローディング中</div>;
+    return <LoadingSpinner />;
   }
 
   return (
@@ -83,7 +96,7 @@ export const Home = () => {
             現在のパス :{" "}
             {dirs.map((dir, index) => {
               return (
-                <React.Fragment key={dir}>
+                <React.Fragment key={dir + index}>
                   <span className="" style={{ color: "royalblue" }}>
                     {dir}
                   </span>
