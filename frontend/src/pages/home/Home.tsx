@@ -1,8 +1,10 @@
 import { ArrowBack, Folder, InsertDriveFile } from "@mui/icons-material";
-import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import { Fab, List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { ContextMenu } from "../../components/home/ContextMenu";
+import { NewMenu } from "../../components/home/NewMenu";
 import { slieceEndFileName } from "../../utils/slice";
 import "./home.css";
 
@@ -60,7 +62,12 @@ export const Home = () => {
   return (
     <div className="home-wrapper">
       <aside id="side-contents">
-        <div>サイドのコンテンツです</div>
+        <NewMenu>
+          <Fab color="primary" variant="extended">
+            <AddIcon sx={{ mr: 1, ml: 1 }} fontSize="large" />
+            <span style={{ marginRight: "1rem" }}>新規</span>
+          </Fab>
+        </NewMenu>
       </aside>
       <main id="main-contents">
         <List>

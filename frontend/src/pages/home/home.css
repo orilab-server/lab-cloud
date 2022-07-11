@@ -4,13 +4,18 @@
 }
 
 #side-contents {
-  flex: 1;
-  background-color: #ccc;
   height: 100%;
+  background-color: #ccc;
+  padding: 20px 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
 }
 
 #main-contents {
-  flex: 3;
+  flex: 4;
 }
 
 .current-path-text {
