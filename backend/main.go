@@ -1,6 +1,7 @@
 package main
 
 import (
+	service "backend/service/mkrm_service"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -78,6 +79,26 @@ func main() {
 		ctx.JSON(http.StatusOK, gin.H{
 			"items": string(jsonitems),
 			"ishome": ishome,
+		})
+	})
+	engine.POST("/", func(ctx *gin.Context) {
+		path := ctx.DefaultQuery("path", sharedir) // get Query Parameter
+		newpath, _ := url.QueryUnescape(path) // decode URL
+		var json service.MkRmRequest
+		if err := ctx.ShouldBindJSON(&json); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		err := json.Run(newpath)
+		if err != nil {
+			fmt.Println(err)
+			ctx.JSON(http.StatusOK, gin.H{
+				"status": "fail",
+			})
+			return
+		}
+		ctx.JSON(http.StatusOK, gin.H{
+			"status": "success",
 		})
 	})
 	engine.Run(":8000")
