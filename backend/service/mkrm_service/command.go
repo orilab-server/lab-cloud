@@ -1,4 +1,4 @@
-package service
+package mkrm_service
 
 import (
 	"fmt"

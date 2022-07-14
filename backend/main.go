@@ -1,7 +1,8 @@
 package main
 
 import (
-	service "backend/service/mkrm_service"
+	"backend/service/mkrm_service"
+	"backend/service/upload_service"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -55,10 +56,10 @@ func main() {
 		AllowCredentials: true,
 		// preflightリクエストの結果をキャッシュする時間
 		MaxAge: 24 * time.Hour,
-	  }))
+	}))
 	engine.GET("/", func(ctx *gin.Context) {
 		path := ctx.DefaultQuery("path", sharedir) // get Query Parameter
-		newpath, err := url.QueryUnescape(path) // decode URL
+		newpath, err := url.QueryUnescape(path)    // decode URL
 		// user cannot access private dir
 		if !strings.Contains(newpath, sharedir) {
 			newpath = sharedir
@@ -75,31 +76,53 @@ func main() {
 		}
 		ishome := newpath == sharedir
 		jsonitems, _ := json.Marshal(items)
-		fmt.Println(string(jsonitems))
 		ctx.JSON(http.StatusOK, gin.H{
-			"items": string(jsonitems),
+			"items":  string(jsonitems),
 			"ishome": ishome,
 		})
 	})
 	engine.POST("/", func(ctx *gin.Context) {
 		path := ctx.DefaultQuery("path", sharedir) // get Query Parameter
-		newpath, _ := url.QueryUnescape(path) // decode URL
-		var json service.MkRmRequest
-		if err := ctx.ShouldBindJSON(&json); err != nil {
-			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-			return
+		newpath, _ := url.QueryUnescape(path)      // decode URL
+		reqtype := ctx.Request.FormValue("type")
+		switch reqtype {
+		case "command":
+			{
+				json := mkrm_service.MkRmRequest{RequestType: ctx.Request.FormValue("requestType"), DirName: ctx.Request.FormValue("dirName"), FileName: ctx.Request.FormValue("fileName")}
+				err := json.Run(newpath)
+				if err != nil {
+					fmt.Println(err)
+					ctx.JSON(http.StatusOK, gin.H{
+						"status": "fail",
+					})
+					return
+				}
+				ctx.JSON(http.StatusOK, gin.H{
+					"status": "success",
+				})
+			}
+		case "upload":
+			{
+				form, err := ctx.MultipartForm()
+				if err != nil {
+					ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+				}
+				files := form.File["files"]
+				json := upload_service.UploadRequest{RequestType: ctx.Request.FormValue("requestType"), Files: files, DirName: ctx.Request.FormValue("dirName")}
+				fmt.Println(json)
+				uploaderr := json.Upload(newpath, ctx)
+				if uploaderr != nil {
+					fmt.Println(err)
+					ctx.JSON(http.StatusOK, gin.H{
+						"status": "fail",
+					})
+					return
+				}
+				ctx.JSON(http.StatusOK, gin.H{
+					"status": "success",
+				})
+			}
 		}
-		err := json.Run(newpath)
-		if err != nil {
-			fmt.Println(err)
-			ctx.JSON(http.StatusOK, gin.H{
-				"status": "fail",
-			})
-			return
-		}
-		ctx.JSON(http.StatusOK, gin.H{
-			"status": "success",
-		})
 	})
 	engine.Run(":8000")
 }
