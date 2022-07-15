@@ -6,3 +6,7 @@ export const slieceEndFileName = (path: string) => {
   }
   return path.slice(path.lastIndexOf("/") + 1);
 };
+
+export const sliceStartDirPath = (path: string) => {
+  return path.slice(0, path.indexOf("/"));
+};
