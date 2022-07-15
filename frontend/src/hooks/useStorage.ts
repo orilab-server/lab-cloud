@@ -19,7 +19,7 @@ export const useStorage = () => {
     event.preventDefault();
   };
 
-  const query = useQuery(["path", { path }], async () => {
+  const query = useQuery(["storage", { path }], async () => {
     const res = await fetch(
       `${import.meta.env.VITE_SERVER_URL}/?path=${path}`,
       {
