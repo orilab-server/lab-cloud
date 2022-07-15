@@ -7,19 +7,22 @@ import (
 
 type MkRmRequest struct {
 	RequestType string `json:"requestType"`
-	DirName  string `json:"dirName"`
-	FileName string `json:"fileName"`
+	DirName     string `json:"dirName"`
+	FileName    string `json:"fileName"`
 }
 
 func (p MkRmRequest) Run(dir string) error {
-	switch (p.RequestType) {
-		case "mkdir": {
+	switch p.RequestType {
+	case "mkdir":
+		{
 			return p.mkdir(dir)
 		}
-		case "rmdir": {
+	case "rmdir":
+		{
 			return p.rmdir(dir)
 		}
-		case "rmfile": {
+	case "rmfile":
+		{
 			return p.rmfile(dir)
 		}
 	}
@@ -28,7 +31,7 @@ func (p MkRmRequest) Run(dir string) error {
 
 // create new dir
 func (p MkRmRequest) mkdir(dir string) error {
-	if err := os.Mkdir(dir + "/" + p.DirName, 0777); err != nil {
+	if err := os.Mkdir(dir+"/"+p.DirName, 0777); err != nil {
 		fmt.Println(err)
 		return err
 	}
