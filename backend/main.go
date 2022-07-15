@@ -108,10 +108,9 @@ func main() {
 					ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 				}
 				files := form.File["files"]
-				json := upload_service.UploadRequest{RequestType: ctx.Request.FormValue("requestType"), Files: files, DirName: ctx.Request.FormValue("dirName")}
-				fmt.Println(json)
-				uploaderr := json.Upload(newpath, ctx)
-				if uploaderr != nil {
+				json := upload_service.UploadRequest{RequestType: ctx.Request.FormValue("requestType"), Files: files, FilePaths: ctx.Request.FormValue("filePaths")}
+				uploadErr := json.Upload(newpath, ctx)
+				if uploadErr != nil {
 					fmt.Println(err)
 					ctx.JSON(http.StatusOK, gin.H{
 						"status": "fail",
