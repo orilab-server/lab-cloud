@@ -8,11 +8,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type StorageItem struct {
-	Path string `json:"path"`
-	Type string `json:"type"`
-}
-
 func main() {
 	home, err := os.UserHomeDir()
 	if err != nil {

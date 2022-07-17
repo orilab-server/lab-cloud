@@ -19,7 +19,6 @@ type GetController struct {
 func (g GetController) Controller(ctx *gin.Context) {
 	path := ctx.DefaultQuery("path", g.ShareDir) // get Query Parameter
 		newpath, err := url.QueryUnescape(path)    // decode URL
-		fmt.Print(newpath)
 		// user cannot access private dir
 		if !strings.Contains(newpath, g.ShareDir) {
 			newpath = g.ShareDir
@@ -29,7 +28,6 @@ func (g GetController) Controller(ctx *gin.Context) {
 			return
 		}
 		items, err := tools.Getitems(newpath)
-		fmt.Println(items)
 		if err != nil {
 			ctx.String(http.StatusBadRequest, "Bad Request")
 			return
