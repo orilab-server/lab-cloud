@@ -1,16 +1,16 @@
 import React, { useState } from "react";
 import { useQuery } from "react-query";
+import { useRecoilState } from "recoil";
+import { pathState } from "../store";
 import { Storage } from "../types/storage";
 
 export const useStorage = () => {
   const [items, setItems] = useState<Storage["items"]>([]);
   const [isHome, setIsHome] = useState<boolean>(true);
-  const param = new URL(location.href).searchParams;
-  const dirPath = param.get("path");
-  const [path, setPath] = useState<string>(dirPath || "/");
+  const [path, setPath] = useRecoilState(pathState);
 
   const moveDir = (newPath: string) => {
-    location.href = `${import.meta.env.VITE_CLIENT_URL}/?path=${newPath}`;
+    setPath(newPath);
   };
 
   const openMyContextMenu: React.MouseEventHandler<HTMLDivElement> = (
@@ -37,11 +37,6 @@ export const useStorage = () => {
         parseData[0].path.lastIndexOf("/")
       );
       setPath(currentDir);
-      if (dirPath === null) {
-        location.href = `${
-          import.meta.env.VITE_CLIENT_URL
-        }/?path=${currentDir}`;
-      }
       setItems(
         parseData.map((item) => {
           return {
@@ -56,7 +51,6 @@ export const useStorage = () => {
   return {
     items,
     isHome,
-    path,
     query,
     moveDir,
     openMyContextMenu,
