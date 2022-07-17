@@ -1,9 +1,12 @@
 import axios from "axios";
 import { useMutation, useQueryClient } from "react-query";
+import { useSetRecoilState } from "recoil";
+import { notifyState } from "../store";
 import { MkRmRequest } from "../types/request";
 
 export const useMkRmRequest = (path: string) => {
   const queryClient = useQueryClient();
+  const setNotify = useSetRecoilState(notifyState);
 
   const requestMutation = useMutation(async (body: MkRmRequest) => {
     const formData = new FormData();
@@ -20,7 +23,11 @@ export const useMkRmRequest = (path: string) => {
         },
       }
     );
+
     console.log(res);
+    setNotify(
+      body.requestType.match("rm") !== null ? "削除しました" : "作成しました"
+    );
     await queryClient.invalidateQueries("storage");
   });
 

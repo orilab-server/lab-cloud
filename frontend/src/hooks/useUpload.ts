@@ -1,6 +1,8 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
+import { useSetRecoilState } from "recoil";
+import { notifyState } from "../store";
 import { startDirPathSlicer } from "../utils/slice";
 
 type Folder = {
@@ -12,6 +14,7 @@ type Folder = {
 export const useUpload = (path: string) => {
   const [files, setFiles] = useState<File[]>([]);
   const [folders, setFolders] = useState<Folder[]>([]);
+  const setNotify = useSetRecoilState(notifyState);
   const queryClient = useQueryClient();
 
   const handleOnAddFile = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -64,6 +67,7 @@ export const useUpload = (path: string) => {
       }
     );
     console.log(res);
+    setNotify("ファイルをアップロードしました");
     await queryClient.invalidateQueries("storage");
     setFiles([]);
   });
@@ -90,6 +94,7 @@ export const useUpload = (path: string) => {
       }
     );
     console.log(res);
+    setNotify("フォルダをアップロードしました");
     await queryClient.invalidateQueries("storage");
     setFolders([]);
   });
