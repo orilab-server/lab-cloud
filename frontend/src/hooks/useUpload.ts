@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import { sliceStartDirPath } from "../utils/slice";
+import { startDirPathSlicer } from "../utils/slice";
 
 type Folder = {
   name: string;
@@ -31,7 +31,7 @@ export const useUpload = (path: string) => {
     setFolders([
       ...folders,
       {
-        name: sliceStartDirPath(files[0].webkitRelativePath),
+        name: startDirPathSlicer(files[0].webkitRelativePath),
         fileNames,
         files,
       },
