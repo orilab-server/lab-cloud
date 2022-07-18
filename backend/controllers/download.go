@@ -13,10 +13,9 @@ type DownloadController struct {
 
 func (d DownloadController) Controller(ctx *gin.Context) {
 	path := ctx.DefaultQuery("path", d.ShareDir) // get Query Parameter
-		newpath, _ := url.QueryUnescape(path)      // decode URL
-		target := ctx.Query("target")
-		itemType := ctx.Query("type")
-		download := download_service.DownloadResponse{ItemType: itemType, Target: target}
-		download.Download(ctx, newpath)
-		
+	newpath, _ := url.QueryUnescape(path)        // decode URL
+	target := ctx.Query("target")
+	itemType := ctx.Query("type")
+	download := download_service.DownloadResponse{ItemType: itemType, Target: target}
+	download.Download(ctx, newpath)
 }
