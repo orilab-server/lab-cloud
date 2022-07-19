@@ -1,5 +1,11 @@
 import { ArrowBack, Folder, InsertDriveFile } from "@mui/icons-material";
-import { List, ListItem, ListItemIcon, ListItemText } from "@mui/material";
+import {
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Stack,
+} from "@mui/material";
 import React from "react";
 import { ContextMenu } from "./ContextMenu";
 import { LoadingSpinner } from "../misc/LoadingSpinner";
@@ -8,11 +14,15 @@ import { useStorage } from "../../hooks/useStorage";
 import { endFilenameSlicer } from "../../utils/slice";
 import { useRecoilValue } from "recoil";
 import { pathState } from "../../store";
+import { useDownload } from "../../hooks/useDownload";
+import { ProgressSnackBar } from "../misc/ProgressSnackBar";
 
 export const MainContents = () => {
-  const { items, isHome, query, moveDir, openMyContextMenu } = useStorage();
   const path = useRecoilValue(pathState);
+  const { items, isHome, query, moveDir, openMyContextMenu } = useStorage();
   const { requestMutation } = useMkRmRequest(path);
+  const { myProgress, responses, handleCancel, saveFile, downloadMutation } =
+    useDownload(path);
   const prevPath = path.slice(0, path.lastIndexOf("/"));
   const dirs = path.split("/");
 
@@ -22,8 +32,34 @@ export const MainContents = () => {
 
   return (
     <main id="main-contents">
+      <Stack
+        sx={{
+          position: "absolute",
+          bottom: 20,
+          right: 20,
+        }}
+        spacing={1}
+      >
+        {responses.map((response) => {
+          const { progress, status, start, text } =
+            myProgress[
+              myProgress.findIndex((item) => item.name === response.name)
+            ];
+          return (
+            <ProgressSnackBar
+              key={response.name}
+              progress={progress}
+              isOpen={start}
+              text={text}
+              status={status}
+              onSave={() => saveFile(response)}
+              cancel={() => handleCancel(response.name)}
+            />
+          );
+        })}
+      </Stack>
       <List>
-        {!isHome && items.length > 0 ? (
+        {!isHome ? (
           <ListItem onClick={() => moveDir(prevPath)} button>
             <ListItemIcon>
               <ArrowBack />
@@ -54,6 +90,7 @@ export const MainContents = () => {
                 itemName={endFilenameSlicer(item.path)}
                 itemType="dir"
                 requestMutation={requestMutation}
+                downloadMutation={downloadMutation}
                 key={item.path}
               >
                 <ListItem
@@ -79,6 +116,7 @@ export const MainContents = () => {
               itemName={endFilenameSlicer(item.path)}
               itemType="file"
               requestMutation={requestMutation}
+              downloadMutation={downloadMutation}
               key={item.path}
             >
               <ListItem

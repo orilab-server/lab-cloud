@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from "react";
 import CircularProgress, {
   CircularProgressProps,
 } from "@mui/material/CircularProgress";
 import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
-import { IconButton, Snackbar, Stack } from "@mui/material";
+import { IconButton, Stack } from "@mui/material";
 import { Cancel } from "@mui/icons-material";
+import { MyResponse } from "../../hooks/useDownload";
+import { useEffect } from "react";
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number }
@@ -39,31 +40,52 @@ type ProgressSnackBarProps = {
   progress: number;
   isOpen: boolean;
   text: string;
-  suspend?: () => void;
+  status: "pending" | "fullfilled" | "suspended" | "finish";
+  onSave: () => void;
+  cancel: () => void;
 };
 
 export const ProgressSnackBar = ({
   progress,
   isOpen,
   text,
-  suspend,
+  status,
+  onSave,
+  cancel,
 }: ProgressSnackBarProps) => {
+  useEffect(() => {
+    if (status === "fullfilled") {
+      onSave();
+    }
+  }, [status]);
+
+  if (!isOpen) {
+    return null;
+  }
+
   const action = (
-    <IconButton sx={{ color: "white" }} onClick={suspend}>
-      <Cancel />
+    <IconButton sx={{ color: "white" }} onClick={cancel}>
+      <Stack alignItems="center">
+        <Cancel />
+        <Box sx={{ fontSize: 3 }}>中断</Box>
+      </Stack>
     </IconButton>
   );
   return (
-    <Snackbar
-      anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
-      open={isOpen}
-      action={action}
-      message={
-        <Stack direction="row" alignItems="center" spacing={2}>
-          <CircularProgressWithLabel value={progress} />
-          <Box>{text}</Box>
-        </Stack>
-      }
-    />
+    <Stack
+      sx={{
+        bgcolor: "rgba(0,0,0,0.7)",
+        px: 3,
+        borderRadius: 1,
+        color: "white",
+      }}
+      direction="row"
+      alignItems="center"
+      spacing={3}
+    >
+      <CircularProgressWithLabel value={progress} />
+      <Box>{text}</Box>
+      {status === "suspended" ? null : action}
+    </Stack>
   );
 };
