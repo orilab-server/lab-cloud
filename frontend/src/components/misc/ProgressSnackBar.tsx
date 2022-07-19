@@ -6,7 +6,7 @@ import Box from "@mui/material/Box";
 import { IconButton, Stack } from "@mui/material";
 import { Cancel } from "@mui/icons-material";
 import { MyResponse } from "../../hooks/useDownload";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number }
@@ -53,13 +53,14 @@ export const ProgressSnackBar = ({
   onSave,
   cancel,
 }: ProgressSnackBarProps) => {
+  const [isShow, setIsShow] = useState<boolean>(true);
   useEffect(() => {
     if (status === "fullfilled") {
       onSave();
     }
   }, [status]);
 
-  if (!isOpen) {
+  if (!isOpen || !isShow) {
     return null;
   }
 
@@ -78,6 +79,7 @@ export const ProgressSnackBar = ({
         px: 3,
         borderRadius: 1,
         color: "white",
+        position: "relative",
       }}
       direction="row"
       alignItems="center"
@@ -86,6 +88,11 @@ export const ProgressSnackBar = ({
       <CircularProgressWithLabel value={progress} />
       <Box>{text}</Box>
       {status === "suspended" ? null : action}
+      <Cancel
+        onClick={() => setIsShow(false)}
+        sx={{ position: "absolute", top: -6, right: -5 }}
+        fontSize="small"
+      />
     </Stack>
   );
 };

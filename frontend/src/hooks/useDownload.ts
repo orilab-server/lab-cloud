@@ -38,11 +38,11 @@ export const useDownload = (path: string) => {
   ) => {
     setMyProgress((old) =>
       old.map((item) => {
-        if (item.name === name) {
+        if (item.name === name && item.status !== "suspended") {
           return {
             ...item,
             ...params,
-            progress: item.status === "suspended" ? 0 : getRandom(min, max),
+            progress: getRandom(min, max),
           };
         }
         return item;
