@@ -1,3 +1,4 @@
+import axios from "axios";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { useRecoilState } from "recoil";
@@ -20,32 +21,34 @@ export const useStorage = () => {
   };
 
   const query = useQuery(["storage", { path }], async () => {
-    const res = await fetch(
+    const res = await axios.get(
       `${import.meta.env.VITE_SERVER_URL}/?path=${path}`,
       {
-        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
       }
     );
-    await res.json().then((data) => {
-      setIsHome(data.ishome);
-      const parseData = JSON.parse(data.items) as Storage["items"];
-      const currentDir = parseData[0].path.slice(
-        0,
-        parseData[0].path.lastIndexOf("/")
-      );
-      setPath(currentDir);
-      setItems(
-        parseData.map((item) => {
-          return {
-            path: item.path,
-            type: item.type,
-          };
-        })
-      );
-    });
+    const { data } = res;
+    setIsHome(data.ishome);
+    if (data.items === "null") {
+      setItems([]);
+      return;
+    }
+    const parseData = JSON.parse(data.items) as Storage["items"];
+    const currentDir = parseData[0].path.slice(
+      0,
+      parseData[0].path.lastIndexOf("/")
+    );
+    setPath(currentDir);
+    setItems(
+      parseData.map((item) => {
+        return {
+          path: item.path,
+          type: item.type,
+        };
+      })
+    );
   });
 
   return {
