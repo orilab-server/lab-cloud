@@ -1,6 +1,7 @@
 import { useSetRecoilState } from "recoil";
 import { supabase } from "../lib/supabase";
 import { notifyState } from "../store";
+import { sleep } from "../utils/sleep";
 
 export const useAuth = () => {
   const setNotify = useSetRecoilState(notifyState);
@@ -47,8 +48,27 @@ export const useAuth = () => {
     }
   };
 
+  const signOut = async () => {
+    try {
+      const ok = window.confirm("ログアウトしますか？");
+      if (ok) {
+        const { error } = await supabase.auth.signOut();
+        if (error) {
+          throw error;
+        }
+        setNotify({ severity: "info", text: "ログアウトしました" });
+        await sleep(1);
+        location.reload();
+      }
+    } catch (error) {
+      setNotify({ severity: "error", text: "ログアウトに失敗しました" });
+      console.log(error);
+    }
+  };
+
   return {
     signIn,
     additionalSignUp,
+    signOut,
   };
 };
