@@ -12,11 +12,15 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import React from "react";
 import { useAuth } from "../../hooks/useAuth";
+import { supabase } from "../../lib/supabase";
+import { Navigate } from "react-router-dom";
+import { sleep } from "../../utils/sleep";
 
 const theme = createTheme();
 
 export const Login = () => {
   const { signIn } = useAuth();
+  const user = supabase.auth.user();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -25,8 +29,14 @@ export const Login = () => {
     const password = data.get("password")?.toString();
     if (email && password) {
       await signIn(email, password);
+      await sleep(1);
+      location.reload();
     }
   };
+
+  if (user) {
+    return <Navigate to="/" />;
+  }
 
   return (
     <ThemeProvider theme={theme}>
