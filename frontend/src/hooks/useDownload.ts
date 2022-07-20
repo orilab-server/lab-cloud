@@ -52,6 +52,17 @@ export const useDownload = (path: string) => {
 
   const downloadMutation = useMutation(
     async ({ name, type }: { name: string; type: "dir" | "file" }) => {
+      setMyProgress((old) => [
+        {
+          name,
+          start: true,
+          text: type === "dir" ? "圧縮しています" : "ダウンロードしています",
+          status: "pending",
+          progress: 0,
+        },
+        ...old,
+      ]);
+      setResponses((old) => [{ name, type, data: null }, ...old]);
       const requestPromise = downloadRequest({ name, type });
       await sleep(3);
       [...Array(getRandom(30, 60))].forEach((_, i) =>
@@ -96,6 +107,13 @@ export const useDownload = (path: string) => {
     }
   );
 
+  const getPreviewFile = async (name: string) => {
+    const requestPromise = downloadRequest({ name, type: "file" });
+    return await requestPromise.then((data: Blob) => {
+      return data;
+    });
+  };
+
   const saveFile = async (target: MyResponse) => {
     if (target.data !== null) {
       saveAs(
@@ -119,17 +137,6 @@ export const useDownload = (path: string) => {
     name: string;
     type: "dir" | "file";
   }): Promise<any> => {
-    setMyProgress((old) => [
-      {
-        name,
-        start: true,
-        text: type === "dir" ? "圧縮しています" : "ダウンロードしています",
-        status: "pending",
-        progress: 0,
-      },
-      ...old,
-    ]);
-    setResponses((old) => [{ name, type, data: null }, ...old]);
     return axios
       .get(
         `${
@@ -147,6 +154,7 @@ export const useDownload = (path: string) => {
     responses,
     handleCancel,
     saveFile,
+    getPreviewFile,
     downloadMutation,
   };
 };

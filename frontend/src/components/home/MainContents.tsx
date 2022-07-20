@@ -17,13 +17,20 @@ import { pathState } from "../../store";
 import { useDownload } from "../../hooks/useDownload";
 import { ProgressSnackBar } from "../misc/ProgressSnackBar";
 import { FileIcons } from "../misc/FileIcons";
+import { FilePreviewModal } from "../misc/FilePreview";
 
 export const MainContents = () => {
   const path = useRecoilValue(pathState);
   const { items, isHome, query, moveDir, openMyContextMenu } = useStorage();
   const { requestMutation } = useMkRmRequest(path);
-  const { myProgress, responses, handleCancel, saveFile, downloadMutation } =
-    useDownload(path);
+  const {
+    myProgress,
+    responses,
+    handleCancel,
+    saveFile,
+    getPreviewFile,
+    downloadMutation,
+  } = useDownload(path);
   const prevPath = path.slice(0, path.lastIndexOf("/"));
   const dirs = path.split("/");
 
@@ -120,20 +127,25 @@ export const MainContents = () => {
               downloadMutation={downloadMutation}
               key={item.path}
             >
-              <ListItem
-                onContextMenu={openMyContextMenu}
-                onDoubleClick={() => console.log("ダブルクリック: file")}
-                className="list-item"
-                button
-              >
-                <ListItemIcon>
-                  <FileIcons fileName={endFilenameSlicer(item.path)} />
-                </ListItemIcon>
-                <ListItemText
-                  className="list-item-text"
-                  primary={endFilenameSlicer(item.path)}
-                />
-              </ListItem>
+              <FilePreviewModal
+                onFetchFile={() => getPreviewFile(endFilenameSlicer(item.path))}
+                fileName={endFilenameSlicer(item.path)}
+                button={
+                  <ListItem
+                    onContextMenu={openMyContextMenu}
+                    className="list-item"
+                    button
+                  >
+                    <ListItemIcon>
+                      <FileIcons fileName={endFilenameSlicer(item.path)} />
+                    </ListItemIcon>
+                    <ListItemText
+                      className="list-item-text"
+                      primary={endFilenameSlicer(item.path)}
+                    />
+                  </ListItem>
+                }
+              />
             </ContextMenu>
           );
         })}
