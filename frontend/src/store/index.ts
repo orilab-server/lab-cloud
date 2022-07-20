@@ -14,3 +14,8 @@ export const notifyState = atom<NotifyType | null>({
   key: "notifyState",
   default: null,
 });
+
+export const userNameState = atom<string | null>({
+  key: "userNameState",
+  default: null,
+});
