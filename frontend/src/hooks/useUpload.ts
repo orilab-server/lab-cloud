@@ -66,8 +66,7 @@ export const useUpload = (path: string) => {
         },
       }
     );
-    console.log(res);
-    setNotify("ファイルをアップロードしました");
+    setNotify({ severity: "info", text: "ファイルをアップロードしました" });
     await queryClient.invalidateQueries("storage");
     setFiles([]);
   });
@@ -93,8 +92,7 @@ export const useUpload = (path: string) => {
         },
       }
     );
-    console.log(res);
-    setNotify("フォルダをアップロードしました");
+    setNotify({ severity: "info", text: "フォルダをアップロードしました" });
     await queryClient.invalidateQueries("storage");
     setFolders([]);
   });

@@ -16,7 +16,7 @@ export const NotifyBar = () => {
   const notify = useRecoilValue(notifyState);
 
   useEffect(() => {
-    if (notify !== "") {
+    if (notify !== null) {
       setOpen(true);
     }
   }, [notify]);
@@ -38,8 +38,12 @@ export const NotifyBar = () => {
       autoHideDuration={6000}
       onClose={handleClose}
     >
-      <Alert onClose={handleClose} severity="info" sx={{ width: "100%" }}>
-        {notify}
+      <Alert
+        onClose={handleClose}
+        severity={notify?.severity}
+        sx={{ width: "100%" }}
+      >
+        {notify?.text}
       </Alert>
     </Snackbar>
   );

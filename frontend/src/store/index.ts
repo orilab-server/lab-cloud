@@ -5,7 +5,12 @@ export const pathState = atom<string>({
   default: "",
 });
 
-export const notifyState = atom<string>({
+type NotifyType = {
+  severity: "info" | "error";
+  text: string;
+};
+
+export const notifyState = atom<NotifyType | null>({
   key: "notifyState",
-  default: "",
+  default: null,
 });

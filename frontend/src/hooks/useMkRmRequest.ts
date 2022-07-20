@@ -25,9 +25,11 @@ export const useMkRmRequest = (path: string) => {
     );
 
     console.log(res);
-    setNotify(
-      body.requestType.match("rm") !== null ? "削除しました" : "作成しました"
-    );
+    setNotify({
+      severity: "info",
+      text:
+        body.requestType.match("rm") !== null ? "削除しました" : "作成しました",
+    });
     await queryClient.invalidateQueries("storage");
   });
 
