@@ -16,6 +16,7 @@ import { useRecoilValue } from "recoil";
 import { pathState } from "../../store";
 import { useDownload } from "../../hooks/useDownload";
 import { ProgressSnackBar } from "../misc/ProgressSnackBar";
+import { FileIcons } from "../misc/FileIcons";
 
 export const MainContents = () => {
   const path = useRecoilValue(pathState);
@@ -100,7 +101,7 @@ export const MainContents = () => {
                   button
                 >
                   <ListItemIcon>
-                    <Folder />
+                    <Folder sx={{ color: "steelblue" }} />
                   </ListItemIcon>
                   <ListItemText
                     className="list-item-text"
@@ -126,7 +127,7 @@ export const MainContents = () => {
                 button
               >
                 <ListItemIcon>
-                  <InsertDriveFile />
+                  <FileIcons fileName={endFilenameSlicer(item.path)} />
                 </ListItemIcon>
                 <ListItemText
                   className="list-item-text"
