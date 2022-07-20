@@ -11,17 +11,21 @@ import {
 } from "@mui/material";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import React from "react";
+import { useAuth } from "../../hooks/useAuth";
 
 const theme = createTheme();
 
 export const Login = () => {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const { signIn } = useAuth();
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-    });
+    const email = data.get("email")?.toString();
+    const password = data.get("password")?.toString();
+    if (email && password) {
+      await signIn(email, password);
+    }
   };
 
   return (
@@ -40,7 +44,10 @@ export const Login = () => {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Orilab Cloud Storage Login
+            Orilab Cloud Storage
+          </Typography>
+          <Typography component="h1" variant="h5">
+            Login
           </Typography>
           <Box
             component="form"
@@ -74,7 +81,7 @@ export const Login = () => {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Login
             </Button>
           </Box>
         </Box>
