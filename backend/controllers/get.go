@@ -35,6 +35,7 @@ func (g GetController) Controller(ctx *gin.Context) {
 		ishome := newpath == g.ShareDir
 		jsonitems, _ := json.Marshal(items)
 		ctx.JSON(http.StatusOK, gin.H{
+			"basedir": g.ShareDir,
 			"items":  string(jsonitems),
 			"ishome": ishome,
 		})
