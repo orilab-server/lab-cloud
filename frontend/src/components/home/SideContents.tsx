@@ -24,7 +24,6 @@ import { endFilenameSlicer } from "../../utils/slice";
 
 const style = {
   width: "100%",
-  // maxWidth: 360,
   paddingTop: 10,
   bgcolor: "background.paper",
 };
@@ -88,8 +87,10 @@ export const SideContents = () => {
           <LogoutIcon sx={{ mr: 1, ml: 1 }} />
           <strong style={{ marginRight: "1rem" }}>ログアウト</strong>
         </Fab>
-        <List sx={style} component="nav" aria-label="mailbox folders">
-          <ListSubheader>Share</ListSubheader>
+        <List sx={style} component="nav">
+          <ListItem>
+            <ListItemText sx={{ color: "rgba(0,0,0,0.5)" }}>Share</ListItemText>
+          </ListItem>
           {topDirs.map((item) => (
             <React.Fragment key={item}>
               <ListItem button onClick={() => setPath(item)}>
