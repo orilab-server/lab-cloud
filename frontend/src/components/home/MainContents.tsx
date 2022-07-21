@@ -1,5 +1,6 @@
 import { ArrowBack, Folder } from "@mui/icons-material";
 import {
+  Container,
   List,
   ListItem,
   ListItemIcon,
@@ -39,7 +40,7 @@ export const MainContents = () => {
   }
 
   return (
-    <main id="main-contents">
+    <Container sx={{ flex: 4, height: "100%" }}>
       <Stack
         sx={{
           position: "absolute",
@@ -150,6 +151,6 @@ export const MainContents = () => {
           );
         })}
       </List>
-    </main>
+    </Container>
   );
 };

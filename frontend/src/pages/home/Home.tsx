@@ -1,12 +1,10 @@
-import { useQuery } from "react-query";
-import { useRecoilState, useRecoilValue } from "recoil";
+import { Stack } from "@mui/material";
+import { useRecoilValue } from "recoil";
 import { MainContents } from "../../components/home/MainContents";
 import { SideContents } from "../../components/home/SideContents";
 import { SignUpComplete } from "../../components/home/SignUpComplete";
 import { useUser } from "../../hooks/useUser";
-import { supabase } from "../../lib/supabase";
 import { userNameState } from "../../store";
-import "./home.css";
 
 export const Home = () => {
   const userName = useRecoilValue(userNameState);
@@ -17,9 +15,9 @@ export const Home = () => {
   }
 
   return (
-    <div className="home-wrapper">
+    <Stack direction="row">
       <SideContents />
       <MainContents />
-    </div>
+    </Stack>
   );
 };

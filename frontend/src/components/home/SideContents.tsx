@@ -15,17 +15,25 @@ export const SideContents = () => {
 
   return (
     <Container
-      sx={{ width: "auto", height: "100%", backgroundColor: "rgba(0,0,0,0.1)" }}
+      sx={{
+        flex: 1,
+        height: "100%",
+      }}
     >
       <Box
-        sx={{ width: "100%", pt: 5, display: "flex", flexDirection: "column" }}
+        sx={{
+          position: "fixed",
+          width: 200,
+          // width: "100%",
+          pt: 5,
+          display: "flex",
+          flexDirection: "column",
+        }}
       >
         <NewMenu requestMutation={requestMutation} path={path}>
           <Fab
             sx={{
-              mb: 3,
               width: "100%",
-              textAlign: "left",
               display: "flex",
               justifyContent: "start",
             }}
@@ -37,7 +45,12 @@ export const SideContents = () => {
           </Fab>
         </NewMenu>
         <Fab
-          sx={{ mt: 3 }}
+          sx={{
+            width: "100%",
+            top: 30,
+            display: "flex",
+            justifyContent: "start",
+          }}
           onClick={signOut}
           color="secondary"
           variant="extended"
