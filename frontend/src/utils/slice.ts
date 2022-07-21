@@ -17,3 +17,10 @@ export const multiSlicer = <T extends unknown[]>(list: T, divider: number) => {
     .fill(0)
     .map((_, i) => list.slice(i * divider, (i + 1) * divider)) as T[];
 };
+
+export const relativePathSlicer = (current: string, base: string) => {
+  if (current === base) {
+    return "/";
+  }
+  return current.replace(base, "");
+};

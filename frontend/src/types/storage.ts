@@ -3,5 +3,6 @@ export type Storage = {
     path: string;
     type: string;
   }[];
+  basedir: string;
   ishome: boolean;
 };

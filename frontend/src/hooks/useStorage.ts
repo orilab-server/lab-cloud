@@ -8,6 +8,7 @@ import { Storage } from "../types/storage";
 export const useStorage = () => {
   const [items, setItems] = useState<Storage["items"]>([]);
   const [isHome, setIsHome] = useState<boolean>(true);
+  const [baseDir, setBaseDir] = useState<string>("");
   const [path, setPath] = useRecoilState(pathState);
 
   const moveDir = (newPath: string) => {
@@ -40,6 +41,7 @@ export const useStorage = () => {
       0,
       parseData[0].path.lastIndexOf("/")
     );
+    setBaseDir(data.basedir);
     setPath(currentDir);
     setItems(
       parseData.map((item) => {
@@ -54,6 +56,7 @@ export const useStorage = () => {
   return {
     items,
     isHome,
+    baseDir,
     query,
     moveDir,
     openMyContextMenu,

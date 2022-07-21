@@ -1,18 +1,20 @@
 import { ArrowBack, Folder } from "@mui/icons-material";
 import {
+  Box,
   Container,
   List,
   ListItem,
   ListItemIcon,
   ListItemText,
   Stack,
+  Typography,
 } from "@mui/material";
 import React from "react";
 import { ContextMenu } from "./ContextMenu";
 import { LoadingSpinner } from "../misc/LoadingSpinner";
 import { useMkRmRequest } from "../../hooks/useMkRmRequest";
 import { useStorage } from "../../hooks/useStorage";
-import { endFilenameSlicer } from "../../utils/slice";
+import { endFilenameSlicer, relativePathSlicer } from "../../utils/slice";
 import { useRecoilValue } from "recoil";
 import { pathState } from "../../store";
 import { useDownload } from "../../hooks/useDownload";
@@ -22,7 +24,8 @@ import { FilePreviewModal } from "../misc/FilePreview";
 
 export const MainContents = () => {
   const path = useRecoilValue(pathState);
-  const { items, isHome, query, moveDir, openMyContextMenu } = useStorage();
+  const { items, isHome, baseDir, query, moveDir, openMyContextMenu } =
+    useStorage();
   const { requestMutation } = useMkRmRequest(path);
   const {
     myProgress,
@@ -33,14 +36,16 @@ export const MainContents = () => {
     downloadMutation,
   } = useDownload(path);
   const prevPath = path.slice(0, path.lastIndexOf("/"));
-  const dirs = path.split("/");
+  const relativePath = relativePathSlicer(path, baseDir);
+  const dirs = relativePath.split("/");
+  const relativeDirs = relativePath.split("/");
 
   if (query.isLoading) {
     return <LoadingSpinner />;
   }
 
   return (
-    <Container sx={{ flex: 4, height: "100%" }}>
+    <Container sx={{ flex: 4, height: "100%", pt: 3 }}>
       <Stack
         sx={{
           position: "absolute",
@@ -76,21 +81,50 @@ export const MainContents = () => {
             <ListItemText className="list-item-text" primary="戻る" />
           </ListItem>
         ) : null}
-        <div className="current-path-text">
+        <Box py={2}>
           現在のパス :{" "}
+          <Typography component="span" sx={{ color: "rgba(0,0,0,0.5)" }}>
+            /{" "}
+            <Typography
+              component="span"
+              onClick={() => moveDir(baseDir)}
+              sx={{
+                color: "royalblue",
+                borderBottom: "1px solid royalblue",
+                cursor: "pointer",
+              }}
+            >
+              Share
+            </Typography>{" "}
+            /{" "}
+          </Typography>
           {dirs.map((dir, index) => {
+            let targetPath = "/";
+            if (relativePath.match(dir)) {
+              targetPath = relativeDirs
+                .slice(0, relativeDirs.indexOf(dir) + 1)
+                .join("/");
+            }
             return (
               <React.Fragment key={dir + index}>
-                <span className="" style={{ color: "royalblue" }}>
+                <Typography
+                  component="span"
+                  onClick={() => moveDir(baseDir + targetPath)}
+                  sx={{
+                    color: "royalblue",
+                    borderBottom: "1px solid royalblue",
+                    cursor: "pointer",
+                  }}
+                >
                   {dir}
-                </span>
-                <span className="" style={{ color: "rgba(0,0,0,0.5)" }}>
-                  {index > 0 && index + 1 !== dirs.length ? " ▶︎ " : null}
-                </span>
+                </Typography>
+                <Typography component="span" sx={{ color: "rgba(0,0,0,0.5)" }}>
+                  {index > 0 && index + 1 !== dirs.length ? " / " : null}
+                </Typography>
               </React.Fragment>
             );
           })}
-        </div>
+        </Box>
         {items.map((item) => {
           if (item.type === "dir") {
             return (
