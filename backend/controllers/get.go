@@ -13,7 +13,6 @@ import (
 
 type GetController struct {
 	ShareDir string
-	TopDirs []string
 	Items []tools.StorageItem
 }
 
@@ -33,10 +32,11 @@ func (g GetController) Controller(ctx *gin.Context) {
 			ctx.String(http.StatusBadRequest, "Bad Request")
 			return
 		}
+		topDirs, _ := tools.GetDirs(g.ShareDir)
 		ishome := newpath == g.ShareDir
 		jsonitems, _ := json.Marshal(items)
 		ctx.JSON(http.StatusOK, gin.H{
-			"topdirs": g.TopDirs,
+			"topdirs": topDirs,
 			"basedir": g.ShareDir,
 			"items":  string(jsonitems),
 			"ishome": ishome,
