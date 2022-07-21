@@ -19,3 +19,8 @@ export const userNameState = atom<string | null>({
   key: "userNameState",
   default: null,
 });
+
+export const topDirsState = atom<string[]>({
+  key: "topDirsState",
+  default: [],
+});

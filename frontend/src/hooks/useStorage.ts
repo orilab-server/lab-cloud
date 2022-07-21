@@ -1,8 +1,8 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
-import { useRecoilState } from "recoil";
-import { pathState } from "../store";
+import { useRecoilState, useSetRecoilState } from "recoil";
+import { pathState, topDirsState } from "../store";
 import { Storage } from "../types/storage";
 
 export const useStorage = () => {
@@ -10,6 +10,7 @@ export const useStorage = () => {
   const [isHome, setIsHome] = useState<boolean>(true);
   const [baseDir, setBaseDir] = useState<string>("");
   const [path, setPath] = useRecoilState(pathState);
+  const setTopDirs = useSetRecoilState(topDirsState);
 
   const moveDir = (newPath: string) => {
     setPath(newPath);
@@ -43,6 +44,7 @@ export const useStorage = () => {
     );
     setBaseDir(data.basedir);
     setPath(currentDir);
+    setTopDirs(data.topdirs);
     setItems(
       parseData.map((item) => {
         return {

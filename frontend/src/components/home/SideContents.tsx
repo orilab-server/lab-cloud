@@ -1,15 +1,38 @@
 import AddIcon from "@mui/icons-material/Add";
+import PersonIcon from "@mui/icons-material/Person";
 import LogoutIcon from "@mui/icons-material/Logout";
-import { Container, Fab } from "@mui/material";
+import {
+  Avatar,
+  Container,
+  Divider,
+  Fab,
+  List,
+  ListItem,
+  ListItemText,
+  ListSubheader,
+  Stack,
+  Typography,
+} from "@mui/material";
 import { Box } from "@mui/system";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { NewMenu } from "../../components/home/NewMenu";
 import { useAuth } from "../../hooks/useAuth";
 import { useMkRmRequest } from "../../hooks/useMkRmRequest";
-import { pathState } from "../../store";
+import { pathState, topDirsState, userNameState } from "../../store";
+import React from "react";
+import { endFilenameSlicer } from "../../utils/slice";
+
+const style = {
+  width: "100%",
+  // maxWidth: 360,
+  paddingTop: 10,
+  bgcolor: "background.paper",
+};
 
 export const SideContents = () => {
-  const path = useRecoilValue(pathState);
+  const userName = useRecoilValue(userNameState);
+  const [path, setPath] = useRecoilState(pathState);
+  const topDirs = useRecoilValue(topDirsState);
   const { signOut } = useAuth();
   const { requestMutation } = useMkRmRequest(path);
 
@@ -24,12 +47,19 @@ export const SideContents = () => {
         sx={{
           position: "fixed",
           width: 200,
-          // width: "100%",
           pt: 5,
           display: "flex",
           flexDirection: "column",
         }}
       >
+        <Stack direction="row" alignItems="center" spacing={2} pb={3}>
+          <Avatar sx={{ bgcolor: "green" }}>
+            <PersonIcon />
+          </Avatar>
+          <Typography variant="h6" component="div">
+            {userName}
+          </Typography>
+        </Stack>
         <NewMenu requestMutation={requestMutation} path={path}>
           <Fab
             sx={{
@@ -58,6 +88,17 @@ export const SideContents = () => {
           <LogoutIcon sx={{ mr: 1, ml: 1 }} />
           <strong style={{ marginRight: "1rem" }}>ログアウト</strong>
         </Fab>
+        <List sx={style} component="nav" aria-label="mailbox folders">
+          <ListSubheader>Share</ListSubheader>
+          {topDirs.map((item) => (
+            <React.Fragment key={item}>
+              <ListItem button onClick={() => setPath(item)}>
+                <ListItemText primary={endFilenameSlicer(item)} />
+              </ListItem>
+              <Divider />
+            </React.Fragment>
+          ))}
+        </List>
       </Box>
     </Container>
   );
