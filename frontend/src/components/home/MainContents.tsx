@@ -138,7 +138,7 @@ export const MainContents = () => {
               <ContextMenu
                 itemName={endFilenameSlicer(item.path)}
                 itemType="dir"
-                copyLink={() => copyLink(path)}
+                copyLink={() => copyLink(item.path)}
                 requestMutation={requestMutation}
                 downloadMutation={downloadMutation}
                 key={item.path}

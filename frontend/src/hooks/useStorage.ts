@@ -14,6 +14,7 @@ export const useStorage = () => {
   const setNotify = useSetRecoilState(notifyState);
   const url = new URL(location.href);
   const params = url.searchParams;
+  const paramPath = params.get("path");
 
   const moveDir = (newPath: string) => {
     setPath(newPath);
@@ -32,14 +33,14 @@ export const useStorage = () => {
   };
 
   const query = useQuery(["storage", { path }], async () => {
-    if (params.get("path") !== null) {
-      localStorage.setItem("prev_path", params.get("path") || "");
+    if (paramPath !== null) {
+      localStorage.setItem("prev_path", paramPath);
       location.href = import.meta.env.VITE_CLIENT_URL;
       return;
     }
     const prevPath = localStorage.getItem("prev_path");
     const correctPath = prevPath || path;
-    if (prevPath !== "") {
+    if (prevPath !== null) {
       localStorage.removeItem("prev_path");
     }
     const res = await axios.get(
