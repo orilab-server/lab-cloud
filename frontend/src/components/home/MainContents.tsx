@@ -24,8 +24,15 @@ import { FilePreviewModal } from "../misc/FilePreview";
 
 export const MainContents = () => {
   const path = useRecoilValue(pathState);
-  const { items, isHome, baseDir, query, moveDir, openMyContextMenu } =
-    useStorage();
+  const {
+    items,
+    isHome,
+    baseDir,
+    query,
+    moveDir,
+    copyLink,
+    openMyContextMenu,
+  } = useStorage();
   const { requestMutation } = useMkRmRequest(path);
   const {
     myProgress,
@@ -129,9 +136,9 @@ export const MainContents = () => {
           if (item.type === "dir") {
             return (
               <ContextMenu
-                path={path}
                 itemName={endFilenameSlicer(item.path)}
                 itemType="dir"
+                copyLink={() => copyLink(path)}
                 requestMutation={requestMutation}
                 downloadMutation={downloadMutation}
                 key={item.path}
@@ -155,9 +162,9 @@ export const MainContents = () => {
           }
           return (
             <ContextMenu
-              path={path}
               itemName={endFilenameSlicer(item.path)}
               itemType="file"
+              copyLink={() => copyLink(path)}
               requestMutation={requestMutation}
               downloadMutation={downloadMutation}
               key={item.path}

@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useQuery } from "react-query";
 import { useRecoilState, useSetRecoilState } from "recoil";
-import { pathState, topDirsState } from "../store";
+import { notifyState, pathState, topDirsState } from "../store";
 import { Storage } from "../types/storage";
 
 export const useStorage = () => {
@@ -11,9 +11,18 @@ export const useStorage = () => {
   const [baseDir, setBaseDir] = useState<string>("");
   const [path, setPath] = useRecoilState(pathState);
   const setTopDirs = useSetRecoilState(topDirsState);
+  const setNotify = useSetRecoilState(notifyState);
+  const url = new URL(location.href);
+  const params = url.searchParams;
 
   const moveDir = (newPath: string) => {
     setPath(newPath);
+  };
+
+  const copyLink = (path: string) => {
+    const url = `${import.meta.env.VITE_CLIENT_URL}/?path=${path}`;
+    navigator.clipboard.writeText(url);
+    setNotify({ severity: "info", text: "コピーしました！" });
   };
 
   const openMyContextMenu: React.MouseEventHandler<HTMLDivElement> = (
@@ -23,8 +32,18 @@ export const useStorage = () => {
   };
 
   const query = useQuery(["storage", { path }], async () => {
+    if (params.get("path") !== null) {
+      localStorage.setItem("prev_path", params.get("path") || "");
+      location.href = import.meta.env.VITE_CLIENT_URL;
+      return;
+    }
+    const prevPath = localStorage.getItem("prev_path");
+    const correctPath = prevPath || path;
+    if (prevPath !== "") {
+      localStorage.removeItem("prev_path");
+    }
     const res = await axios.get(
-      `${import.meta.env.VITE_SERVER_URL}/?path=${path}`,
+      `${import.meta.env.VITE_SERVER_URL}/?path=${correctPath}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -61,6 +80,7 @@ export const useStorage = () => {
     baseDir,
     query,
     moveDir,
+    copyLink,
     openMyContextMenu,
   };
 };

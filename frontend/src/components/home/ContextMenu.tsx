@@ -10,10 +10,10 @@ import { UseMutationResult } from "react-query";
 import { MkRmRequest } from "../../types/request";
 
 type ContextMenurops = {
-  path: string;
   itemName: string;
   itemType: "dir" | "file";
   children: React.ReactNode;
+  copyLink: () => void;
   requestMutation: UseMutationResult<void, unknown, MkRmRequest, unknown>;
   downloadMutation: UseMutationResult<
     void,
@@ -27,10 +27,10 @@ type ContextMenurops = {
 };
 
 export const ContextMenu = ({
-  path,
   itemName,
   itemType,
   children,
+  copyLink,
   requestMutation,
   downloadMutation,
 }: ContextMenurops) => {
@@ -45,6 +45,11 @@ export const ContextMenu = ({
   };
   const handleClose = () => {
     setAnchorEl(null);
+  };
+
+  const handleCopyLink = () => {
+    copyLink();
+    handleClose();
   };
 
   return (
@@ -89,7 +94,7 @@ export const ContextMenu = ({
             <Typography variant="h6">{itemName}</Typography>
           </Stack>
         </ShareModal>
-        <MenuItem onClick={handleClose}>
+        <MenuItem onClick={handleCopyLink}>
           <ListItemIcon>
             <LinkIcon fontSize="small" />
           </ListItemIcon>
