@@ -14,7 +14,7 @@ func main() {
 		panic(err)
 	}
 	// 暫定
-	sharedir := home + "/Desktop/Laboratory"
+	sharedir := home + "/Desktop"
 	engine := gin.Default()
 	engine.Use(middlewares.CorsMiddleWare())
 
