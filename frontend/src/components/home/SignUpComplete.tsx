@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useAuth } from "../../hooks/useAuth";
 import { sleep } from "../../utils/sleep";
 
@@ -22,6 +22,8 @@ type SignUpCompleteProps = {
 
 export const SignUpComplete = ({ userId }: SignUpCompleteProps) => {
   const { additionalSignUp } = useAuth();
+  const [routeChangeComplete, setRouteChangeComplete] =
+    useState<boolean>(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -34,6 +36,16 @@ export const SignUpComplete = ({ userId }: SignUpCompleteProps) => {
       location.reload();
     }
   };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setRouteChangeComplete(true);
+    }, 2 * 1000);
+  }, []);
+
+  if (!routeChangeComplete) {
+    return null;
+  }
 
   return (
     <ThemeProvider theme={theme}>
