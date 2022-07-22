@@ -7,10 +7,16 @@ type RouteGuardProps = {
 
 export const RouteGuard = ({ children }: RouteGuardProps) => {
   const user = supabase.auth.user();
-  const location = useLocation();
+  const routerLocation = useLocation();
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
+    const url = new URL(location.href);
+    const params = url.searchParams;
+    const path = params.get("path");
+    if (path !== null) {
+      localStorage.setItem("prev_path", path);
+    }
+    return <Navigate to="/login" state={{ from: routerLocation }} replace />;
   }
 
   return children;
