@@ -17,10 +17,16 @@ type Users = struct {
 	UpdatedAt string
 }
 
-type QueryParam struct {
+type SelectQueryParam struct {
 	From   string
 	Column []string
 	Where  map[string]any
+}
+
+type InsertQueryParam struct {
+	From string
+	Column []string
+	Values []any
 }
 
 func Init() (*sql.DB, error) {

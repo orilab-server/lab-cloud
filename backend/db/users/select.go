@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-func SelectRow(myDB *sql.DB, qp db.QueryParam) (db.Users, error) {
+func SelectRow(myDB *sql.DB, qp db.SelectQueryParam) (db.Users, error) {
 	selectStr := strings.Join(qp.Column, ",")
 	strs, vals := divideWhereParam(qp.Where)
 	whereStr := strings.Join(strs, "and ")
