@@ -29,6 +29,12 @@ type InsertQueryParam struct {
 	Values []any
 }
 
+type UpdateQueryParam struct {
+	From string
+	Set map[string]any
+	Where map[string]any
+}
+
 func Init() (*sql.DB, error) {
 	err := godotenv.Load()
 	if err != nil {
