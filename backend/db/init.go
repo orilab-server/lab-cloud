@@ -17,6 +17,12 @@ type Users = struct {
 	UpdatedAt string
 }
 
+type QueryParam struct {
+	From   string
+	Column []string
+	Where  map[string]any
+}
+
 func Init() (*sql.DB, error) {
 	err := godotenv.Load()
 	if err != nil {
