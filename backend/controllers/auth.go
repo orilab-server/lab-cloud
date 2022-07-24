@@ -6,7 +6,6 @@ import (
 	"backend/tools"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -28,8 +27,6 @@ func (a Authcontroller) LoginController(ctx *gin.Context) {
 		ctx.Status(http.StatusBadRequest)
 	} else {
 		user, err := users_table.SelectRow(a.MyDB, db.SelectQueryParam{From: "users",Column: []string{"*"},Where: map[string]any{"email":email}})
-		fmt.Println(user)
-		fmt.Println(a.SessionKey)
 		if err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
