@@ -10,11 +10,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type PostController struct {
+type UploadController struct {
 	ShareDir string
 }
 
-func (p PostController) Controller(ctx *gin.Context) {
+func (p UploadController) Controller(ctx *gin.Context) {
 	path := ctx.DefaultQuery("path", p.ShareDir) // get Query Parameter
 	newpath, _ := url.QueryUnescape(path)      // decode URL
 	reqtype := ctx.Request.FormValue("type")

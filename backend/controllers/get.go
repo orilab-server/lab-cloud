@@ -11,12 +11,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type GetController struct {
+type HomeController struct {
 	ShareDir string
 	Items []tools.StorageItem
 }
 
-func (g GetController) Controller(ctx *gin.Context) {
+func (g HomeController) Controller(ctx *gin.Context) {
 	path := ctx.DefaultQuery("path", g.ShareDir) // get Query Parameter
 		newpath, err := url.QueryUnescape(path)    // decode URL
 		// user cannot access private dir
