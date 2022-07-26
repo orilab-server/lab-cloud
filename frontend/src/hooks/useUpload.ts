@@ -57,10 +57,11 @@ export const useUpload = (path: string) => {
     for (const file of files) {
       formData.append("files", file);
     }
-    const res = await axios.post(
-      `${import.meta.env.VITE_SERVER_URL}/?path=${path}`,
+    await axios.post(
+      `${import.meta.env.VITE_SERVER_URL}/home/upload?path=${path}`,
       formData,
       {
+        withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -83,10 +84,11 @@ export const useUpload = (path: string) => {
       folder.files.forEach((file) => formData.append("files", file));
       formData.append("filePaths", folder.fileNames.join(" // "));
     }
-    const res = await axios.post(
-      `${import.meta.env.VITE_SERVER_URL}/?path=${path}`,
+    await axios.post(
+      `${import.meta.env.VITE_SERVER_URL}/home/upload?path=${path}`,
       formData,
       {
+        withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
         },

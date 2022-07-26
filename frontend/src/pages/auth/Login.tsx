@@ -12,15 +12,16 @@ import {
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import React from "react";
 import { useAuth } from "../../hooks/useAuth";
-import { supabase } from "../../lib/supabase";
 import { Navigate } from "react-router-dom";
 import { sleep } from "../../utils/sleep";
+import { useRecoilValue } from "recoil";
+import { sessionState } from "../../store";
 
 const theme = createTheme();
 
 export const Login = () => {
   const { signIn } = useAuth();
-  const user = supabase.auth.user();
+  const session = useRecoilValue(sessionState);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -28,13 +29,16 @@ export const Login = () => {
     const email = data.get("email")?.toString();
     const password = data.get("password")?.toString();
     if (email && password) {
-      await signIn(email, password);
+      const params = new URLSearchParams();
+      params.append("email", email);
+      params.append("password", password);
+      await signIn(params);
       await sleep(1);
       location.reload();
     }
   };
 
-  if (user) {
+  if (session !== null) {
     return <Navigate to="/" />;
   }
 

@@ -44,8 +44,9 @@ export const useStorage = () => {
       localStorage.removeItem("prev_path");
     }
     const res = await axios.get(
-      `${import.meta.env.VITE_SERVER_URL}/?path=${correctPath}`,
+      `${import.meta.env.VITE_SERVER_URL}/home/?path=${correctPath}`,
       {
+        withCredentials: true,
         headers: {
           "Content-Type": "application/json",
         },
