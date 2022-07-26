@@ -9,13 +9,13 @@ import (
 )
 
 type Users = struct {
-	Id        string
-	Name      string
-	Password  string
-	Email     string
+	Id          string
+	Name        string
+	Password    string
+	Email       string
 	IsTemporary bool
-	CreatedAt string
-	UpdatedAt string
+	CreatedAt   string
+	UpdatedAt   string
 }
 
 type SelectQueryParam struct {
@@ -25,14 +25,14 @@ type SelectQueryParam struct {
 }
 
 type InsertQueryParam struct {
-	From string
+	From   string
 	Column []string
 	Values []any
 }
 
 type UpdateQueryParam struct {
-	From string
-	Set map[string]any
+	From  string
+	Set   map[string]any
 	Where map[string]any
 }
 
@@ -41,7 +41,7 @@ func Init() (*sql.DB, error) {
 	if err != nil {
 		panic(err)
 	}
-	source := fmt.Sprintf("%s:%s@(%s:%s)/%s", os.Getenv("USER_NAME"), os.Getenv("DB_PASS"), os.Getenv("HOST_IP"), os.Getenv("HOST_PORT"), os.Getenv("DB_NAME"))
+	source := fmt.Sprintf("%s:%s@(%s:%s)/%s", os.Getenv("USER_NAME"), os.Getenv("DB_PASS"), os.Getenv("DB_IP"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
 	db, err := sql.Open("mysql", source)
 	if err != nil {
 		return nil, err

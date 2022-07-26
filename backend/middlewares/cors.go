@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CorsMiddleWare() gin.HandlerFunc {
+func CorsMiddleWare(allowOrigin string) gin.HandlerFunc {
 	return cors.New(cors.Config{
 		// アクセスを許可したいアクセス元
 		AllowOrigins: []string{

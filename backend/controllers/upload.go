@@ -15,7 +15,7 @@ type UploadController struct {
 
 func (p UploadController) Controller(ctx *gin.Context) {
 	path := ctx.DefaultQuery("path", p.ShareDir) // get Query Parameter
-	newpath, _ := url.QueryUnescape(path)      // decode URL
+	newpath, _ := url.QueryUnescape(path)        // decode URL
 	reqtype := ctx.Request.FormValue("type")
 	switch reqtype {
 	case "command":

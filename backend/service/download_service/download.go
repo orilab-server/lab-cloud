@@ -12,31 +12,33 @@ import (
 
 type DownloadResponse struct {
 	ItemType string
-	Target string
+	Target   string
 }
 
 func (d DownloadResponse) Download(ctx *gin.Context, path string) {
 	switch d.ItemType {
-		case "file": {
-			filePath := path+"/"+d.Target
+	case "file":
+		{
+			filePath := path + "/" + d.Target
 			ctx.Header("Content-Description", "File Transfer")
 			ctx.Header("Content-Transfer-Encoding", "binary")
-			ctx.Header("Content-Disposition", "attachment; filename="+d.Target )
+			ctx.Header("Content-Disposition", "attachment; filename="+d.Target)
 			ctx.Header("Content-Type", "application/octet-stream")
 			ctx.File(filePath)
 			return
 		}
-		case "dir": {
-			zipPath := path+"/"+d.Target+".zip"
-			dirPath := path+"/"+d.Target
+	case "dir":
+		{
+			zipPath := path + "/" + d.Target + ".zip"
+			dirPath := path + "/" + d.Target
 			out, err := os.Create(zipPath)
 			if err != nil {
 				fmt.Println(err)
 				return
 			}
-			
+
 			w := zip.NewWriter(out)
-			
+
 			if err := addFilesToZip(w, dirPath, ""); err != nil {
 				_ = out.Close()
 				fmt.Println(err)
@@ -47,7 +49,7 @@ func (d DownloadResponse) Download(ctx *gin.Context, path string) {
 				fmt.Println(err)
 				return
 			}
-			
+
 			if err := out.Close(); err != nil {
 				fmt.Println(err)
 				return
@@ -55,7 +57,7 @@ func (d DownloadResponse) Download(ctx *gin.Context, path string) {
 
 			ctx.Header("Content-Description", "File Transfer")
 			ctx.Header("Content-Transfer-Encoding", "binary")
-			ctx.Header("Content-Disposition", "attachment; filename="+d.Target+".zip" )
+			ctx.Header("Content-Disposition", "attachment; filename="+d.Target+".zip")
 			ctx.Header("Content-Type", "application/octet-stream")
 			ctx.File(zipPath)
 
@@ -77,7 +79,7 @@ func addFilesToZip(w *zip.Writer, basePath, baseInZip string) error {
 		if _, err := os.Stat(fullPath); os.IsNotExist(err) {
 			continue
 		}
-		if file.Mode() & os.ModeSymlink != 0 {
+		if file.Mode()&os.ModeSymlink != 0 {
 			continue
 		}
 

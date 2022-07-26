@@ -4,6 +4,8 @@ import (
 	"backend/controllers"
 	"backend/db"
 	"backend/middlewares"
+	"log"
+	"net/http"
 	"os"
 
 	"github.com/gin-contrib/sessions"
@@ -22,26 +24,31 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	// 暫定
-	sharedir := home + "/Desktop"
-	router := gin.New()
-	router.Use(middlewares.CorsMiddleWare())
-
 	sessionKey := os.Getenv("SESSION_KEY")
-	auth := controllers.Authcontroller{MyDB: myDB,SessionKey: sessionKey}
+	siteUrl := os.Getenv("SITE_URL")
+	serverPort := os.Getenv("SERVER_PORT")
+	shareDir := os.Getenv("SHARE_DIR")
+	shareDirPath := home + shareDir
+	router := gin.New()
+	server := &http.Server{
+		Addr:    ":" + serverPort,
+		Handler: router,
+	}
+	router.Use(middlewares.CorsMiddleWare(siteUrl))
+
+	auth := controllers.Authcontroller{MyDB: myDB, SessionKey: sessionKey}
 	store := cookie.NewStore([]byte("secret"))
 	router.Use(sessions.Sessions("mysession", store))
 	router.POST("/login", auth.LoginController)
 	router.POST("/signup/"+os.Getenv("SIGNUP_ROUTE"), auth.SignUpController)
-	
+
 	authGroup := router.Group("/home")
-	authGroup.Use(middlewares.CorsMiddleWare())
-	authGroup.Use(middlewares.LoginCheckMiddleware(sessionKey)) 
+	authGroup.Use(middlewares.LoginCheckMiddleware(sessionKey))
 	{
-		upload := controllers.UploadController{ShareDir: sharedir}
-		home := controllers.HomeController{ShareDir: sharedir}
-		download := controllers.DownloadController{ShareDir: sharedir}
-		user := controllers.UserController{ShareDir: sharedir,MyDB: myDB,SessionKey: sessionKey}
+		upload := controllers.UploadController{ShareDir: shareDirPath}
+		home := controllers.HomeController{ShareDir: shareDirPath}
+		download := controllers.DownloadController{ShareDir: shareDirPath}
+		user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey}
 		authGroup.GET("/", home.Controller)
 		authGroup.GET("/user", user.GetUserController)
 		authGroup.PATCH("/user", user.PatchUserController)
@@ -49,5 +56,8 @@ func main() {
 		authGroup.POST("/upload", upload.Controller)
 		authGroup.GET("/logout", auth.LogoutController)
 	}
-	router.Run(":8000")
+	err = server.ListenAndServe()
+	if err != nil {
+		log.Fatal(err)
+	}
 }

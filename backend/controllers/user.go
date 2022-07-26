@@ -15,8 +15,8 @@ import (
 )
 
 type UserController struct {
-	MyDB *sql.DB
-	ShareDir string
+	MyDB       *sql.DB
+	ShareDir   string
 	SessionKey string
 }
 
@@ -30,15 +30,15 @@ func (u UserController) GetUserController(ctx *gin.Context) {
 		return
 	}
 	json.Unmarshal([]byte(jsonLoginUser), &loginUser)
-	user, err := users_table.SelectRow(u.MyDB, db.SelectQueryParam{From: "users",Column: []string{"name","is_temporary"},Where: map[string]any{"email":loginUser.Email}})
+	user, err := users_table.SelectRow(u.MyDB, db.SelectQueryParam{From: "users", Column: []string{"name", "is_temporary"}, Where: map[string]any{"email": loginUser.Email}})
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "user not found",
 		})
 	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"name": user.Name,
-		"is_temporary": user.IsTemporary,	
+		"name":         user.Name,
+		"is_temporary": user.IsTemporary,
 	})
 }
 
@@ -59,8 +59,8 @@ func (u UserController) PatchUserController(ctx *gin.Context) {
 	if err != nil {
 		ctx.Status(http.StatusInternalServerError)
 		return
-    }
-	if _, err := users_table.UpdateRow(u.MyDB, db.UpdateQueryParam{From: "users",Set: map[string]any{"password":string(hashed),"is_temporary":false},Where: map[string]any{"email":loginUser.Email}}); err != nil {
+	}
+	if _, err := users_table.UpdateRow(u.MyDB, db.UpdateQueryParam{From: "users", Set: map[string]any{"password": string(hashed), "is_temporary": false}, Where: map[string]any{"email": loginUser.Email}}); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "user not found",
 		})

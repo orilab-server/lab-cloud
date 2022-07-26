@@ -14,7 +14,7 @@ func GetDirs(dir string) ([]string, error) {
 	}
 
 	for _, item := range items {
-		if (item.IsDir()) {
+		if item.IsDir() {
 			findList = append(findList, dir+"/"+item.Name())
 		}
 	}

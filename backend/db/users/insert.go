@@ -29,5 +29,5 @@ func getIntos(column []string) (string, string) {
 	for i := 0; i < colCount; i++ {
 		intoVals[i] = "?"
 	}
-	return strings.Join(column, ","), strings.Join(intoVals,",")
+	return strings.Join(column, ","), strings.Join(intoVals, ",")
 }

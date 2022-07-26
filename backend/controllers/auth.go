@@ -14,9 +14,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-
 type Authcontroller struct {
-	MyDB *sql.DB
+	MyDB       *sql.DB
 	SessionKey string
 }
 
@@ -26,12 +25,12 @@ func (a Authcontroller) LoginController(ctx *gin.Context) {
 	if email == "" || password == "" {
 		ctx.Status(http.StatusBadRequest)
 	} else {
-		user, err := users_table.SelectRow(a.MyDB, db.SelectQueryParam{From: "users",Column: []string{"*"},Where: map[string]any{"email":email}})
+		user, err := users_table.SelectRow(a.MyDB, db.SelectQueryParam{From: "users", Column: []string{"*"}, Where: map[string]any{"email": email}})
 		if err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return
 		}
-		// compare with hash and pass 
+		// compare with hash and pass
 		err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 		if err != nil {
 			ctx.JSON(http.StatusBadRequest, gin.H{
@@ -78,17 +77,17 @@ func (a Authcontroller) SignUpController(ctx *gin.Context) {
 	if err != nil {
 		ctx.Status(http.StatusInternalServerError)
 		return
-    }
+	}
 	name := ctx.PostForm("name")
 	email := ctx.PostForm("email")
-	if _, err := users_table.InsertRow(a.MyDB, db.InsertQueryParam{From: "users",Column: []string{"name","password","email","is_temporary"},Values: []any{name,hashed,email,true}}); err != nil {
+	if _, err := users_table.InsertRow(a.MyDB, db.InsertQueryParam{From: "users", Column: []string{"name", "password", "email", "is_temporary"}, Values: []any{name, hashed, email, true}}); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": "fail",
 		})
 		return
-    }
+	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"status": "success",
+		"status":   "success",
 		"password": randStr,
 	})
 }
