@@ -17,6 +17,7 @@ func CorsMiddleWare() gin.HandlerFunc {
 		AllowMethods: []string{
 			"POST",
 			"GET",
+			"PATCH",
 			"OPTIONS",
 		},
 		// 許可したいHTTPリクエストヘッダ

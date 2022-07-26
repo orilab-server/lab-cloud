@@ -3,7 +3,6 @@ package controllers
 import (
 	"backend/service/mkrm_service"
 	"backend/service/upload_service"
-	"fmt"
 	"net/http"
 	"net/url"
 
@@ -24,7 +23,6 @@ func (p UploadController) Controller(ctx *gin.Context) {
 			json := mkrm_service.MkRmRequest{RequestType: ctx.Request.FormValue("requestType"), DirName: ctx.Request.FormValue("dirName"), FileName: ctx.Request.FormValue("fileName")}
 			err := json.Run(newpath)
 			if err != nil {
-				fmt.Println(err)
 				ctx.JSON(http.StatusOK, gin.H{
 					"status": "fail",
 				})
@@ -44,7 +42,6 @@ func (p UploadController) Controller(ctx *gin.Context) {
 			json := upload_service.UploadRequest{RequestType: ctx.Request.FormValue("requestType"), Files: files, FilePaths: ctx.Request.FormValue("filePaths")}
 			uploadErr := json.Upload(newpath, ctx)
 			if uploadErr != nil {
-				fmt.Println(err)
 				ctx.JSON(http.StatusOK, gin.H{
 					"status": "fail",
 				})

@@ -35,12 +35,16 @@ func main() {
 	router.POST("/signup/"+os.Getenv("SIGNUP_ROUTE"), auth.SignUpController)
 	
 	authGroup := router.Group("/home")
-	authGroup.Use(middlewares.LoginCheckMiddleware()) 
+	authGroup.Use(middlewares.CorsMiddleWare())
+	authGroup.Use(middlewares.LoginCheckMiddleware(sessionKey)) 
 	{
 		upload := controllers.UploadController{ShareDir: sharedir}
 		home := controllers.HomeController{ShareDir: sharedir}
 		download := controllers.DownloadController{ShareDir: sharedir}
+		user := controllers.UserController{ShareDir: sharedir,MyDB: myDB,SessionKey: sessionKey}
 		authGroup.GET("/", home.Controller)
+		authGroup.GET("/user", user.GetUserController)
+		authGroup.PATCH("/user", user.PatchUserController)
 		authGroup.GET("/download", download.Controller)
 		authGroup.POST("/upload", upload.Controller)
 		authGroup.GET("/logout", auth.LogoutController)

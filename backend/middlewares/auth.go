@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func LoginCheckMiddleware() gin.HandlerFunc {
+func LoginCheckMiddleware(sessionKey string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		session := sessions.Default(ctx)
-		loginUserJson := session.Get("loginUser")
+		loginUserJson := session.Get(sessionKey)
 		
 		if loginUserJson == nil {
 			ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
