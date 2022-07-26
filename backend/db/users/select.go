@@ -24,8 +24,8 @@ func SelectRow(myDB *sql.DB, qp db.SelectQueryParam) (db.Users, error) {
 
 func getScanCols(data *db.Users, column []string) []any {
 	var cols []any
-	if strings.Contains(strings.Join(column, ""), "*") || len(column) >= 6 {
-		return []any{&data.Id, &data.Name, &data.Email, &data.Password, &data.CreatedAt, &data.UpdatedAt}
+	if strings.Contains(strings.Join(column, ""), "*") || len(column) >= 7 {
+		return []any{&data.Id, &data.Name, &data.Email, &data.Password, &data.IsTemporary, &data.CreatedAt, &data.UpdatedAt}
 	}
 	for _, str := range column {
 		switch str {
@@ -49,6 +49,11 @@ func getScanCols(data *db.Users, column []string) []any {
 				cols = append(cols, &data.Email)
 				continue
 			}
+		case "is_temporary":
+			{
+				cols = append(cols, &data.IsTemporary)
+				continue
+			}
 		case "created_at":
 			{
 				cols = append(cols, &data.CreatedAt)
@@ -56,7 +61,7 @@ func getScanCols(data *db.Users, column []string) []any {
 			}
 		case "updated_at":
 			{
-				cols = append(cols, &data.CreatedAt)
+				cols = append(cols, &data.UpdatedAt)
 				continue
 			}
 		}

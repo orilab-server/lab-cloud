@@ -81,7 +81,7 @@ func (a Authcontroller) SignUpController(ctx *gin.Context) {
     }
 	name := ctx.PostForm("name")
 	email := ctx.PostForm("email")
-	if _, err := users_table.InsertRow(a.MyDB, db.InsertQueryParam{From: "users",Column: []string{"name","password","email"},Values: []any{name,hashed,email}}); err != nil {
+	if _, err := users_table.InsertRow(a.MyDB, db.InsertQueryParam{From: "users",Column: []string{"name","password","email","is_temporary"},Values: []any{name,hashed,email,true}}); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"status": "fail",
 		})

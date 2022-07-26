@@ -13,6 +13,7 @@ type Users = struct {
 	Name      string
 	Password  string
 	Email     string
+	IsTemporary bool
 	CreatedAt string
 	UpdatedAt string
 }
