@@ -9,7 +9,6 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListSubheader,
   Stack,
   Typography,
 } from "@mui/material";
@@ -24,7 +23,6 @@ import { endFilenameSlicer } from "../../utils/slice";
 
 const style = {
   width: "100%",
-  paddingTop: 10,
   bgcolor: "background.paper",
 };
 
@@ -46,6 +44,7 @@ export const SideContents = () => {
         sx={{
           position: "fixed",
           width: 200,
+          height: "100%",
           pt: 5,
           display: "flex",
           flexDirection: "column",
@@ -64,6 +63,7 @@ export const SideContents = () => {
             sx={{
               width: "100%",
               display: "flex",
+              mb: 1,
               justifyContent: "start",
             }}
             color="primary"
@@ -76,7 +76,8 @@ export const SideContents = () => {
         <Fab
           sx={{
             width: "100%",
-            top: 30,
+            mt: 1,
+            mb: 2,
             display: "flex",
             justifyContent: "start",
           }}
@@ -91,14 +92,22 @@ export const SideContents = () => {
           <ListItem>
             <ListItemText sx={{ color: "rgba(0,0,0,0.5)" }}>Share</ListItemText>
           </ListItem>
-          {topDirs.map((item) => (
-            <React.Fragment key={item}>
-              <ListItem button onClick={() => setPath(item)}>
-                <ListItemText primary={endFilenameSlicer(item)} />
-              </ListItem>
-              <Divider />
-            </React.Fragment>
-          ))}
+          <Box
+            sx={{
+              overflow: "scroll",
+              borderTop: "1px solid rgba(0,0,0,0.6)",
+              height: 450,
+            }}
+          >
+            {topDirs.map((item) => (
+              <React.Fragment key={item}>
+                <ListItem button onClick={() => setPath(item)}>
+                  <ListItemText primary={endFilenameSlicer(item)} />
+                </ListItem>
+                <Divider />
+              </React.Fragment>
+            ))}
+          </Box>
         </List>
       </Box>
     </Container>
