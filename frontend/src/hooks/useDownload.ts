@@ -141,8 +141,9 @@ export const useDownload = (path: string) => {
       .get(
         `${
           import.meta.env.VITE_SERVER_URL
-        }/download?path=${path}&target=${name}&type=${type}`,
+        }/home/download?path=${path}&target=${name}&type=${type}`,
         {
+          withCredentials: true,
           responseType: "blob",
         }
       )

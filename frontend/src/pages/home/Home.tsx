@@ -4,14 +4,14 @@ import { MainContents } from "../../components/home/MainContents";
 import { SideContents } from "../../components/home/SideContents";
 import { SignUpComplete } from "../../components/home/SignUpComplete";
 import { useUser } from "../../hooks/useUser";
-import { userNameState } from "../../store";
+import { isTemporaryState } from "../../store";
 
 export const Home = () => {
-  const userName = useRecoilValue(userNameState);
-  const { user } = useUser();
+  const isTemporary = useRecoilValue(isTemporaryState);
+  useUser();
 
-  if (userName === null || userName === "") {
-    return <SignUpComplete userId={user?.id} />;
+  if (isTemporary) {
+    return <SignUpComplete />;
   }
 
   return (

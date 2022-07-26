@@ -1,30 +1,30 @@
+import axios from "axios";
 import { useQuery } from "react-query";
 import { useSetRecoilState } from "recoil";
-import { supabase } from "../lib/supabase";
-import { userNameState } from "../store";
+import { isTemporaryState, userNameState } from "../store";
 
 export const useUser = () => {
   const setUserName = useSetRecoilState(userNameState);
-  const user = supabase.auth.user();
+  const setIsTemporary = useSetRecoilState(isTemporaryState);
 
   useQuery(
     "user",
     async () => {
-      const { data, error } = await supabase
-        .from<{ user_name: string }>("users")
-        .select("user_name")
-        .match({ id: user?.id });
-      if (error) {
-        throw error;
-      }
-      setUserName(data[0].user_name);
+      const res = await axios.get(
+        `${import.meta.env.VITE_SERVER_URL}/home/user`,
+        {
+          withCredentials: true,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      console.log(res);
+      setUserName(res.data.name);
+      setIsTemporary(res.data.is_temporary);
     },
     {
       onError: (error) => console.log(error),
     }
   );
-
-  return {
-    user,
-  };
 };

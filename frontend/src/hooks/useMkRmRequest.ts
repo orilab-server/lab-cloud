@@ -15,16 +15,16 @@ export const useMkRmRequest = (path: string) => {
     formData.append("dirName", body.dirName || "");
     formData.append("fileName", body.fileName || "");
     const res = await axios.post(
-      `${import.meta.env.VITE_SERVER_URL}/?path=${path}`,
+      `${import.meta.env.VITE_SERVER_URL}/home/upload?path=${path}`,
       formData,
       {
+        withCredentials: true,
         headers: {
           "Content-Type": "multipart/form-data",
         },
       }
     );
 
-    console.log(res);
     setNotify({
       severity: "info",
       text:

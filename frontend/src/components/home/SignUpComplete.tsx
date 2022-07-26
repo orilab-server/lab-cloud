@@ -16,11 +16,7 @@ import { sleep } from "../../utils/sleep";
 
 const theme = createTheme();
 
-type SignUpCompleteProps = {
-  userId?: string;
-};
-
-export const SignUpComplete = ({ userId }: SignUpCompleteProps) => {
+export const SignUpComplete = () => {
   const { additionalSignUp } = useAuth();
   const [routeChangeComplete, setRouteChangeComplete] =
     useState<boolean>(false);
@@ -28,10 +24,11 @@ export const SignUpComplete = ({ userId }: SignUpCompleteProps) => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const name = data.get("name")?.toString();
-    const password = data.get("password")?.toString();
-    if (name && password) {
-      await additionalSignUp(userId, name, password);
+    const newPassword = data.get("password")?.toString();
+    if (newPassword) {
+      const params = new URLSearchParams();
+      params.append("newPassword", newPassword);
+      await additionalSignUp(params);
       await sleep(1);
       location.reload();
     }
@@ -75,18 +72,8 @@ export const SignUpComplete = ({ userId }: SignUpCompleteProps) => {
               margin="normal"
               required
               fullWidth
-              id="name"
-              label="Your Name"
-              name="name"
-              autoComplete="email"
-              autoFocus
-            />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
               name="password"
-              label="Password"
+              label="New Password"
               type="password"
               id="password"
               autoComplete="current-password"
