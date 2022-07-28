@@ -28,7 +28,7 @@ func main() {
 	siteUrl := os.Getenv("SITE_URL")
 	serverPort := os.Getenv("SERVER_PORT")
 	shareDir := os.Getenv("SHARE_DIR")
-	shareDirPath := home + shareDir
+	shareDirPath := home + "/" + shareDir
 	router := gin.New()
 	server := &http.Server{
 		Addr:    ":" + serverPort,
