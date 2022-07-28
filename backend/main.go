@@ -28,6 +28,7 @@ func main() {
 	siteUrl := os.Getenv("SITE_URL")
 	serverPort := os.Getenv("SERVER_PORT")
 	shareDir := os.Getenv("SHARE_DIR")
+	secret := os.Getenv("SECRET")
 	shareDirPath := home + "/" + shareDir
 	router := gin.New()
 	server := &http.Server{
@@ -35,7 +36,7 @@ func main() {
 		Handler: router,
 	}
 	router.Use(middlewares.CorsMiddleWare(siteUrl))
-	store := cookie.NewStore([]byte("secret"))
+	store := cookie.NewStore([]byte(secret))
 
 	auth := controllers.Authcontroller{MyDB: myDB, SessionKey: sessionKey}
 	user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey}
