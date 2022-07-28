@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
+import { useUser } from "./hooks/useUser";
 import { Login } from "./pages/auth/Login";
 import { RouteGuard } from "./pages/auth/RouteGuard";
 import { Home } from "./pages/home/Home";
@@ -9,6 +10,7 @@ import { getCookie } from "./utils/cookie";
 
 function App() {
   const setSession = useSetRecoilState(sessionState);
+  useUser();
 
   useEffect(() => {
     const session = getCookie("mysession");

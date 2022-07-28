@@ -1,6 +1,7 @@
 import axios from "axios";
 import { useSetRecoilState } from "recoil";
 import {
+  isLoginState,
   isTemporaryState,
   notifyState,
   sessionState,
@@ -9,6 +10,7 @@ import {
 
 export const useAuth = () => {
   const setNotify = useSetRecoilState(notifyState);
+  const setIsLogin = useSetRecoilState(isLoginState);
   const setSession = useSetRecoilState(sessionState);
   const setUserName = useSetRecoilState(userNameState);
   const setIsTemporary = useSetRecoilState(isTemporaryState);
@@ -66,6 +68,7 @@ export const useAuth = () => {
           })
           .then(() => {
             document.cookie = "mysession=;";
+            setIsLogin(false);
             setSession(null);
             setUserName(null);
           });

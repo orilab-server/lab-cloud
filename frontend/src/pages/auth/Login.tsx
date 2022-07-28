@@ -15,12 +15,13 @@ import { useAuth } from "../../hooks/useAuth";
 import { Navigate } from "react-router-dom";
 import { sleep } from "../../utils/sleep";
 import { useRecoilValue } from "recoil";
-import { sessionState } from "../../store";
+import { isLoginState, sessionState } from "../../store";
 
 const theme = createTheme();
 
 export const Login = () => {
   const { signIn } = useAuth();
+  const isLogin = useRecoilValue(isLoginState);
   const session = useRecoilValue(sessionState);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -38,7 +39,7 @@ export const Login = () => {
     }
   };
 
-  if (session !== null) {
+  if (session !== null && isLogin) {
     return <Navigate to="/" />;
   }
 

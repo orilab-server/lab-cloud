@@ -8,7 +8,6 @@ import { isTemporaryState } from "../../store";
 
 export const Home = () => {
   const isTemporary = useRecoilValue(isTemporaryState);
-  useUser();
 
   if (isTemporary) {
     return <SignUpComplete />;

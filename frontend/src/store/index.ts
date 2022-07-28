@@ -15,6 +15,11 @@ export const sessionState = atom<string | null>({
   default: null,
 });
 
+export const isLoginState = atom<boolean>({
+  key: "isLoginState",
+  default: false,
+});
+
 export const notifyState = atom<NotifyType | null>({
   key: "notifyState",
   default: null,
