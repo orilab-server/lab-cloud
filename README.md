@@ -41,3 +41,34 @@ Google Drive に比べると少ないので今後余裕があったら増やし�
 - bcrypt
 - godotenv
 - その他
+
+# 環境変数
+
+## フロントエンド
+
+```env
+VITE_CLIENT_URL=
+VITE_SERVER_URL=
+```
+
+## バックエンド
+
+```env
+SERVER_IP=
+SERVER_PORT=
+SHARE_DIR=
+
+SITE_URL=
+
+DB_IP=
+DB_PORT=
+USER_NAME=
+DB_PASS=
+DB_NAME=
+
+SESSION_KEY=
+
+SECRET=
+
+SIGNUP_ROUTE=
+```
