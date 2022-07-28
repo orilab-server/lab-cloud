@@ -35,10 +35,12 @@ func main() {
 		Handler: router,
 	}
 	router.Use(middlewares.CorsMiddleWare(siteUrl))
+	store := cookie.NewStore([]byte("secret"))
 
 	auth := controllers.Authcontroller{MyDB: myDB, SessionKey: sessionKey}
-	store := cookie.NewStore([]byte("secret"))
+	user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey}
 	router.Use(sessions.Sessions("mysession", store))
+	router.GET("/user", user.GetUserController)
 	router.POST("/login", auth.LoginController)
 	router.POST("/signup/"+os.Getenv("SIGNUP_ROUTE"), auth.SignUpController)
 
@@ -48,9 +50,7 @@ func main() {
 		upload := controllers.UploadController{ShareDir: shareDirPath}
 		home := controllers.HomeController{ShareDir: shareDirPath}
 		download := controllers.DownloadController{ShareDir: shareDirPath}
-		user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey}
 		authGroup.GET("/", home.Controller)
-		authGroup.GET("/user", user.GetUserController)
 		authGroup.PATCH("/user", user.PatchUserController)
 		authGroup.GET("/download", download.Controller)
 		authGroup.POST("/upload", upload.Controller)

@@ -26,7 +26,9 @@ func (u UserController) GetUserController(ctx *gin.Context) {
 	session := sessions.Default(ctx)
 	jsonLoginUser, err := dproxy.New(session.Get(u.SessionKey)).String()
 	if err != nil {
-		ctx.Status(http.StatusUnauthorized)
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"is_login": false,
+		})
 		return
 	}
 	json.Unmarshal([]byte(jsonLoginUser), &loginUser)
@@ -37,6 +39,7 @@ func (u UserController) GetUserController(ctx *gin.Context) {
 		})
 	}
 	ctx.JSON(http.StatusOK, gin.H{
+		"is_login":     true,
 		"name":         user.Name,
 		"is_temporary": user.IsTemporary,
 	})
