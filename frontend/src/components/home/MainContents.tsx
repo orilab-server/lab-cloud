@@ -99,6 +99,9 @@ export const MainContents = () => {
                 color: "royalblue",
                 borderBottom: "1px solid royalblue",
                 cursor: "pointer",
+                "&:hover": {
+                  color: "rgba(0,0,0,0.3)",
+                },
               }}
             >
               Share
@@ -121,6 +124,9 @@ export const MainContents = () => {
                     color: "royalblue",
                     borderBottom: "1px solid royalblue",
                     cursor: "pointer",
+                    "&:hover": {
+                      color: "rgba(0,0,0,0.3)",
+                    },
                   }}
                 >
                   {dir}

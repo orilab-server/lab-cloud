@@ -68,6 +68,10 @@ export const FilePreviewModal = ({
               bgcolor: "black",
               borderRadius: "50%",
               color: "white",
+              cursor: "pointer",
+              "&:hover": {
+                backgroundColor: "rgba(0,0,0,0.3)",
+              },
             }}
           />
         </Box>
