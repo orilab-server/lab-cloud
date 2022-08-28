@@ -9,6 +9,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
+import { VscFiles } from "react-icons/vsc";
 import React from "react";
 import { ContextMenu } from "./ContextMenu";
 import { LoadingSpinner } from "../misc/LoadingSpinner";
@@ -138,6 +139,38 @@ export const MainContents = () => {
             );
           })}
         </Box>
+        {items.length === 0 && (
+          <Box
+            sx={{
+              height: "80vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Box
+              sx={{
+                width: "20rem",
+                height: "20rem",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                background: "whitesmoke",
+                border: "1px solid rgba(0,0,0,0)",
+                borderRadius: 50,
+              }}
+            >
+              <VscFiles size={40} />
+              <Typography
+                sx={{ mt: 3, color: "rgba(0,0,0,0.6)" }}
+                fontSize={20}
+              >
+                ファイルを追加してください
+              </Typography>
+            </Box>
+          </Box>
+        )}
         {items.map((item) => {
           if (item.type === "dir") {
             return (
