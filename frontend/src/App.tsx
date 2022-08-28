@@ -1,3 +1,4 @@
+import { Box } from "@mui/material";
 import { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import { useSetRecoilState } from "recoil";
@@ -32,7 +33,24 @@ function App() {
           </RouteGuard>
         }
       />
-      <Route path="*" element={<div>404 Not Found</div>} />
+      <Route
+        path="*"
+        element={
+          <Box
+            sx={{
+              fontSize: 80,
+              fontWeight: "bold",
+              width: "100vw",
+              height: "100vh",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            404 Not Found
+          </Box>
+        }
+      />
     </Routes>
   );
 }
