@@ -18,12 +18,12 @@ export const downloadRequest = async (path: string, name: string, type: 'dir' | 
     )
     .then((res) => res.data);
 
-    export const getPreviewFile = async (path: string, name: string) => {
-      const requestPromise = downloadRequest(path, name, 'file');
-      return await requestPromise.then((data: Blob) => {
-        return data;
-      });
-    };
+export const getPreviewFile = async (path: string, name: string) => {
+  const requestPromise = downloadRequest(path, name, 'file');
+  return await requestPromise.then((data: Blob) => {
+    return data;
+  });
+};
 
 const getProgress = (
   progresses: ResponseProgress[],
@@ -53,54 +53,59 @@ export const saveFile = async (target: Response | null) => {
 
 export const download = async (
   path: string,
-  target: { name: string; type: 'dir' | 'file' },
+  targets: { name: string; type: 'dir' | 'file' }[],
   setProgress: Dispatch<SetStateAction<ResponseProgress[]>>,
 ) => {
-  const { name, type } = target;
-  console.log(path, name, type);
-  setProgress((old) => [
-    ...old,
-    {
-      name,
-      type,
-      progress: 0,
-      start: true,
-      data: null,
-      text: type === 'dir' ? '圧縮しています' : 'ダウンロードしています',
-      status: 'pending',
-    },
-  ]);
-  const requestPromise = downloadRequest(path, name, type);
-  await sleep(3);
-  [...Array(getRandom(30, 60))].forEach((_, i) =>
-    setProgress((old) => getProgress(old, name, i, i)),
+  const responses = await Promise.all(
+    targets.map(async (target) => {
+      const { name, type } = target;
+      setProgress((old) => [
+        ...old,
+        {
+          name,
+          type,
+          progress: 0,
+          start: true,
+          data: null,
+          text: type === 'dir' ? '圧縮しています' : 'ダウンロードしています',
+          status: 'pending',
+        },
+      ]);
+      const requestPromise = downloadRequest(path, name, type);
+      await sleep(3);
+      [...Array(getRandom(30, 60))].forEach((_, i) =>
+        setProgress((old) => getProgress(old, name, i, i)),
+      );
+      const res = await requestPromise
+        .then(async (data: Blob) => {
+          const omitName = Array.from(name).length > 8 ? name.slice(0, 10) + '...' : name;
+          setProgress((old) =>
+            getProgress(old, name, 70, 85, {
+              text: type === 'dir' ? `${omitName}.zip` : omitName + 'をダウンロードしています',
+              data,
+            }),
+          );
+          await sleep(1);
+          return name;
+        })
+        .catch(async (error) => {
+          console.log(error);
+          setProgress((old) =>
+            getProgress(old, name, 0, 0, {
+              text: 'エラーが発生しました',
+              status: 'suspended',
+              start: false,
+            }),
+          );
+          await sleep(6);
+          setProgress((old) => old.filter((item) => item.name !== name));
+          return null;
+        });
+      setProgress((old) => getProgress(old, name, 98, 99));
+      return res || '';
+    }),
   );
-  const res = await requestPromise
-    .then((data: Blob) => {
-      console.log(data);
-      setProgress((old) =>
-        getProgress(old, name, 70, 85, {
-          text: type === 'dir' ? `${name}.zip` : name + 'をダウンロードしています',
-          data,
-        }),
-      );
-      return name;
-    })
-    .catch(async (error) => {
-      console.log(error);
-      setProgress((old) =>
-        getProgress(old, name, 0, 0, {
-          text: 'エラーが発生しました',
-          status: 'suspended',
-          start: false,
-        }),
-      );
-      await sleep(6);
-      setProgress((old) => old.filter((item) => item.name !== name));
-      return null;
-    });
-  setProgress((old) => getProgress(old, name, 98, 99));
-  return res || '';
+  return responses;
 };
 
 export const cancel = async (
@@ -114,19 +119,25 @@ export const cancel = async (
 
 export type DownloadMutationConfig = {
   path: string;
-  target: { name: string; type: 'dir' | 'file' };
+  targets: { name: string; type: 'dir' | 'file' }[];
 };
 
 export const useDownload = () => {
   const [downloadProgress, setDownloadProgress] = useState<ResponseProgress[]>([]);
   const downloadMutation = useMutation(
     async (config: DownloadMutationConfig) =>
-      download(config.path, config.target, setDownloadProgress),
+      download(config.path, config.targets, setDownloadProgress),
     {
-      onSuccess: async (name) => {
-        setDownloadProgress((old) => getProgress(old, name, 100, 100, { status: 'finish' }));
-        await sleep(6);
-        setDownloadProgress((old) => old.filter((item) => item.name !== name));
+      onSuccess: async (names) => {
+        await Promise.all(
+          names.map(async (name) => {
+            setDownloadProgress((old) =>
+              getProgress(old, name, 100, 100, { status: 'finish', text: '完了' }),
+            );
+            await sleep(6);
+            setDownloadProgress((old) => old.filter((item) => item.name !== name));
+          }),
+        );
       },
     },
   );

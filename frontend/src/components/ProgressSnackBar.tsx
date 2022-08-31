@@ -61,7 +61,7 @@ export const ProgressSnackBar = ({ response, cancel }: ProgressSnackBarProps) =>
   return (
     <Stack
       sx={{
-        bgcolor: 'rgba(0,0,0,0.7)',
+        bgcolor: '#333',
         px: 3,
         borderRadius: 1,
         color: 'white',

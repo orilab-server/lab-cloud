@@ -6,7 +6,6 @@ import * as React from 'react';
 import { MdDelete, MdOutlineLink } from 'react-icons/md';
 import { RiDownloadFill } from 'react-icons/ri';
 import { UseMutationResult } from 'react-query';
-import { DownloadMutationConfig } from '../api/download';
 import { SendRequestMutationConfig } from '../api/sendRequest';
 
 type ContextMenurops = {
@@ -15,8 +14,8 @@ type ContextMenurops = {
   path: string;
   children: React.ReactNode;
   copyLink: () => void;
+  downloadItems: () => void;
   requestMutation: UseMutationResult<string, unknown, SendRequestMutationConfig, unknown>;
-  downloadMutation: UseMutationResult<string, unknown, DownloadMutationConfig, unknown>;
 };
 
 export const ContextMenu = ({
@@ -25,8 +24,8 @@ export const ContextMenu = ({
   path,
   children,
   copyLink,
+  downloadItems,
   requestMutation,
-  downloadMutation,
 }: ContextMenurops) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -59,9 +58,10 @@ export const ContextMenu = ({
         }}
       >
         <MenuItem
-          onClick={() =>
-            downloadMutation.mutate({ path, target: { name: itemName, type: itemType } })
-          }
+          onClick={() => {
+            downloadItems();
+            setAnchorEl(null);
+          }}
         >
           <ListItemIcon>
             <RiDownloadFill fontSize={20} />
@@ -69,7 +69,10 @@ export const ContextMenu = ({
           <ListItemText>ダウンロード</ListItemText>
         </MenuItem>
         <ShareModal
-          onSend={() => requestMutation.mutate({ body: requestBody, path })}
+          onSend={() => {
+            requestMutation.mutate({ body: requestBody, path });
+            setAnchorEl(null);
+          }}
           sendText="削除"
           button={
             <MenuItem>

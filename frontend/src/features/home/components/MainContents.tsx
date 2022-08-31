@@ -1,11 +1,12 @@
+import { CustomList } from '@/components/CustomList';
 import { FileIcons } from '@/components/FileIcons';
 import { FilePreviewModal } from '@/components/FilePreview';
 import { ProgressSnackBar } from '@/components/ProgressSnackBar';
+import { notifyState } from '@/stores';
 import { endFilenameSlicer, relativePathSlicer, withoutLastPathSlicer } from '@/utils/slice';
 import {
   Box,
   Container,
-  List,
   ListItem,
   ListItemIcon,
   ListItemText,
@@ -16,8 +17,10 @@ import React from 'react';
 import { AiFillFolder } from 'react-icons/ai';
 import { MdArrowBack } from 'react-icons/md';
 import { VscFiles } from 'react-icons/vsc';
+import { useSetRecoilState } from 'recoil';
 import { getPreviewFile, useDownload } from '../api/download';
 import { useSendRequest } from '../api/sendRequest';
+import { useSelector } from '../hooks/useSelector';
 import { Storage } from '../types/storage';
 import { ContextMenu } from './ContextMenu';
 
@@ -36,7 +39,9 @@ export const MainContents = ({
   isHome,
   moveDir,
 }: MainContentsProps) => {
+  const setNotify = useSetRecoilState(notifyState);
   const { downloadProgress, downloadMutation, downloadCancelMutation } = useDownload();
+  const { selects, unSelect, clickListItem, onKeyDown, onKeyUp } = useSelector();
   const requestMutation = useSendRequest();
   const prevPath = currentdir.slice(0, currentdir.lastIndexOf('/'));
   const relativePath = relativePathSlicer(currentdir, baseDir);
@@ -46,6 +51,7 @@ export const MainContents = ({
   const copyLink = (path: string) => {
     const url = `${process.env.NEXT_PUBLIC_CLIENT_URL}/?path=${path}`;
     navigator.clipboard.writeText(url);
+    setNotify({ severity: 'info', text: 'リンクをコピーしました' });
   };
 
   const openMyContextMenu: React.MouseEventHandler<HTMLDivElement> = (
@@ -74,7 +80,7 @@ export const MainContents = ({
           );
         })}
       </Stack>
-      <List>
+      <CustomList onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
         {!isHome ? (
           <ListItem onClick={() => moveDir(prevPath)} button>
             <ListItemIcon>
@@ -162,8 +168,18 @@ export const MainContents = ({
         )}
         {filepaths.map((item) => {
           const name = endFilenameSlicer(item.path);
+          const type = item.type as 'dir' | 'file';
           const path = withoutLastPathSlicer(item.path);
-          if (item.type === 'dir') {
+          const isSelect = selects.some((file) => file.name === name);
+          const downloadItems = () => {
+            downloadMutation.mutate({
+              path,
+              targets: selects.length === 0 ? [{ name, type }] : selects,
+            });
+            unSelect();
+          };
+          // show dir
+          if (type === 'dir') {
             return (
               <ContextMenu
                 key={item.path}
@@ -172,12 +188,14 @@ export const MainContents = ({
                 path={path}
                 copyLink={() => copyLink(item.path)}
                 requestMutation={requestMutation}
-                downloadMutation={downloadMutation}
+                downloadItems={downloadItems}
               >
                 <ListItem
+                  onClick={() => clickListItem(name, 'dir')}
                   onContextMenu={openMyContextMenu}
                   onDoubleClick={() => moveDir(item.path)}
                   className="list-item"
+                  sx={{ background: isSelect ? '#ccc' : '' }}
                   button
                 >
                   <ListItemIcon>
@@ -188,6 +206,7 @@ export const MainContents = ({
               </ContextMenu>
             );
           }
+          // show file
           return (
             <ContextMenu
               itemName={name}
@@ -195,14 +214,20 @@ export const MainContents = ({
               path={path}
               copyLink={() => copyLink(currentdir)}
               requestMutation={requestMutation}
-              downloadMutation={downloadMutation}
+              downloadItems={downloadItems}
               key={item.path}
             >
               <FilePreviewModal
                 onFetchFile={() => getPreviewFile(path, name)}
                 fileName={name}
                 button={
-                  <ListItem onContextMenu={openMyContextMenu} className="list-item" button>
+                  <ListItem
+                    onClick={() => clickListItem(name, 'file')}
+                    onContextMenu={openMyContextMenu}
+                    className="list-item"
+                    sx={{ background: isSelect ? '#ccc' : '' }}
+                    button
+                  >
                     <ListItemIcon>
                       <FileIcons fileName={name} />
                     </ListItemIcon>
@@ -213,7 +238,7 @@ export const MainContents = ({
             </ContextMenu>
           );
         })}
-      </List>
+      </CustomList>
     </Container>
   );
 };
