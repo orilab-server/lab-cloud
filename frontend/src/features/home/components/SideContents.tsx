@@ -29,7 +29,7 @@ type SideContentsProps = {
   name?: string;
   topDirs: string[];
   currentDir: string;
-  requestMutation: UseMutationResult<void, unknown, SendRequestMutationConfig, unknown>;
+  requestMutation: UseMutationResult<string, unknown, SendRequestMutationConfig, unknown>;
   moveDir: (path: string) => Promise<void>;
 };
 
