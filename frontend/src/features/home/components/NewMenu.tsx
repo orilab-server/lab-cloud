@@ -81,11 +81,13 @@ export const NewMenu = ({ children, path, requestMutation }: ContextMenurops) =>
         <ShareModal
           onSend={() =>
             requestMutation.mutate({
-              body: {
-                requestType: 'mkdir',
-                dirName: folderName,
-              },
               path,
+              requests: [
+                {
+                  requestType: 'mkdir',
+                  dirName: folderName,
+                },
+              ],
             })
           }
           sendText="作成"

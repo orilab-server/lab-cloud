@@ -178,6 +178,16 @@ export const MainContents = ({
             });
             unSelect();
           };
+          const requests = selects.map((select) => {
+            if (select.type === 'dir') {
+              return { requestType: 'rmdir', dirName: select.name };
+            }
+            return { requestType: 'rmfile', fileName: select.name };
+          });
+          const requestItems = () => {
+            requestMutation.mutate({ path, requests });
+            unSelect();
+          };
           // show dir
           if (type === 'dir') {
             return (
@@ -187,7 +197,7 @@ export const MainContents = ({
                 itemType="dir"
                 path={path}
                 copyLink={() => copyLink(item.path)}
-                requestMutation={requestMutation}
+                requestItems={requestItems}
                 downloadItems={downloadItems}
               >
                 <ListItem
@@ -213,7 +223,7 @@ export const MainContents = ({
               itemType="file"
               path={path}
               copyLink={() => copyLink(currentdir)}
-              requestMutation={requestMutation}
+              requestItems={requestItems}
               downloadItems={downloadItems}
               key={item.path}
             >

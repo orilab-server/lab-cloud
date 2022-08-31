@@ -5,8 +5,6 @@ import MenuItem from '@mui/material/MenuItem';
 import * as React from 'react';
 import { MdDelete, MdOutlineLink } from 'react-icons/md';
 import { RiDownloadFill } from 'react-icons/ri';
-import { UseMutationResult } from 'react-query';
-import { SendRequestMutationConfig } from '../api/sendRequest';
 
 type ContextMenurops = {
   itemName: string;
@@ -15,7 +13,7 @@ type ContextMenurops = {
   children: React.ReactNode;
   copyLink: () => void;
   downloadItems: () => void;
-  requestMutation: UseMutationResult<string, unknown, SendRequestMutationConfig, unknown>;
+  requestItems: () => void;
 };
 
 export const ContextMenu = ({
@@ -25,14 +23,10 @@ export const ContextMenu = ({
   children,
   copyLink,
   downloadItems,
-  requestMutation,
+  requestItems,
 }: ContextMenurops) => {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const requestBody =
-    itemType === 'dir'
-      ? { requestType: 'rmdir', dirName: itemName }
-      : { requestType: 'rmfile', fileName: itemName };
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
@@ -70,7 +64,7 @@ export const ContextMenu = ({
         </MenuItem>
         <ShareModal
           onSend={() => {
-            requestMutation.mutate({ body: requestBody, path });
+            requestItems();
             setAnchorEl(null);
           }}
           sendText="削除"
