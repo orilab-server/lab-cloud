@@ -1,9 +1,7 @@
-import { isLoginState, userNameState } from '@/stores';
 import { sleep } from '@/utils/sleep';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
-import { useSetRecoilState } from 'recoil';
 
 export const logout = async () => {
   const ok = window.confirm('ログアウトしますか？');
@@ -16,13 +14,9 @@ export const logout = async () => {
 
 export const useLogout = () => {
   const router = useRouter();
-  const setIsLogin = useSetRecoilState(isLoginState);
-  const setUserName = useSetRecoilState(userNameState);
   return useMutation(async () => logout(), {
     onSuccess: async () => {
       document.cookie = 'mysession=;';
-      setIsLogin(false);
-      setUserName(null);
       await sleep(1);
       await router.push('/login');
     },
