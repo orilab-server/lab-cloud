@@ -27,18 +27,18 @@ func (g HomeController) Controller(ctx *gin.Context) {
 		fmt.Println("error : ", err)
 		return
 	}
-	items, err := tools.Getitems(newpath)
+	filepaths, err := tools.Getitems(newpath)
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "Bad Request")
 		return
 	}
 	topDirs, _ := tools.GetDirs(g.ShareDir)
 	ishome := newpath == g.ShareDir
-	jsonitems, _ := json.Marshal(items)
+	jsonitems, _ := json.Marshal(filepaths)
 	ctx.JSON(http.StatusOK, gin.H{
 		"topdirs": topDirs,
 		"basedir": g.ShareDir,
-		"items":   string(jsonitems),
+		"filepaths":   string(jsonitems),
 		"ishome":  ishome,
 	})
 }
