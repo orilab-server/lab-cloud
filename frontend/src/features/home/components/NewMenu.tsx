@@ -1,4 +1,3 @@
-import { ShareModal } from '@/components/Modal';
 import {
   Avatar,
   Button,
@@ -9,11 +8,14 @@ import {
   ListItemAvatar,
   ListItemIcon,
   ListItemText,
+  Stack,
   TextField,
 } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import { Box } from '@mui/system';
 import React, { useRef, useState } from 'react';
+import { useModal } from 'react-hooks-use-modal';
 import { AiFillFolder } from 'react-icons/ai';
 import {
   MdCreateNewFolder,
@@ -44,9 +46,29 @@ const formStyle: React.CSSProperties = {
   padding: '20px 40px',
 };
 
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  bgcolor: 'background.paper',
+  boxShadow: 24,
+  width: '60vw',
+  p: 5,
+  px: 10,
+};
+
 export const NewMenu = ({ children, path, requestMutation }: ContextMenurops) => {
   const { files, addFiles, deleteFile, fileUploadMutation } = useUploadFiles();
   const { folders, addFolders, deleteFolder, folderUploadMutation } = useUploadFolders();
+  const [CreateModal, openCreateModal, closeCreateModal] = useModal('create');
+  const [UploadFilesModal, openUploadFilesModal, closeUploadFileModal] = useModal('file-upload');
+  const [UploadFoldersModal, openUploadFoldersModal, closeUploadFolderModal] =
+    useModal('folder-upload');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [folderName, setFolderName] = useState<string>('');
   const open = Boolean(anchorEl);
@@ -78,117 +100,152 @@ export const NewMenu = ({ children, path, requestMutation }: ContextMenurops) =>
           'aria-labelledby': 'basic-button',
         }}
       >
-        <ShareModal
-          onSend={() =>
-            requestMutation.mutate({
-              path,
-              requests: [
-                {
-                  requestType: 'mkdir',
-                  dirName: folderName,
-                },
-              ],
-            })
-          }
-          sendText="作成"
-          button={
-            <MenuItem>
-              <ListItemIcon>
-                <MdCreateNewFolder fontSize={20} />
-              </ListItemIcon>
-              <ListItemText>フォルダを作成</ListItemText>
-            </MenuItem>
-          }
-        >
-          <div style={formStyle}>
-            <TextField
-              label="フォルダ名入力"
-              variant="standard"
-              value={folderName}
-              onChange={handleChangeText}
-            />
-          </div>
-        </ShareModal>
+        <MenuItem onClick={openCreateModal}>
+          <ListItemIcon>
+            <MdCreateNewFolder fontSize={20} />
+          </ListItemIcon>
+          <ListItemText>フォルダを作成</ListItemText>
+        </MenuItem>
+        <Box id="create" sx={{ width: '100%' }}>
+          <CreateModal>
+            <Stack sx={modalStyle} spacing={5} alignItems="center">
+              <TextField
+                label="フォルダ名入力"
+                variant="standard"
+                value={folderName}
+                onChange={handleChangeText}
+              />
+              <Stack direction="row" spacing={2}>
+                <Button
+                  size="medium"
+                  variant="contained"
+                  onClick={() =>
+                    requestMutation.mutate({
+                      path,
+                      requests: [
+                        {
+                          requestType: 'mkdir',
+                          dirName: folderName,
+                        },
+                      ],
+                    })
+                  }
+                >
+                  作成
+                </Button>
+                <Button onClick={closeCreateModal}>閉じる</Button>
+              </Stack>
+            </Stack>
+          </CreateModal>
+        </Box>
         <Divider />
-        <ShareModal
-          onSend={() => fileUploadMutation.mutate(path)}
-          sendText="アップロード"
-          button={
-            <MenuItem>
-              <ListItemIcon>
-                <MdUploadFile fontSize={20} />
-              </ListItemIcon>
-              <ListItemText>ファイルをアップロード</ListItemText>
-            </MenuItem>
-          }
-        >
-          <div style={formStyle}>
-            <Button onClick={handleFileClick}>ファイルを追加</Button>
-            <input hidden multiple type="file" ref={inputRef} onChange={addFiles} />
-            <List>
-              {files.map((file) => (
-                <ListItem
-                  key={file.name}
-                  secondaryAction={
-                    <IconButton onClick={() => deleteFile(file.name)} edge="end">
-                      <MdDelete />
-                    </IconButton>
-                  }
+        <MenuItem onClick={openUploadFilesModal}>
+          <ListItemIcon>
+            <MdUploadFile fontSize={20} />
+          </ListItemIcon>
+          <ListItemText>ファイルをアップロード</ListItemText>
+        </MenuItem>
+        <Box id="file-upload" sx={{ width: '100%' }}>
+          <UploadFilesModal>
+            <Stack sx={modalStyle} spacing={2} alignItems="center">
+              <Button onClick={handleFileClick}>ファイルを追加</Button>
+              <input hidden multiple type="file" ref={inputRef} onChange={addFiles} />
+              <List>
+                {files.map((file) => (
+                  <ListItem
+                    key={file.name}
+                    secondaryAction={
+                      <IconButton
+                        onClick={() => {
+                          deleteFile(file.name);
+                          setAnchorEl(null);
+                        }}
+                        edge="end"
+                      >
+                        <MdDelete />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemAvatar>
+                      <Avatar>
+                        <MdCreateNewFolder />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText primary={file.name} />
+                  </ListItem>
+                ))}
+              </List>
+              <Stack direction="row" spacing={2}>
+                <Button
+                  sx={{ whiteSpace: 'nowrap' }}
+                  size="medium"
+                  variant="contained"
+                  onClick={() => {
+                    fileUploadMutation.mutate(path);
+                    setAnchorEl(null);
+                  }}
                 >
-                  <ListItemAvatar>
-                    <Avatar>
-                      <MdCreateNewFolder />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary={file.name} />
-                </ListItem>
-              ))}
-            </List>
-          </div>
-        </ShareModal>
-        <ShareModal
-          onSend={() => folderUploadMutation.mutate(path)}
-          sendText="アップロード"
-          button={
-            <MenuItem>
-              <ListItemIcon>
-                <MdOutlineDriveFolderUpload fontSize={20} />
-              </ListItemIcon>
-              <ListItemText>フォルダをアップロード</ListItemText>
-            </MenuItem>
-          }
-        >
-          <div style={formStyle}>
-            <Button onClick={handleFileClick}>フォルダを追加</Button>
-            <input
-              hidden
-              multiple
-              type="file"
-              ref={inputRef}
-              onChange={addFolders}
-              webkitdirectory="true"
-            />
-            <List>
-              {folders.map((folder) => (
-                <ListItem
-                  key={folder.name}
-                  secondaryAction={
-                    <IconButton onClick={() => deleteFolder(folder.name)} edge="end">
-                      <MdDelete />
-                    </IconButton>
-                  }
+                  アップロード
+                </Button>
+                <Button onClick={closeUploadFileModal}>閉じる</Button>
+              </Stack>
+            </Stack>
+          </UploadFilesModal>
+        </Box>
+        <MenuItem onClick={openUploadFoldersModal}>
+          <ListItemIcon>
+            <MdOutlineDriveFolderUpload fontSize={20} />
+          </ListItemIcon>
+          <ListItemText>フォルダをアップロード</ListItemText>
+        </MenuItem>
+        <Box id="folder-upload" sx={{ width: '100%' }}>
+          <UploadFoldersModal>
+            <Stack sx={modalStyle} spacing={2} alignItems="center">
+              <Button onClick={handleFileClick}>フォルダを追加</Button>
+              <input
+                hidden
+                multiple
+                type="file"
+                ref={inputRef}
+                onChange={addFolders}
+                webkitdirectory="true"
+              />
+              <List>
+                {folders.map((folder) => (
+                  <ListItem
+                    key={folder.name}
+                    secondaryAction={
+                      <IconButton onClick={() => deleteFolder(folder.name)} edge="end">
+                        <MdDelete />
+                      </IconButton>
+                    }
+                  >
+                    <ListItemAvatar>
+                      <Avatar>
+                        <AiFillFolder />
+                      </Avatar>
+                    </ListItemAvatar>
+                    <ListItemText primary={folder.name} />
+                  </ListItem>
+                ))}
+              </List>
+              <Stack direction="row" spacing={2}>
+                <Button
+                  sx={{ whiteSpace: 'nowrap' }}
+                  size="medium"
+                  variant="contained"
+                  onClick={() => {
+                    folderUploadMutation.mutate(path);
+                    setAnchorEl(null);
+                  }}
                 >
-                  <ListItemAvatar>
-                    <Avatar>
-                      <AiFillFolder />
-                    </Avatar>
-                  </ListItemAvatar>
-                  <ListItemText primary={folder.name} />
-                </ListItem>
-              ))}
-            </List>
-          </div>
-        </ShareModal>
+                  アップロード
+                </Button>
+                <Button onClick={closeUploadFolderModal}>閉じる</Button>
+              </Stack>
+            </Stack>
+          </UploadFoldersModal>
+        </Box>
       </Menu>
     </div>
   );
