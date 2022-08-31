@@ -1,3 +1,4 @@
+import { NotifyBar } from '@/components/NotifyBar';
 import { RouteGuard } from '@/components/RouteGuard';
 import type { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -10,6 +11,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <RecoilRoot>
+        <NotifyBar />
         <RouteGuard>
           <Component {...pageProps} />
         </RouteGuard>

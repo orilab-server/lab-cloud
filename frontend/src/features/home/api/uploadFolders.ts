@@ -1,7 +1,9 @@
+import { notifyState } from '@/stores';
 import { startDirPathSlicer } from '@/utils/slice';
 import axios from 'axios';
 import React, { useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
+import { useSetRecoilState } from 'recoil';
 
 type Folder = {
   name: string;
@@ -32,6 +34,7 @@ export const uploadFolders = async (folders: Folder[], path: string) => {
 export const useUploadFolders = () => {
   const [folders, setFolders] = useState<Folder[]>([]);
   const queryClient = useQueryClient();
+  const setNotify = useSetRecoilState(notifyState);
 
   const addFolders = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return;
@@ -54,7 +57,14 @@ export const useUploadFolders = () => {
 
   const folderUploadMutation = useMutation(async (path: string) => uploadFolders(folders, path), {
     onSuccess: async () => {
+      setNotify({ severity: 'info', text: 'アップロードしました' });
       await queryClient.invalidateQueries('storage');
+    },
+    onError: () => {
+      setNotify({
+        severity: 'error',
+        text: 'エラーが発生しました',
+      });
     },
   });
   return { folders, addFolders, deleteFolder, folderUploadMutation };

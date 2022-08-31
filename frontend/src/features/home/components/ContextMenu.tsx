@@ -15,7 +15,7 @@ type ContextMenurops = {
   path: string;
   children: React.ReactNode;
   copyLink: () => void;
-  requestMutation: UseMutationResult<void, unknown, SendRequestMutationConfig, unknown>;
+  requestMutation: UseMutationResult<string, unknown, SendRequestMutationConfig, unknown>;
   downloadMutation: UseMutationResult<string, unknown, DownloadMutationConfig, unknown>;
 };
 

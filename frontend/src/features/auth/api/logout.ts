@@ -1,7 +1,9 @@
+import { notifyState } from '@/stores';
 import { sleep } from '@/utils/sleep';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
+import { useSetRecoilState } from 'recoil';
 
 export const logout = async () => {
   const ok = window.confirm('ログアウトしますか？');
@@ -14,11 +16,19 @@ export const logout = async () => {
 
 export const useLogout = () => {
   const router = useRouter();
+  const setNotify = useSetRecoilState(notifyState);
   return useMutation(async () => logout(), {
     onSuccess: async () => {
+      setNotify({ severity: 'info', text: 'ログアウトしました' });
       document.cookie = 'mysession=;';
       await sleep(1);
       await router.push('/login');
+    },
+    onError: () => {
+      setNotify({
+        severity: 'error',
+        text: 'エラーが発生しました',
+      });
     },
   });
 };

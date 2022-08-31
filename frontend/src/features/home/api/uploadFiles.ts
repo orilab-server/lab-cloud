@@ -1,6 +1,8 @@
+import { notifyState } from '@/stores';
 import axios from 'axios';
 import { useState } from 'react';
 import { useMutation, useQueryClient } from 'react-query';
+import { useSetRecoilState } from 'recoil';
 
 export const uploadFiles = async (files: File[], path: string) => {
   if (files.length === 0) {
@@ -24,6 +26,7 @@ export const uploadFiles = async (files: File[], path: string) => {
 export const useUploadFiles = () => {
   const [files, setFiles] = useState<File[]>([]);
   const queryClient = useQueryClient();
+  const setNotify = useSetRecoilState(notifyState);
 
   const addFiles = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (!event.target.files) return;
@@ -37,7 +40,14 @@ export const useUploadFiles = () => {
 
   const fileUploadMutation = useMutation(async (path: string) => uploadFiles(files, path), {
     onSuccess: async () => {
+      setNotify({ severity: 'info', text: 'アップロードしました' });
       await queryClient.invalidateQueries('storage');
+    },
+    onError: () => {
+      setNotify({
+        severity: 'error',
+        text: 'エラーが発生しました',
+      });
     },
   });
   return { files, addFiles, deleteFile, fileUploadMutation };

@@ -1,5 +1,7 @@
+import { notifyState } from '@/stores';
 import axios from 'axios';
 import { useMutation, useQueryClient } from 'react-query';
+import { useSetRecoilState } from 'recoil';
 
 export const register = async (params: URLSearchParams) => {
   const signupPost = axios.create({
@@ -15,9 +17,17 @@ type RegisterMutationConfig = {
 
 export const useRegister = () => {
   const queryClient = useQueryClient();
+  const setNotify = useSetRecoilState(notifyState);
   return useMutation(async (config: RegisterMutationConfig) => register(config.params), {
     onSuccess: async () => {
+      setNotify({ severity: 'info', text: '登録しました' });
       await queryClient.invalidateQueries('user');
+    },
+    onError: () => {
+      setNotify({
+        severity: 'error',
+        text: 'エラーが発生しました',
+      });
     },
   });
 };

@@ -1,7 +1,9 @@
+import { notifyState } from '@/stores';
 import { sleep } from '@/utils/sleep';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
+import { useSetRecoilState } from 'recoil';
 
 export const Login = async (email: string, password: string) => {
   const params = new URLSearchParams();
@@ -21,10 +23,18 @@ type LoginMutationConfig = {
 
 export const useLogin = () => {
   const router = useRouter();
+  const setNotify = useSetRecoilState(notifyState);
   return useMutation(async (config: LoginMutationConfig) => Login(config.email, config.password), {
     onSuccess: async () => {
+      setNotify({ severity: 'info', text: 'ログインしました' });
       await sleep(2);
       await router.push('/');
+    },
+    onError: () => {
+      setNotify({
+        severity: 'error',
+        text: 'エラーが発生しました',
+      });
     },
   });
 };

@@ -1,5 +1,7 @@
+import { notifyState } from '@/stores';
 import axios from 'axios';
 import { useMutation, useQueryClient } from 'react-query';
+import { useSetRecoilState } from 'recoil';
 import { MkRmRequest } from '../types/request';
 
 export const sendRequest = async (body: MkRmRequest, path: string) => {
@@ -14,6 +16,7 @@ export const sendRequest = async (body: MkRmRequest, path: string) => {
       'Content-Type': 'multipart/form-data',
     },
   });
+  return body.requestType;
 };
 
 export type SendRequestMutationConfig = {
@@ -23,11 +26,22 @@ export type SendRequestMutationConfig = {
 
 export const useSendRequest = () => {
   const queryClient = useQueryClient();
+  const setNotify = useSetRecoilState(notifyState);
   return useMutation(
     async (config: SendRequestMutationConfig) => sendRequest(config.body, config.path),
     {
-      onSuccess: async () => {
+      onSuccess: async (requestType) => {
+        setNotify({
+          severity: 'info',
+          text: requestType.match('rm') !== null ? '削除しました' : '作成しました',
+        });
         await queryClient.invalidateQueries('storage');
+      },
+      onError: () => {
+        setNotify({
+          severity: 'error',
+          text: 'エラーが発生しました',
+        });
       },
     },
   );
