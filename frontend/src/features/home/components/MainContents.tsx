@@ -1,4 +1,3 @@
-import { CustomList } from '@/components/CustomList';
 import { FileIcons } from '@/components/FileIcons';
 import { FilePreviewModal } from '@/components/FilePreview';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
@@ -8,12 +7,15 @@ import { endFilenameSlicer, relativePathSlicer, withoutLastPathSlicer } from '@/
 import {
   Box,
   Button,
+  Divider,
+  List,
   ListItem,
   ListItemIcon,
   ListItemText,
   Stack,
-  Typography
+  Typography,
 } from '@mui/material';
+import SelectionArea from '@viselect/react';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { AiFillFolder } from 'react-icons/ai';
@@ -59,9 +61,18 @@ export const MainContents = ({
   const router = useRouter();
   const setNotify = useSetRecoilState(notifyState);
   const { downloadProgress, downloadMutation, downloadCancelMutation } = useDownload();
-  const { selects, setSelects, unSelect, clickListItem, onKeyDown, onKeyUp } = useSelector();
+  const { selected, unSelect, onStart, onMove, onResetKeyDownEscape } = useSelector();
   const requestMutation = useSendRequest();
   const [downloadFromLink, setDownloadFromLink] = useState<boolean>(false);
+  const [downloadSelectedArray, setDownloadSelectedArray] = useState<
+    { name: string; type: 'dir' | 'file' }[]
+  >([]);
+  const selectedArray = Array.from(selected).map((item) => ({
+    name: item,
+    type: filepaths.find((filepath) => filepath.path.match(`${currentdir}/${item}`))?.type as
+      | 'dir'
+      | 'file',
+  }));
   const prevPath = currentdir.slice(0, currentdir.lastIndexOf('/'));
   const relativePath = relativePathSlicer(currentdir, baseDir);
   const dirs = relativePath.split('/');
@@ -93,7 +104,7 @@ export const MainContents = ({
         name: item,
         type: targetTypes[index] as 'dir' | 'file',
       }));
-      setSelects(targets);
+      setDownloadSelectedArray(targets);
       setDownloadFromLink(true);
     }
   }, []);
@@ -123,7 +134,7 @@ export const MainContents = ({
         <Box sx={modalStyle}>
           <Stack sx={{ py: 2, px: 10 }} spacing={2} alignItems="center">
             <div>以下をダウンロードしますか？</div>
-            <SelectList selects={selects} />
+            <SelectList selects={downloadSelectedArray} />
             <Stack direction="row" spacing={2}>
               <Button
                 sx={{ whiteSpace: 'nowrap' }}
@@ -132,7 +143,7 @@ export const MainContents = ({
                 onClick={async () => {
                   setNotify({ severity: 'info', text: 'ダウンロード後, 移動します' });
                   await downloadMutation
-                    .mutateAsync({ path: currentdir, targets: selects })
+                    .mutateAsync({ path: currentdir, targets: downloadSelectedArray })
                     .finally(async () => {
                       setDownloadFromLink(false);
                       await router.push(`/?path=${router.query.path}`);
@@ -160,7 +171,7 @@ export const MainContents = ({
   }
 
   return (
-    <Box sx={{ flex: 6, height: '100%', pt: 3 }}>
+    <Box onKeyDown={onResetKeyDownEscape} sx={{ flex: 6, height: '100%', pt: 3 }}>
       <Stack
         sx={{
           position: 'absolute',
@@ -179,15 +190,15 @@ export const MainContents = ({
           );
         })}
       </Stack>
-      <CustomList onKeyDown={onKeyDown} onKeyUp={onKeyUp}>
-        {!isHome ? (
-          <ListItem onClick={() => moveDir(prevPath)} button>
-            <ListItemIcon>
-              <MdArrowBack />
-            </ListItemIcon>
-            <ListItemText className="list-item-text" primary="戻る" />
-          </ListItem>
-        ) : null}
+      {!isHome ? (
+        <Button color="inherit" onClick={() => moveDir(prevPath)}>
+          <Stack direction="row" alignItems="center" spacing={2}>
+            <MdArrowBack />
+            <Typography>戻る</Typography>
+          </Stack>
+        </Button>
+      ) : null}
+      <List>
         <Box py={2}>
           現在のパス :{' '}
           <Typography component="span" sx={{ color: 'rgba(0,0,0,0.5)' }}>
@@ -265,98 +276,109 @@ export const MainContents = ({
             </Box>
           </Box>
         )}
-        {filepaths.map((item) => {
-          const name = endFilenameSlicer(item.path);
-          const type = item.type as 'dir' | 'file';
-          const path = withoutLastPathSlicer(item.path);
-          const isSelect = selects.some((file) => file.name === name);
-          const onContextSelects =
-            selects.length === 0
-              ? [{ name, type }]
-              : isSelect
-              ? selects
-              : [...selects, { name, type }];
-          // リンク共有に使用するためエンコード
-          const onContextSelectNames = onContextSelects.map((item) => encodeURI(item.name));
-          const onContextSelectTypes = onContextSelects.map((item) => item.type);
-          const downloadItems = (targets: { name: string; type: 'dir' | 'file' }[]) => {
-            downloadMutation.mutate({
-              path,
-              targets,
+        <SelectionArea onStart={onStart} onMove={onMove} selectables=".selectable">
+          {filepaths.map((item) => {
+            const name = endFilenameSlicer(item.path);
+            const type = item.type as 'dir' | 'file';
+            const path = withoutLastPathSlicer(item.path);
+            const isSelect = selected.has(name);
+            const onContextSelects =
+              selected.size === 0
+                ? [{ name, type }]
+                : isSelect
+                ? selectedArray
+                : [...selectedArray, { name, type }];
+            // リンク共有に使用するためエンコード
+            const onContextSelectNames = onContextSelects.map((item) => encodeURI(item.name));
+            const onContextSelectTypes = onContextSelects.map((item) => item.type);
+            const downloadItems = (targets: { name: string; type: 'dir' | 'file' }[]) => {
+              downloadMutation.mutate({
+                path,
+                targets,
+              });
+              unSelect();
+            };
+            const requests = onContextSelects.map((select) => {
+              if (select.type === 'dir') {
+                return { requestType: 'rmdir', dirName: select.name };
+              }
+              return { requestType: 'rmfile', fileName: select.name };
             });
-            unSelect();
-          };
-          const requests = onContextSelects.map((select) => {
-            if (select.type === 'dir') {
-              return { requestType: 'rmdir', dirName: select.name };
+            const requestItems = () => {
+              requestMutation.mutate({ path, requests });
+              unSelect();
+            };
+            // show dir
+            if (type === 'dir') {
+              return (
+                <ContextMenu
+                  key={item.path}
+                  selects={onContextSelects}
+                  path={path}
+                  copyLink={() => copyLink(path, onContextSelectNames, onContextSelectTypes)}
+                  requestItems={requestItems}
+                  downloadItems={downloadItems}
+                >
+                  <ListItem
+                    onContextMenu={openMyContextMenu}
+                    onDoubleClick={() => moveDir(item.path)}
+                    sx={{
+                      background: isSelect ? '#888' : '',
+                      color: isSelect ? 'rgba(0,0,0,0.5)' : '',
+                    }}
+                    className={selected.has(name) ? 'selected selectable' : 'selectable'}
+                    data-key={name}
+                    button
+                  >
+                    <ListItemIcon>
+                      <AiFillFolder size={25} style={{ color: 'steelblue' }} />
+                    </ListItemIcon>
+                    <ListItemText
+                      className="list-item-text"
+                      primary={endFilenameSlicer(item.path)}
+                    />
+                  </ListItem>
+                  <Divider />
+                </ContextMenu>
+              );
             }
-            return { requestType: 'rmfile', fileName: select.name };
-          });
-          const requestItems = () => {
-            requestMutation.mutate({ path, requests });
-            unSelect();
-          };
-          // show dir
-          if (type === 'dir') {
+            // show file
             return (
               <ContextMenu
                 key={item.path}
                 selects={onContextSelects}
-                setSelects={setSelects}
                 path={path}
                 copyLink={() => copyLink(path, onContextSelectNames, onContextSelectTypes)}
                 requestItems={requestItems}
                 downloadItems={downloadItems}
               >
-                <ListItem
-                  onClick={() => clickListItem(name, 'dir')}
-                  onContextMenu={openMyContextMenu}
-                  onDoubleClick={() => moveDir(item.path)}
-                  className="list-item"
-                  sx={{ background: isSelect ? '#ccc' : '' }}
-                  button
-                >
-                  <ListItemIcon>
-                    <AiFillFolder size={25} style={{ color: 'steelblue' }} />
-                  </ListItemIcon>
-                  <ListItemText className="list-item-text" primary={endFilenameSlicer(item.path)} />
-                </ListItem>
+                <FilePreviewModal
+                  onFetchFile={() => getPreviewFile(path, name)}
+                  fileName={name}
+                  button={
+                    <ListItem
+                      onContextMenu={openMyContextMenu}
+                      sx={{
+                        background: isSelect ? '#888' : '',
+                        color: isSelect ? 'rgba(0,0,0,0.5)' : '',
+                      }}
+                      className={selected.has(name) ? 'selected selectable' : 'selectable'}
+                      data-key={name}
+                      button
+                    >
+                      <ListItemIcon>
+                        <FileIcons fileName={name} />
+                      </ListItemIcon>
+                      <ListItemText className="list-item-text" primary={name} />
+                    </ListItem>
+                  }
+                />
+                <Divider />
               </ContextMenu>
             );
-          }
-          // show file
-          return (
-            <ContextMenu
-              key={item.path}
-              selects={onContextSelects}
-              setSelects={setSelects}
-              path={path}
-              copyLink={() => copyLink(path, onContextSelectNames, onContextSelectTypes)}
-              requestItems={requestItems}
-              downloadItems={downloadItems}
-            >
-              <FilePreviewModal
-                onFetchFile={() => getPreviewFile(path, name)}
-                fileName={name}
-                button={
-                  <ListItem
-                    onClick={() => clickListItem(name, 'file')}
-                    onContextMenu={openMyContextMenu}
-                    className="list-item"
-                    sx={{ background: isSelect ? '#ccc' : '' }}
-                    button
-                  >
-                    <ListItemIcon>
-                      <FileIcons fileName={name} />
-                    </ListItemIcon>
-                    <ListItemText className="list-item-text" primary={name} />
-                  </ListItem>
-                }
-              />
-            </ContextMenu>
-          );
-        })}
-      </CustomList>
+          })}
+        </SelectionArea>
+      </List>
     </Box>
   );
 };

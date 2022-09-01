@@ -12,14 +12,6 @@ type ContextMenurops = {
   selects: { name: string; type: 'dir' | 'file' }[];
   path: string;
   children: React.ReactNode;
-  setSelects: React.Dispatch<
-    React.SetStateAction<
-      {
-        name: string;
-        type: 'dir' | 'file';
-      }[]
-    >
-  >;
   copyLink: () => void;
   downloadItems: (targets: { name: string; type: 'dir' | 'file' }[]) => void;
   requestItems: () => void;
@@ -43,7 +35,6 @@ const modalStyle = {
 export const ContextMenu = ({
   selects,
   children,
-  setSelects,
   copyLink,
   downloadItems,
   requestItems,
