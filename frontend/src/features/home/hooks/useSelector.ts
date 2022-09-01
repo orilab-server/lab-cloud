@@ -36,5 +36,5 @@ export const useSelector = () => {
     setSelects([]);
   };
 
-  return { selects, unSelect, clickListItem, onKeyDown, onKeyUp };
+  return { selects, setSelects, unSelect, clickListItem, onKeyDown, onKeyUp };
 };

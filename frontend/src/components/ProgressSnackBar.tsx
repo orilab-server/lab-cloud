@@ -33,10 +33,11 @@ function CircularProgressWithLabel(props: CircularProgressProps & { value: numbe
 
 type ProgressSnackBarProps = {
   response: ResponseProgress;
+  isFromLink?: boolean;
   cancel: () => void;
 };
 
-export const ProgressSnackBar = ({ response, cancel }: ProgressSnackBarProps) => {
+export const ProgressSnackBar = ({ response, isFromLink, cancel }: ProgressSnackBarProps) => {
   const [isShow, setIsShow] = useState<boolean>(true);
   const { name, text, type, data, start: isOpen, status, progress } = response;
   useEffect(() => {
@@ -61,10 +62,10 @@ export const ProgressSnackBar = ({ response, cancel }: ProgressSnackBarProps) =>
   return (
     <Stack
       sx={{
-        bgcolor: '#333',
+        bgcolor: isFromLink ? '#ccc' : '#333',
         px: 3,
         borderRadius: 1,
-        color: 'white',
+        color: isFromLink ? '#333' : 'white',
         position: 'relative',
       }}
       direction="row"

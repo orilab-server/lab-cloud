@@ -33,6 +33,10 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
 
     if (!publicPaths.includes(path)) {
       if (!session) {
+        // 未ログイン状態でリンクにアクセスした場合
+        if (url.match('path=') !== null) {
+          localStorage.setItem('path', url);
+        }
         void router.push('/login');
       }
     } else {

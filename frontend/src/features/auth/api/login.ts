@@ -28,7 +28,12 @@ export const useLogin = () => {
     onSuccess: async () => {
       setNotify({ severity: 'info', text: 'ログインしました' });
       await sleep(2);
-      await router.push('/');
+      const localStoragePath = localStorage.getItem('path');
+      const to = localStoragePath ? `/${localStoragePath}` : '/';
+      if (localStoragePath) {
+        localStorage.removeItem('path');
+      }
+      await router.push(to);
     },
     onError: () => {
       setNotify({

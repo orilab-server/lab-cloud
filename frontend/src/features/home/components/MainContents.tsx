@@ -1,11 +1,13 @@
 import { CustomList } from '@/components/CustomList';
 import { FileIcons } from '@/components/FileIcons';
 import { FilePreviewModal } from '@/components/FilePreview';
+import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ProgressSnackBar } from '@/components/ProgressSnackBar';
 import { notifyState } from '@/stores';
 import { endFilenameSlicer, relativePathSlicer, withoutLastPathSlicer } from '@/utils/slice';
 import {
   Box,
+  Button,
   Container,
   ListItem,
   ListItemIcon,
@@ -13,7 +15,8 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import React from 'react';
+import { useRouter } from 'next/router';
+import React, { useEffect, useState } from 'react';
 import { AiFillFolder } from 'react-icons/ai';
 import { MdArrowBack } from 'react-icons/md';
 import { VscFiles } from 'react-icons/vsc';
@@ -23,6 +26,7 @@ import { useSendRequest } from '../api/sendRequest';
 import { useSelector } from '../hooks/useSelector';
 import { Storage } from '../types/storage';
 import { ContextMenu } from './ContextMenu';
+import { SelectList } from './SelectList';
 
 type MainContentsProps = {
   filepaths: Storage['filepaths'];
@@ -32,6 +36,20 @@ type MainContentsProps = {
   moveDir: (path: string) => Promise<void>;
 };
 
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  bgcolor: 'background.paper',
+  p: 5,
+  px: 10,
+};
+
 export const MainContents = ({
   filepaths,
   currentdir,
@@ -39,17 +57,21 @@ export const MainContents = ({
   isHome,
   moveDir,
 }: MainContentsProps) => {
+  const router = useRouter();
   const setNotify = useSetRecoilState(notifyState);
   const { downloadProgress, downloadMutation, downloadCancelMutation } = useDownload();
-  const { selects, unSelect, clickListItem, onKeyDown, onKeyUp } = useSelector();
+  const { selects, setSelects, unSelect, clickListItem, onKeyDown, onKeyUp } = useSelector();
   const requestMutation = useSendRequest();
+  const [downloadFromLink, setDownloadFromLink] = useState<boolean>(false);
   const prevPath = currentdir.slice(0, currentdir.lastIndexOf('/'));
   const relativePath = relativePathSlicer(currentdir, baseDir);
   const dirs = relativePath.split('/');
   const relativeDirs = relativePath.split('/');
 
-  const copyLink = (path: string) => {
-    const url = `${process.env.NEXT_PUBLIC_CLIENT_URL}/?path=${path}`;
+  const copyLink = (path: string, targetNames: string[], targetTypes: string[]) => {
+    const url = `${
+      process.env.NEXT_PUBLIC_CLIENT_URL
+    }/?path=${path}&share=true&targets=${targetNames.join('/')}&types=${targetTypes.join('/')}`;
     navigator.clipboard.writeText(url);
     setNotify({ severity: 'info', text: 'リンクをコピーしました' });
   };
@@ -59,6 +81,84 @@ export const MainContents = ({
   ) => {
     event.preventDefault();
   };
+
+  useEffect(() => {
+    const queries = router.query;
+    if (Boolean(queries.share)) {
+      if (downloadFromLink) {
+        return;
+      }
+      const targetNames = (queries.targets as string).split('/');
+      const targetTypes = (queries.types as string).split('/');
+      const targets = targetNames.map((item, index) => ({
+        name: item,
+        type: targetTypes[index] as 'dir' | 'file',
+      }));
+      setSelects(targets);
+      setDownloadFromLink(true);
+    }
+  }, []);
+
+  if (downloadFromLink) {
+    return (
+      <Box sx={{ width: '100%', height: '100vh', bgcolor: 'rgba(0,0,0,0.8)', zIndex: 100 }}>
+        <Stack
+          sx={{
+            position: 'absolute',
+            bottom: 20,
+            right: 20,
+          }}
+          spacing={1}
+        >
+          {downloadProgress.map((downloadProgress) => {
+            return (
+              <ProgressSnackBar
+                key={downloadProgress.name}
+                response={downloadProgress}
+                isFromLink={true}
+                cancel={() => downloadCancelMutation.mutate(downloadProgress.name)}
+              />
+            );
+          })}
+        </Stack>
+        <Box sx={modalStyle}>
+          <Stack sx={{ py: 2, px: 10 }} spacing={2} alignItems="center">
+            <div>以下をダウンロードしますか？</div>
+            <SelectList selects={selects} />
+            <Stack direction="row" spacing={2}>
+              <Button
+                sx={{ whiteSpace: 'nowrap' }}
+                size="medium"
+                variant="contained"
+                onClick={async () => {
+                  setNotify({ severity: 'info', text: 'ダウンロード後, 移動します' });
+                  await downloadMutation
+                    .mutateAsync({ path: currentdir, targets: selects })
+                    .finally(async () => {
+                      setDownloadFromLink(false);
+                      await router.push(`/?path=${router.query.path}`);
+                    });
+                }}
+              >
+                {downloadMutation.isLoading && (
+                  <LoadingSpinner size="sm" sx={{ color: '#fff', mr: 1 }} />
+                )}
+                ダウンロード
+              </Button>
+              <Button
+                onClick={async () => {
+                  setDownloadFromLink(false);
+                  await router.push(`/?path=${router.query.path}`);
+                }}
+              >
+                閉じる
+              </Button>
+            </Stack>
+          </Stack>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Container sx={{ flex: 4, height: '100%', pt: 3 }}>
@@ -171,14 +271,23 @@ export const MainContents = ({
           const type = item.type as 'dir' | 'file';
           const path = withoutLastPathSlicer(item.path);
           const isSelect = selects.some((file) => file.name === name);
-          const downloadItems = () => {
+          const onContextSelects =
+            selects.length === 0
+              ? [{ name, type }]
+              : isSelect
+              ? selects
+              : [...selects, { name, type }];
+          // リンク共有に使用するためエンコード
+          const onContextSelectNames = onContextSelects.map((item) => encodeURI(item.name));
+          const onContextSelectTypes = onContextSelects.map((item) => item.type);
+          const downloadItems = (targets: { name: string; type: 'dir' | 'file' }[]) => {
             downloadMutation.mutate({
               path,
-              targets: selects.length === 0 ? [{ name, type }] : selects,
+              targets,
             });
             unSelect();
           };
-          const requests = selects.map((select) => {
+          const requests = onContextSelects.map((select) => {
             if (select.type === 'dir') {
               return { requestType: 'rmdir', dirName: select.name };
             }
@@ -193,10 +302,10 @@ export const MainContents = ({
             return (
               <ContextMenu
                 key={item.path}
-                itemName={name}
-                itemType="dir"
+                selects={onContextSelects}
+                setSelects={setSelects}
                 path={path}
-                copyLink={() => copyLink(item.path)}
+                copyLink={() => copyLink(path, onContextSelectNames, onContextSelectTypes)}
                 requestItems={requestItems}
                 downloadItems={downloadItems}
               >
@@ -219,13 +328,13 @@ export const MainContents = ({
           // show file
           return (
             <ContextMenu
-              itemName={name}
-              itemType="file"
+              key={item.path}
+              selects={onContextSelects}
+              setSelects={setSelects}
               path={path}
-              copyLink={() => copyLink(currentdir)}
+              copyLink={() => copyLink(path, onContextSelectNames, onContextSelectTypes)}
               requestItems={requestItems}
               downloadItems={downloadItems}
-              key={item.path}
             >
               <FilePreviewModal
                 onFetchFile={() => getPreviewFile(path, name)}
