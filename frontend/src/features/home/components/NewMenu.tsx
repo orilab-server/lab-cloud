@@ -37,7 +37,7 @@ declare module 'react' {
 type ContextMenurops = {
   children: React.ReactNode;
   path: string;
-  requestMutation: UseMutationResult<string, unknown, SendRequestMutationConfig, unknown>;
+  requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
 };
 
 const formStyle: React.CSSProperties = {

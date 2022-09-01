@@ -34,7 +34,7 @@ const Home: NextPage = () => {
   const isHome = filePathsQuery.data.ishome;
 
   return (
-    <Stack direction="row">
+    <Stack sx={{ minWidth: '1400px' }} direction="row" justifyContent="start">
       <SideContents
         topDirs={topDirs}
         currentDir={currentDir || '/'}

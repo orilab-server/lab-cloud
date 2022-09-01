@@ -3,7 +3,6 @@ import { useLogout } from '@/features/auth/api/logout';
 import { endFilenameSlicer } from '@/utils/slice';
 import {
   Avatar,
-  Container,
   Divider,
   Fab,
   List,
@@ -29,7 +28,7 @@ type SideContentsProps = {
   name?: string;
   topDirs: string[];
   currentDir: string;
-  requestMutation: UseMutationResult<string, unknown, SendRequestMutationConfig, unknown>;
+  requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
   moveDir: (path: string) => Promise<void>;
 };
 
@@ -43,7 +42,7 @@ export const SideContents = ({
   const logoutMutation = useLogout();
 
   return (
-    <Container
+    <Box
       sx={{
         flex: 1,
         height: '100%',
@@ -55,6 +54,8 @@ export const SideContents = ({
           width: 200,
           height: '100%',
           pt: 5,
+          pl: 3,
+          pr: 1,
           display: 'flex',
           flexDirection: 'column',
         }}
@@ -75,6 +76,7 @@ export const SideContents = ({
               width: '100%',
               display: 'flex',
               mb: 1,
+              minHeight: 50,
               justifyContent: 'start',
             }}
             color="primary"
@@ -90,6 +92,7 @@ export const SideContents = ({
             mt: 1,
             mb: 2,
             display: 'flex',
+            minHeight: 50,
             justifyContent: 'start',
           }}
           onClick={() => logoutMutation.mutate()}
@@ -121,6 +124,6 @@ export const SideContents = ({
           </Box>
         </List>
       </Box>
-    </Container>
+    </Box>
   );
 };

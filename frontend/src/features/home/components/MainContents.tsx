@@ -8,12 +8,11 @@ import { endFilenameSlicer, relativePathSlicer, withoutLastPathSlicer } from '@/
 import {
   Box,
   Button,
-  Container,
   ListItem,
   ListItemIcon,
   ListItemText,
   Stack,
-  Typography,
+  Typography
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
@@ -161,7 +160,7 @@ export const MainContents = ({
   }
 
   return (
-    <Container sx={{ flex: 4, height: '100%', pt: 3 }}>
+    <Box sx={{ flex: 6, height: '100%', pt: 3 }}>
       <Stack
         sx={{
           position: 'absolute',
@@ -358,6 +357,6 @@ export const MainContents = ({
           );
         })}
       </CustomList>
-    </Container>
+    </Box>
   );
 };
