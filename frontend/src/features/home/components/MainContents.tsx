@@ -2,6 +2,7 @@ import { FileIcons } from '@/components/FileIcons';
 import { FilePreviewModal } from '@/components/FilePreview';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { ProgressSnackBar } from '@/components/ProgressSnackBar';
+import { useSelectBox } from '@/hooks/useSelectBox';
 import { notifyState } from '@/stores';
 import { endFilenameSlicer, relativePathSlicer, withoutLastPathSlicer } from '@/utils/slice';
 import {
@@ -51,6 +52,38 @@ const modalStyle = {
   px: 10,
 };
 
+const selectValues = [
+  'ランダム',
+  '昇順-フォルダ',
+  '昇順-ファイル',
+  '降順-フォルダ',
+  '降順-ファイル',
+];
+
+const sortFilePaths = (filePaths: { path: string; type: 'dir' | 'file' }[], value: string) => {
+  if (value === 'ランダム') {
+    return filePaths;
+  }
+  const sortedFilePaths = filePaths.sort((prev, curr) => {
+    if (prev.path < curr.path) return -1;
+    if (curr.path < prev.path) return 1;
+    return 0;
+  });
+  const onlyFolderPaths = sortedFilePaths.filter((item) => item.type === 'dir');
+  const onlyFilePaths = sortedFilePaths.filter((item) => item.type === 'file');
+  switch (value) {
+    case '昇順-フォルダ':
+      return [...onlyFolderPaths, ...onlyFilePaths];
+    case '昇順-ファイル':
+      return [...onlyFilePaths, ...onlyFolderPaths];
+    case '降順-フォルダ':
+      return [...onlyFolderPaths.reverse(), ...onlyFilePaths.reverse()];
+    case '降順-ファイル':
+    default:
+      return [...onlyFilePaths.reverse(), ...onlyFolderPaths.reverse()];
+  }
+};
+
 export const MainContents = ({
   filepaths,
   currentdir,
@@ -63,6 +96,7 @@ export const MainContents = ({
   const { downloadProgress, downloadMutation, downloadCancelMutation } = useDownload();
   const { selected, unSelect, onStart, onMove, onResetKeyDownEscape } = useSelector();
   const requestMutation = useSendRequest();
+  const [SelectForm, selectedValue] = useSelectBox('sort', selectValues);
   const [downloadFromLink, setDownloadFromLink] = useState<boolean>(false);
   const [downloadSelectedArray, setDownloadSelectedArray] = useState<
     { name: string; type: 'dir' | 'file' }[]
@@ -247,6 +281,7 @@ export const MainContents = ({
             );
           })}
         </Box>
+        <SelectForm size="small" />
         {filepaths.length === 0 && (
           <Box
             sx={{
@@ -277,7 +312,7 @@ export const MainContents = ({
           </Box>
         )}
         <SelectionArea onStart={onStart} onMove={onMove} selectables=".selectable">
-          {filepaths.map((item) => {
+          {sortFilePaths(filepaths, selectedValue).map((item) => {
             const name = endFilenameSlicer(item.path);
             const type = item.type as 'dir' | 'file';
             const path = withoutLastPathSlicer(item.path);
