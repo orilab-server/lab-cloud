@@ -25,9 +25,9 @@ func main() {
 		panic(err)
 	}
 	sessionKey := os.Getenv("SESSION_KEY")
-	siteUrl := os.Getenv("SITE_URL")
 	serverPort := os.Getenv("SERVER_PORT")
 	shareDir := os.Getenv("SHARE_DIR")
+	siteUrl := os.Getenv("SITE_URL")
 	secret := os.Getenv("SECRET")
 	shareDirPath := home + "/" + shareDir
 	router := gin.New()
@@ -49,12 +49,14 @@ func main() {
 	authGroup.Use(middlewares.LoginCheckMiddleware(sessionKey))
 	{
 		upload := controllers.UploadController{ShareDir: shareDirPath}
+		request := controllers.RequestController{ShareDir: shareDirPath}
 		home := controllers.HomeController{ShareDir: shareDirPath}
 		download := controllers.DownloadController{ShareDir: shareDirPath}
 		authGroup.GET("/", home.Controller)
 		authGroup.PATCH("/user", user.PatchUserController)
 		authGroup.GET("/download", download.Controller)
 		authGroup.POST("/upload", upload.Controller)
+		authGroup.POST("/request", request.Controller)
 		authGroup.GET("/logout", auth.LogoutController)
 	}
 	err = server.ListenAndServe()
