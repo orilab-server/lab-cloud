@@ -10,7 +10,6 @@ export const uploadFiles = async (files: File[], path: string) => {
     return;
   }
   const formData = new FormData();
-  formData.append('type', 'upload');
   formData.append('requestType', 'files');
   for (const file of files) {
     formData.append('files', file);

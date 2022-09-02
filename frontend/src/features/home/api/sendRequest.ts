@@ -5,11 +5,10 @@ import { useSetRecoilState } from 'recoil';
 import { MkRmRequest } from '../types/request';
 
 export const sendRequest = async (requests: MkRmRequest[], path: string) => {
-  const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/home/upload?path=${path}`;
+  const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/home/request?path=${path}`;
   const requestsTypes = await Promise.all(
     requests.map(async (request) => {
       const formData = new FormData();
-      formData.append('type', 'command');
       formData.append('requestType', request.requestType);
       formData.append('dirName', request.dirName || '');
       formData.append('fileName', request.fileName || '');
