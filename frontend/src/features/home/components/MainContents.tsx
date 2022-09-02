@@ -8,7 +8,6 @@ import { endFilenameSlicer, relativePathSlicer, withoutLastPathSlicer } from '@/
 import {
   Box,
   Button,
-  Divider,
   List,
   ListItem,
   ListItemIcon,
@@ -52,16 +51,12 @@ const modalStyle = {
   px: 10,
 };
 
-const selectValues = [
-  'ランダム',
-  '昇順-フォルダ',
-  '昇順-ファイル',
-  '降順-フォルダ',
-  '降順-ファイル',
-];
+const selectSortValues = ['昇順', '降順'];
+
+const selectPriorityValues = ['なし', 'フォルダ', 'ファイル'];
 
 const sortFilePaths = (filePaths: { path: string; type: 'dir' | 'file' }[], value: string) => {
-  if (value === 'ランダム') {
+  if (value === '昇順-なし') {
     return filePaths;
   }
   const sortedFilePaths = filePaths.sort((prev, curr) => {
@@ -69,18 +64,20 @@ const sortFilePaths = (filePaths: { path: string; type: 'dir' | 'file' }[], valu
     if (curr.path < prev.path) return 1;
     return 0;
   });
-  const onlyFolderPaths = sortedFilePaths.filter((item) => item.type === 'dir');
-  const onlyFilePaths = sortedFilePaths.filter((item) => item.type === 'file');
+  const onlySortedFolderPaths = sortedFilePaths.filter((item) => item.type === 'dir');
+  const onlySortedFilePaths = sortedFilePaths.filter((item) => item.type === 'file');
   switch (value) {
+    case '降順-なし':
+      return sortedFilePaths.reverse();
     case '昇順-フォルダ':
-      return [...onlyFolderPaths, ...onlyFilePaths];
+      return [...onlySortedFolderPaths, ...onlySortedFilePaths];
     case '昇順-ファイル':
-      return [...onlyFilePaths, ...onlyFolderPaths];
+      return [...onlySortedFilePaths, ...onlySortedFolderPaths];
     case '降順-フォルダ':
-      return [...onlyFolderPaths.reverse(), ...onlyFilePaths.reverse()];
+      return [...onlySortedFolderPaths.reverse(), ...onlySortedFilePaths.reverse()];
     case '降順-ファイル':
     default:
-      return [...onlyFilePaths.reverse(), ...onlyFolderPaths.reverse()];
+      return [...onlySortedFilePaths.reverse(), ...onlySortedFolderPaths.reverse()];
   }
 };
 
@@ -96,7 +93,8 @@ export const MainContents = ({
   const { downloadProgress, downloadMutation, downloadCancelMutation } = useDownload();
   const { selected, unSelect, onStart, onMove, onResetKeyDownEscape } = useSelector();
   const requestMutation = useSendRequest();
-  const [SelectForm, selectedValue] = useSelectBox('sort', selectValues);
+  const [SortSelectForm, selectedSortValue] = useSelectBox('sort', selectSortValues);
+  const [PrioritySelectForm, setctedPriorityValue] = useSelectBox('priority', selectPriorityValues);
   const [downloadFromLink, setDownloadFromLink] = useState<boolean>(false);
   const [downloadSelectedArray, setDownloadSelectedArray] = useState<
     { name: string; type: 'dir' | 'file' }[]
@@ -281,7 +279,8 @@ export const MainContents = ({
             );
           })}
         </Box>
-        <SelectForm size="small" />
+        <SortSelectForm size="small" />
+        <PrioritySelectForm size="small" />
         {filepaths.length === 0 && (
           <Box
             sx={{
@@ -312,39 +311,76 @@ export const MainContents = ({
           </Box>
         )}
         <SelectionArea onStart={onStart} onMove={onMove} selectables=".selectable">
-          {sortFilePaths(filepaths, selectedValue).map((item) => {
-            const name = endFilenameSlicer(item.path);
-            const type = item.type as 'dir' | 'file';
-            const path = withoutLastPathSlicer(item.path);
-            const isSelect = selected.has(name);
-            const onContextSelects =
-              selected.size === 0
-                ? [{ name, type }]
-                : isSelect
-                ? selectedArray
-                : [...selectedArray, { name, type }];
-            // リンク共有に使用するためエンコード
-            const onContextSelectNames = onContextSelects.map((item) => encodeURI(item.name));
-            const onContextSelectTypes = onContextSelects.map((item) => item.type);
-            const downloadItems = (targets: { name: string; type: 'dir' | 'file' }[]) => {
-              downloadMutation.mutate({
-                path,
-                targets,
+          {sortFilePaths(filepaths, `${selectedSortValue}-${setctedPriorityValue}`).map(
+            (item, index) => {
+              const name = endFilenameSlicer(item.path);
+              const type = item.type as 'dir' | 'file';
+              const path = withoutLastPathSlicer(item.path);
+              const isSelect = selected.has(name);
+              const onContextSelects =
+                selected.size === 0
+                  ? [{ name, type }]
+                  : isSelect
+                  ? selectedArray
+                  : [...selectedArray, { name, type }];
+              // リンク共有に使用するためエンコード
+              const onContextSelectNames = onContextSelects.map((item) => encodeURI(item.name));
+              const onContextSelectTypes = onContextSelects.map((item) => item.type);
+              const downloadItems = (targets: { name: string; type: 'dir' | 'file' }[]) => {
+                downloadMutation.mutate({
+                  path,
+                  targets,
+                });
+                unSelect();
+              };
+              const requests = onContextSelects.map((select) => {
+                if (select.type === 'dir') {
+                  return { requestType: 'rmdir', dirName: select.name };
+                }
+                return { requestType: 'rmfile', fileName: select.name };
               });
-              unSelect();
-            };
-            const requests = onContextSelects.map((select) => {
-              if (select.type === 'dir') {
-                return { requestType: 'rmdir', dirName: select.name };
+              const requestItems = () => {
+                requestMutation.mutate({ path, requests });
+                unSelect();
+              };
+              // show dir
+              if (type === 'dir') {
+                return (
+                  <ContextMenu
+                    key={item.path}
+                    selects={onContextSelects}
+                    path={path}
+                    copyLink={() => copyLink(path, onContextSelectNames, onContextSelectTypes)}
+                    requestItems={requestItems}
+                    downloadItems={downloadItems}
+                  >
+                    <ListItem
+                      onContextMenu={openMyContextMenu}
+                      onDoubleClick={() => moveDir(item.path)}
+                      sx={{
+                        background: isSelect ? 'skyblue' : index % 2 === 0 ? 'whitesmoke' : '',
+                        '&:hover': {
+                          background: isSelect ? 'skyblue' : '',
+                        },
+                        color: isSelect ? 'rgba(0,0,0,0.5)' : '',
+                        borderRadius: 1,
+                      }}
+                      className={selected.has(name) ? 'selected selectable' : 'selectable'}
+                      data-key={name}
+                      button
+                    >
+                      <ListItemIcon>
+                        <AiFillFolder size={25} style={{ color: 'steelblue' }} />
+                      </ListItemIcon>
+                      <ListItemText
+                        className="list-item-text"
+                        primary={endFilenameSlicer(item.path)}
+                      />
+                    </ListItem>
+                  </ContextMenu>
+                );
               }
-              return { requestType: 'rmfile', fileName: select.name };
-            });
-            const requestItems = () => {
-              requestMutation.mutate({ path, requests });
-              unSelect();
-            };
-            // show dir
-            if (type === 'dir') {
+              // show file
               return (
                 <ContextMenu
                   key={item.path}
@@ -354,64 +390,35 @@ export const MainContents = ({
                   requestItems={requestItems}
                   downloadItems={downloadItems}
                 >
-                  <ListItem
-                    onContextMenu={openMyContextMenu}
-                    onDoubleClick={() => moveDir(item.path)}
-                    sx={{
-                      background: isSelect ? '#888' : '',
-                      color: isSelect ? 'rgba(0,0,0,0.5)' : '',
-                    }}
-                    className={selected.has(name) ? 'selected selectable' : 'selectable'}
-                    data-key={name}
-                    button
-                  >
-                    <ListItemIcon>
-                      <AiFillFolder size={25} style={{ color: 'steelblue' }} />
-                    </ListItemIcon>
-                    <ListItemText
-                      className="list-item-text"
-                      primary={endFilenameSlicer(item.path)}
-                    />
-                  </ListItem>
-                  <Divider />
+                  <FilePreviewModal
+                    onFetchFile={() => getPreviewFile(path, name)}
+                    fileName={name}
+                    button={
+                      <ListItem
+                        onContextMenu={openMyContextMenu}
+                        sx={{
+                          background: isSelect ? 'skyblue' : index % 2 === 0 ? 'whitesmoke' : '',
+                          color: isSelect ? 'rgba(0,0,0,0.5)' : '',
+                          '&:hover': {
+                            background: isSelect ? 'skyblue' : '',
+                          },
+                          borderRadius: 1,
+                        }}
+                        className={selected.has(name) ? 'selected selectable' : 'selectable'}
+                        data-key={name}
+                        button
+                      >
+                        <ListItemIcon>
+                          <FileIcons fileName={name} />
+                        </ListItemIcon>
+                        <ListItemText className="list-item-text" primary={name} />
+                      </ListItem>
+                    }
+                  />
                 </ContextMenu>
               );
-            }
-            // show file
-            return (
-              <ContextMenu
-                key={item.path}
-                selects={onContextSelects}
-                path={path}
-                copyLink={() => copyLink(path, onContextSelectNames, onContextSelectTypes)}
-                requestItems={requestItems}
-                downloadItems={downloadItems}
-              >
-                <FilePreviewModal
-                  onFetchFile={() => getPreviewFile(path, name)}
-                  fileName={name}
-                  button={
-                    <ListItem
-                      onContextMenu={openMyContextMenu}
-                      sx={{
-                        background: isSelect ? '#888' : '',
-                        color: isSelect ? 'rgba(0,0,0,0.5)' : '',
-                      }}
-                      className={selected.has(name) ? 'selected selectable' : 'selectable'}
-                      data-key={name}
-                      button
-                    >
-                      <ListItemIcon>
-                        <FileIcons fileName={name} />
-                      </ListItemIcon>
-                      <ListItemText className="list-item-text" primary={name} />
-                    </ListItem>
-                  }
-                />
-                <Divider />
-              </ContextMenu>
-            );
-          })}
+            },
+          )}
         </SelectionArea>
       </List>
     </Box>
