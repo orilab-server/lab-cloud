@@ -1,3 +1,4 @@
+import { withoutLastPathSlicer } from '@/utils/slice';
 import {
   Avatar,
   Button,
@@ -15,7 +16,8 @@ import {
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Box, SxProps } from '@mui/system';
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
+import { useDropzone } from 'react-dropzone';
 import { useModal } from 'react-hooks-use-modal';
 import { AiFillFolder } from 'react-icons/ai';
 import {
@@ -59,6 +61,10 @@ const modalStyle = {
   px: 10,
 };
 
+interface MyFile extends File {
+  path: string;
+}
+
 export const NewMenu = ({
   children,
   path,
@@ -84,6 +90,30 @@ export const NewMenu = ({
   const handleClose = () => {
     setAnchorEl(null);
   };
+  const onDrop = useCallback((accepted: File[]) => {
+    const files = accepted.filter((item) => (item as MyFile).path.match('/') === null);
+    const filesInFolder = accepted.filter((item) => (item as MyFile).path.match('/') !== null);
+    const relativePaths = filesInFolder.map((item) => withoutLastPathSlicer((item as MyFile).path));
+    const noMultiRelativePaths = new Set(relativePaths);
+    const folders = Array.from(noMultiRelativePaths).map((relativePath) => {
+      const targetFiles = filesInFolder.filter(
+        (fileInFolder) => relativePath === withoutLastPathSlicer((fileInFolder as MyFile).path),
+      );
+      const targetFileNames = targetFiles.map((item) => (item as MyFile).path);
+      return {
+        name: relativePath,
+        fileNames: targetFileNames,
+        files: targetFiles,
+      };
+    });
+    if (files.length > 0) {
+      fileUploadMutation.mutate({ path, files });
+    }
+    if (folders.length > 0) {
+      folderUploadMutation.mutate({ path, folders });
+    }
+  }, []);
+  const { getRootProps } = useDropzone({ onDrop, noClick: true });
 
   const handleChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFolderName(event.target.value);
@@ -96,7 +126,9 @@ export const NewMenu = ({
   return (
     <div>
       {context ? (
-        <div onContextMenu={handleClick}>{children}</div>
+        <div onContextMenu={handleClick} {...getRootProps()}>
+          {children}
+        </div>
       ) : (
         <div onClick={handleClick}>{children}</div>
       )}
@@ -193,7 +225,7 @@ export const NewMenu = ({
                   disabled={files.length === 0}
                   variant="contained"
                   onClick={() => {
-                    fileUploadMutation.mutate(path);
+                    fileUploadMutation.mutate({ path });
                     closeUploadFileModal();
                     resetFiles();
                   }}
@@ -249,7 +281,7 @@ export const NewMenu = ({
                   size="medium"
                   variant="contained"
                   onClick={() => {
-                    folderUploadMutation.mutate(path);
+                    folderUploadMutation.mutate({ path });
                     closeUploadFolderModal();
                     resetFolders();
                   }}

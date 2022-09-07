@@ -22,6 +22,11 @@ export const uploadFiles = async (files: File[], path: string) => {
   });
 };
 
+type UploadFilesMutationConfig = {
+  path: string;
+  files?: File[];
+};
+
 export const useUploadFiles = () => {
   const [files, setFiles] = useState<File[]>([]);
   const queryClient = useQueryClient();
@@ -37,17 +42,27 @@ export const useUploadFiles = () => {
     setFiles(newFiles);
   };
 
-  const fileUploadMutation = useMutation(async (path: string) => uploadFiles(files, path), {
-    onSuccess: async () => {
-      setNotify({ severity: 'info', text: 'アップロードしました' });
-      await queryClient.invalidateQueries('storage');
+  const fileUploadMutation = useMutation(
+    async (config: UploadFilesMutationConfig) => uploadFiles(config.files || files, config.path),
+    {
+      onSuccess: async () => {
+        setNotify({ severity: 'info', text: 'アップロードしました' });
+        await queryClient.invalidateQueries('storage');
+      },
+      onError: () => {
+        setNotify({
+          severity: 'error',
+          text: 'エラーが発生しました',
+        });
+      },
     },
-    onError: () => {
-      setNotify({
-        severity: 'error',
-        text: 'エラーが発生しました',
-      });
-    },
-  });
-  return { files, addFiles, deleteFile, fileUploadMutation, resetFiles: () => setFiles([]) };
+  );
+  return {
+    files,
+    setFiles,
+    addFiles,
+    deleteFile,
+    fileUploadMutation,
+    resetFiles: () => setFiles([]),
+  };
 };

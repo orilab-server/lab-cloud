@@ -31,6 +31,11 @@ export const uploadFolders = async (folders: Folder[], path: string) => {
   });
 };
 
+type UploadFoldersMutationConfig = {
+  path: string;
+  folders?: Folder[];
+};
+
 export const useUploadFolders = () => {
   const [folders, setFolders] = useState<Folder[]>([]);
   const queryClient = useQueryClient();
@@ -55,20 +60,25 @@ export const useUploadFolders = () => {
     setFolders(newFolders);
   };
 
-  const folderUploadMutation = useMutation(async (path: string) => uploadFolders(folders, path), {
-    onSuccess: async () => {
-      setNotify({ severity: 'info', text: 'アップロードしました' });
-      await queryClient.invalidateQueries('storage');
+  const folderUploadMutation = useMutation(
+    async (config: UploadFoldersMutationConfig) =>
+      uploadFolders(config?.folders || folders, config.path),
+    {
+      onSuccess: async () => {
+        setNotify({ severity: 'info', text: 'アップロードしました' });
+        await queryClient.invalidateQueries('storage');
+      },
+      onError: () => {
+        setNotify({
+          severity: 'error',
+          text: 'エラーが発生しました',
+        });
+      },
     },
-    onError: () => {
-      setNotify({
-        severity: 'error',
-        text: 'エラーが発生しました',
-      });
-    },
-  });
+  );
   return {
     folders,
+    setFolders,
     addFolders,
     deleteFolder,
     folderUploadMutation,
