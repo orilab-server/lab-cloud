@@ -67,5 +67,11 @@ export const useUploadFolders = () => {
       });
     },
   });
-  return { folders, addFolders, deleteFolder, folderUploadMutation };
+  return {
+    folders,
+    addFolders,
+    deleteFolder,
+    folderUploadMutation,
+    resetFolders: () => setFolders([]),
+  };
 };

@@ -10,10 +10,11 @@ import {
   ListItemText,
   Stack,
   TextField,
+  Theme,
 } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { Box } from '@mui/system';
+import { Box, SxProps } from '@mui/system';
 import React, { useRef, useState } from 'react';
 import { useModal } from 'react-hooks-use-modal';
 import { AiFillFolder } from 'react-icons/ai';
@@ -37,13 +38,9 @@ declare module 'react' {
 type ContextMenurops = {
   children: React.ReactNode;
   path: string;
+  context?: boolean;
+  anchorStyle?: SxProps<Theme> | undefined;
   requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
-};
-
-const formStyle: React.CSSProperties = {
-  width: '100%',
-  textAlign: 'center',
-  padding: '20px 40px',
 };
 
 const modalStyle = {
@@ -62,9 +59,16 @@ const modalStyle = {
   px: 10,
 };
 
-export const NewMenu = ({ children, path, requestMutation }: ContextMenurops) => {
-  const { files, addFiles, deleteFile, fileUploadMutation } = useUploadFiles();
-  const { folders, addFolders, deleteFolder, folderUploadMutation } = useUploadFolders();
+export const NewMenu = ({
+  children,
+  path,
+  context,
+  anchorStyle,
+  requestMutation,
+}: ContextMenurops) => {
+  const { files, addFiles, deleteFile, fileUploadMutation, resetFiles } = useUploadFiles();
+  const { folders, addFolders, deleteFolder, folderUploadMutation, resetFolders } =
+    useUploadFolders();
   const [CreateModal, openCreateModal, closeCreateModal] = useModal('create');
   const [UploadFilesModal, openUploadFilesModal, closeUploadFileModal] = useModal('file-upload');
   const [UploadFoldersModal, openUploadFoldersModal, closeUploadFolderModal] =
@@ -74,6 +78,7 @@ export const NewMenu = ({ children, path, requestMutation }: ContextMenurops) =>
   const open = Boolean(anchorEl);
   const inputRef = useRef<HTMLInputElement>(null);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
+    event.preventDefault();
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -90,9 +95,14 @@ export const NewMenu = ({ children, path, requestMutation }: ContextMenurops) =>
 
   return (
     <div>
-      <div onClick={handleClick}>{children}</div>
+      {context ? (
+        <div onContextMenu={handleClick}>{children}</div>
+      ) : (
+        <div onClick={handleClick}>{children}</div>
+      )}
       <Menu
         id="basic-menu"
+        sx={anchorStyle}
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -119,7 +129,7 @@ export const NewMenu = ({ children, path, requestMutation }: ContextMenurops) =>
                 <Button
                   size="medium"
                   variant="contained"
-                  onClick={() =>
+                  onClick={() => {
                     requestMutation.mutate({
                       path,
                       requests: [
@@ -128,8 +138,10 @@ export const NewMenu = ({ children, path, requestMutation }: ContextMenurops) =>
                           dirName: folderName,
                         },
                       ],
-                    })
-                  }
+                    });
+                    setFolderName('');
+                    closeCreateModal();
+                  }}
                 >
                   作成
                 </Button>
@@ -158,7 +170,6 @@ export const NewMenu = ({ children, path, requestMutation }: ContextMenurops) =>
                       <IconButton
                         onClick={() => {
                           deleteFile(file.name);
-                          setAnchorEl(null);
                         }}
                         edge="end"
                       >
@@ -179,10 +190,12 @@ export const NewMenu = ({ children, path, requestMutation }: ContextMenurops) =>
                 <Button
                   sx={{ whiteSpace: 'nowrap' }}
                   size="medium"
+                  disabled={files.length === 0}
                   variant="contained"
                   onClick={() => {
                     fileUploadMutation.mutate(path);
-                    setAnchorEl(null);
+                    closeUploadFileModal();
+                    resetFiles();
                   }}
                 >
                   アップロード
@@ -232,11 +245,13 @@ export const NewMenu = ({ children, path, requestMutation }: ContextMenurops) =>
               <Stack direction="row" spacing={2}>
                 <Button
                   sx={{ whiteSpace: 'nowrap' }}
+                  disabled={folders.length === 0}
                   size="medium"
                   variant="contained"
                   onClick={() => {
                     folderUploadMutation.mutate(path);
-                    setAnchorEl(null);
+                    closeUploadFolderModal();
+                    resetFolders();
                   }}
                 >
                   アップロード

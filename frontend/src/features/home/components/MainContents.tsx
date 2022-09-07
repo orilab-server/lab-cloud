@@ -27,6 +27,7 @@ import { getPreviewFile, useDownload } from '../api/download';
 import { useSendRequest } from '../api/sendRequest';
 import { Storage } from '../types/storage';
 import { ContextMenu } from './ContextMenu';
+import { NewMenu } from './NewMenu';
 import { SelectList } from './SelectList';
 
 type MainContentsProps = {
@@ -274,33 +275,40 @@ export const MainContents = ({
         <SortSelectForm size="small" />
         <PrioritySelectForm size="small" />
         {filepaths.length === 0 && (
-          <Box
-            sx={{
-              height: '80vh',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
+          <NewMenu
+            requestMutation={requestMutation}
+            path={currentdir}
+            context={true}
+            anchorStyle={{ top: -180, left: 400 }}
           >
             <Box
               sx={{
-                width: '20rem',
-                height: '20rem',
+                height: '80vh',
                 display: 'flex',
-                flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                background: 'whitesmoke',
-                border: '1px solid rgba(0,0,0,0)',
-                borderRadius: 50,
               }}
             >
-              <VscFiles size={40} />
-              <Typography sx={{ mt: 3, color: 'rgba(0,0,0,0.6)' }} fontSize={20}>
-                ファイルを追加してください
-              </Typography>
+              <Box
+                sx={{
+                  width: '20rem',
+                  height: '20rem',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  background: 'whitesmoke',
+                  border: '1px solid rgba(0,0,0,0)',
+                  borderRadius: 50,
+                }}
+              >
+                <VscFiles size={40} />
+                <Typography sx={{ mt: 3, color: 'rgba(0,0,0,0.6)' }} fontSize={20}>
+                  ファイルを追加してください
+                </Typography>
+              </Box>
             </Box>
-          </Box>
+          </NewMenu>
         )}
         <SelectionArea onStart={onStart} onMove={onMove} selectables=".selectable">
           {sortFilePaths(filepaths, `${selectedSortValue}-${setctedPriorityValue}`).map(

@@ -49,5 +49,5 @@ export const useUploadFiles = () => {
       });
     },
   });
-  return { files, addFiles, deleteFile, fileUploadMutation };
+  return { files, addFiles, deleteFile, fileUploadMutation, resetFiles: () => setFiles([]) };
 };
