@@ -1,18 +1,19 @@
-import { Box, Button, ListItemIcon, ListItemText, Stack } from '@mui/material';
+import { notifyState } from '@/stores';
+import { Box, Button, Input, ListItemIcon, ListItemText, Stack } from '@mui/material';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useModal } from 'react-hooks-use-modal';
 import { MdDelete, MdOutlineLink } from 'react-icons/md';
 import { RiDownloadFill } from 'react-icons/ri';
+import { useSetRecoilState } from 'recoil';
 import { SelectList } from './SelectList';
 
 type ContextMenurops = {
   selects: { name: string; type: 'dir' | 'file' }[];
   path: string;
   children: React.ReactNode;
-  copyLink: () => void;
+  link: string;
   downloadItems: (targets: { name: string; type: 'dir' | 'file' }[]) => void;
   requestItems: () => void;
 };
@@ -35,15 +36,16 @@ const modalStyle = {
 export const ContextMenu = ({
   selects,
   children,
-  copyLink,
+  link,
   downloadItems,
   requestItems,
 }: ContextMenurops) => {
-  const router = useRouter();
-  const [DownloadModal, openDownloadModal, closeDownloadModal, isOpenDownloadModal] =
-    useModal('download');
+  const [DownloadModal, openDownloadModal, closeDownloadModal] = useModal('download');
   const [DeleteModal, openDeleteModal, closeDeleteModal] = useModal('delete');
+  const [CopyModal, openCopyModal, closeCopyModal] = useModal('copy-link');
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const linkRef = useRef(null);
+  const setNotify = useSetRecoilState(notifyState);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -53,8 +55,12 @@ export const ContextMenu = ({
   };
 
   const handleCopyLink = () => {
-    copyLink();
+    const linkBox = document.getElementById('copy');
+    // @ts-ignore
+    linkBox?.select();
+    document.execCommand('copy');
     setAnchorEl(null);
+    setNotify({ severity: 'info', text: 'コピーしました！' });
   };
 
   return (
@@ -128,12 +134,47 @@ export const ContextMenu = ({
             </Box>
           </DeleteModal>
         </Box>
-        <MenuItem onClick={handleCopyLink}>
+        <MenuItem onClick={openCopyModal}>
           <ListItemIcon>
             <MdOutlineLink fontSize={20} />
           </ListItemIcon>
           <ListItemText>リンクをコピー</ListItemText>
         </MenuItem>
+        <Box id="copy-link" sx={{ width: '100%' }}>
+          <CopyModal>
+            <Box sx={modalStyle}>
+              <Stack sx={{ py: 2, px: 5 }} spacing={2} alignItems="center">
+                <div>ボタンを押してコピーしてください</div>
+                <Input
+                  id="copy"
+                  ref={linkRef}
+                  sx={{
+                    p: 1,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    width: '50vh',
+                    overflowWrap: 'break-word',
+                    wordBreak: 'break-all',
+                    background: 'rgba(0,0,0,0.1)',
+                  }}
+                  defaultValue={link}
+                ></Input>
+                <Stack direction="row" spacing={2}>
+                  <Button
+                    size="medium"
+                    variant="contained"
+                    sx={{ whiteSpace: 'nowrap' }}
+                    onClick={handleCopyLink}
+                  >
+                    コピー
+                  </Button>
+                  <Button onClick={closeCopyModal}>閉じる</Button>
+                </Stack>
+              </Stack>
+            </Box>
+          </CopyModal>
+        </Box>
       </Menu>
     </div>
   );

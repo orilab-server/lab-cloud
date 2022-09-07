@@ -110,14 +110,6 @@ export const MainContents = ({
   const dirs = relativePath.split('/');
   const relativeDirs = relativePath.split('/');
 
-  const copyLink = (path: string, targetNames: string[], targetTypes: string[]) => {
-    const url = `${
-      process.env.NEXT_PUBLIC_CLIENT_URL
-    }/?path=${path}&share=true&targets=${targetNames.join('/')}&types=${targetTypes.join('/')}`;
-    navigator.clipboard.writeText(url);
-    setNotify({ severity: 'info', text: 'リンクをコピーしました' });
-  };
-
   const openMyContextMenu: React.MouseEventHandler<HTMLDivElement> = (
     event: React.MouseEvent<HTMLElement>,
   ) => {
@@ -326,6 +318,11 @@ export const MainContents = ({
               // リンク共有に使用するためエンコード
               const onContextSelectNames = onContextSelects.map((item) => encodeURI(item.name));
               const onContextSelectTypes = onContextSelects.map((item) => item.type);
+              const link = `${
+                process.env.NEXT_PUBLIC_CLIENT_URL
+              }/?path=${path}&share=true&targets=${onContextSelectNames.join(
+                '/',
+              )}&types=${onContextSelectTypes.join('/')}`;
               const downloadItems = (targets: { name: string; type: 'dir' | 'file' }[]) => {
                 downloadMutation.mutate({
                   path,
@@ -350,7 +347,7 @@ export const MainContents = ({
                     key={item.path}
                     selects={onContextSelects}
                     path={path}
-                    copyLink={() => copyLink(path, onContextSelectNames, onContextSelectTypes)}
+                    link={link}
                     requestItems={requestItems}
                     downloadItems={downloadItems}
                   >
@@ -390,7 +387,7 @@ export const MainContents = ({
                   key={item.path}
                   selects={onContextSelects}
                   path={path}
-                  copyLink={() => copyLink(path, onContextSelectNames, onContextSelectTypes)}
+                  link={link}
                   requestItems={requestItems}
                   downloadItems={downloadItems}
                 >
