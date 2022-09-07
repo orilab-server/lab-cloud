@@ -360,7 +360,11 @@ export const MainContents = ({
                       sx={{
                         background: isSelect ? 'skyblue' : index % 2 === 0 ? 'whitesmoke' : '',
                         '&:hover': {
-                          background: isSelect ? 'skyblue' : '',
+                          background: isSelect
+                            ? 'skyblue'
+                            : index % 2 === 0
+                            ? 'whitesmoke'
+                            : 'white',
                         },
                         color: isSelect ? 'rgba(0,0,0,0.5)' : '',
                         borderRadius: 1,
@@ -400,7 +404,11 @@ export const MainContents = ({
                           background: isSelect ? 'skyblue' : index % 2 === 0 ? 'whitesmoke' : '',
                           color: isSelect ? 'rgba(0,0,0,0.5)' : '',
                           '&:hover': {
-                            background: isSelect ? 'skyblue' : '',
+                            background: isSelect
+                              ? 'skyblue'
+                              : index % 2 === 0
+                              ? 'whitesmoke'
+                              : 'white',
                           },
                           borderRadius: 1,
                         }}
