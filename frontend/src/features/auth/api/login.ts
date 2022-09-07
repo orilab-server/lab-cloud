@@ -38,7 +38,7 @@ export const useLogin = () => {
     onError: () => {
       setNotify({
         severity: 'error',
-        text: 'エラーが発生しました',
+        text: 'ログインできませんでした',
       });
     },
   });

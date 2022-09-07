@@ -7,22 +7,24 @@ import { useSetRecoilState } from 'recoil';
 
 export const logout = async () => {
   const ok = window.confirm('ログアウトしますか？');
-  if (ok) {
-    await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/home/logout`, {
-      withCredentials: true,
-    });
-  }
+  return ok;
 };
 
 export const useLogout = () => {
   const router = useRouter();
   const setNotify = useSetRecoilState(notifyState);
   return useMutation(async () => logout(), {
-    onSuccess: async () => {
-      setNotify({ severity: 'info', text: 'ログアウトしました' });
-      document.cookie = 'mysession=;';
-      await sleep(1);
-      await router.push('/login');
+    onSuccess: async (ok) => {
+      console.log(ok);
+      if (ok) {
+        await axios.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/home/logout`, {
+          withCredentials: true,
+        });
+        setNotify({ severity: 'info', text: 'ログアウトしました' });
+        document.cookie = 'mysession=;';
+        await sleep(1);
+        await router.push('/login');
+      }
     },
     onError: () => {
       setNotify({
