@@ -1,47 +1,25 @@
+import { CircularProgressWithLabel } from '@/components/CircularProgressWithLabel';
 import { saveFile } from '@/features/home/api/download';
 import { ResponseProgress } from '@/features/home/types/response';
 import { IconButton, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
-import CircularProgress, { CircularProgressProps } from '@mui/material/CircularProgress';
-import Typography from '@mui/material/Typography';
 import { useEffect, useState } from 'react';
 import { MdCancel } from 'react-icons/md';
 
-function CircularProgressWithLabel(props: CircularProgressProps & { value: number }) {
-  return (
-    <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-      <CircularProgress variant="determinate" {...props} />
-      <Box
-        sx={{
-          top: 0,
-          left: 0,
-          bottom: 0,
-          right: 0,
-          position: 'absolute',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}
-      >
-        <Typography variant="caption" component="div" color="white">{`${Math.round(
-          props.value,
-        )}%`}</Typography>
-      </Box>
-    </Box>
-  );
-}
-
-type ProgressSnackBarProps = {
+type DownloadProgressSnackBar = {
   response: ResponseProgress;
   isFromLink?: boolean;
   cancel: () => void;
 };
 
-export const ProgressSnackBar = ({ response, isFromLink, cancel }: ProgressSnackBarProps) => {
+export const DownloadProgressSnackBar = ({
+  response,
+  isFromLink,
+  cancel,
+}: DownloadProgressSnackBar) => {
   const [isShow, setIsShow] = useState<boolean>(true);
   const { name, text, type, data, start: isOpen, status, progress } = response;
   useEffect(() => {
-    console.log(status);
     if (status === 'finish') {
       saveFile({ name, type, data });
     }

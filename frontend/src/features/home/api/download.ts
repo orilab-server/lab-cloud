@@ -1,10 +1,12 @@
+import { downloadResponsesState } from '@/stores';
 import { getRandom } from '@/utils/random';
 import { sleep } from '@/utils/sleep';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import { useMutation } from 'react-query';
+import { useRecoilState } from 'recoil';
 import { Response, ResponseProgress } from '../types/response';
 
 export const downloadRequest = async (path: string, name: string, type: 'dir' | 'file') =>
@@ -123,7 +125,7 @@ export type DownloadMutationConfig = {
 };
 
 export const useDownload = () => {
-  const [downloadProgress, setDownloadProgress] = useState<ResponseProgress[]>([]);
+  const [downloadProgress, setDownloadProgress] = useRecoilState(downloadResponsesState);
   const downloadMutation = useMutation(
     async (config: DownloadMutationConfig) =>
       download(config.path, config.targets, setDownloadProgress),

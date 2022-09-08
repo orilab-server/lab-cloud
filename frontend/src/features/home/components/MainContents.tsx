@@ -1,7 +1,6 @@
 import { FileIcons } from '@/components/FileIcons';
 import { FilePreviewModal } from '@/components/FilePreview';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { ProgressSnackBar } from '@/components/ProgressSnackBar';
 import { useSelectBox } from '@/hooks/useSelectBox';
 import { notifyState } from '@/stores';
 import { endFilenameSlicer, relativePathSlicer, withoutLastPathSlicer } from '@/utils/slice';
@@ -27,6 +26,7 @@ import { getPreviewFile, useDownload } from '../api/download';
 import { useSendRequest } from '../api/sendRequest';
 import { Storage } from '../types/storage';
 import { ContextMenu } from './ContextMenu';
+import { DownloadProgressSnackBar } from './DownloadProgressBar';
 import { NewMenu } from './NewMenu';
 import { SelectList } from './SelectList';
 
@@ -147,7 +147,7 @@ export const MainContents = ({
         >
           {downloadProgress.map((downloadProgress) => {
             return (
-              <ProgressSnackBar
+              <DownloadProgressSnackBar
                 key={downloadProgress.name}
                 response={downloadProgress}
                 isFromLink={true}
@@ -207,7 +207,7 @@ export const MainContents = ({
       >
         {downloadProgress.map((downloadProgress) => {
           return (
-            <ProgressSnackBar
+            <DownloadProgressSnackBar
               key={downloadProgress.name}
               response={downloadProgress}
               cancel={() => downloadCancelMutation.mutate(downloadProgress.name)}

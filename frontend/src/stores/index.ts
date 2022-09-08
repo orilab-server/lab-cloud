@@ -1,3 +1,4 @@
+import { ResponseProgress } from '@/features/home/types/response';
 import { atom } from 'recoil';
 
 type NotifyType = {
@@ -8,4 +9,9 @@ type NotifyType = {
 export const notifyState = atom<NotifyType | null>({
   key: 'notifyState',
   default: null,
+});
+
+export const downloadResponsesState = atom<ResponseProgress[]>({
+  key: 'downloadResponsesState',
+  default: [],
 });
