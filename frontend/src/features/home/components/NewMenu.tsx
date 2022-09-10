@@ -42,6 +42,7 @@ type ContextMenurops = {
   context?: boolean;
   anchorStyle?: SxProps<Theme> | undefined;
   uploads: Uploads;
+  important?: boolean;
   requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
 };
 

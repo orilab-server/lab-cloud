@@ -7,4 +7,5 @@ export type Storage = {
   basedir: string;
   ishome: boolean;
   topdirs: string[];
+  important: boolean;
 };

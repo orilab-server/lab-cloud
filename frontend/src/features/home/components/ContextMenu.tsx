@@ -14,6 +14,7 @@ type ContextMenurops = {
   path: string;
   children: React.ReactNode;
   link: string;
+  important?: boolean;
   downloadItems: (targets: { name: string; type: 'dir' | 'file' }[]) => void;
   requestItems: () => void;
 };
@@ -37,6 +38,7 @@ export const ContextMenu = ({
   selects,
   children,
   link,
+  important,
   downloadItems,
   requestItems,
 }: ContextMenurops) => {
@@ -105,35 +107,40 @@ export const ContextMenu = ({
             </Box>
           </DownloadModal>
         </Box>
-        <MenuItem onClick={openDeleteModal}>
-          <ListItemIcon>
-            <MdDelete fontSize={20} />
-          </ListItemIcon>
-          <ListItemText>削除</ListItemText>
-        </MenuItem>
-        <Box id="delete" sx={{ width: '100%' }}>
-          <DeleteModal>
-            <Box sx={modalStyle}>
-              <Stack sx={{ py: 2, px: 10 }} spacing={2} alignItems="center">
-                <div>以下を削除しますか？</div>
-                <SelectList selects={selects} />
-                <Stack direction="row" spacing={2}>
-                  <Button
-                    size="medium"
-                    variant="contained"
-                    onClick={() => {
-                      requestItems();
-                      setAnchorEl(null);
-                    }}
-                  >
-                    削除
-                  </Button>
-                  <Button onClick={closeDeleteModal}>閉じる</Button>
-                </Stack>
-              </Stack>
+        {/* 削除用ボタン (重要ディレクトリは削除できない) */}
+        {important ? null : (
+          <div>
+            <MenuItem onClick={openDeleteModal}>
+              <ListItemIcon>
+                <MdDelete fontSize={20} />
+              </ListItemIcon>
+              <ListItemText>削除</ListItemText>
+            </MenuItem>
+            <Box id="delete" sx={{ width: '100%' }}>
+              <DeleteModal>
+                <Box sx={modalStyle}>
+                  <Stack sx={{ py: 2, px: 10 }} spacing={2} alignItems="center">
+                    <div>以下を削除しますか？</div>
+                    <SelectList selects={selects} />
+                    <Stack direction="row" spacing={2}>
+                      <Button
+                        size="medium"
+                        variant="contained"
+                        onClick={() => {
+                          requestItems();
+                          setAnchorEl(null);
+                        }}
+                      >
+                        削除
+                      </Button>
+                      <Button onClick={closeDeleteModal}>閉じる</Button>
+                    </Stack>
+                  </Stack>
+                </Box>
+              </DeleteModal>
             </Box>
-          </DeleteModal>
-        </Box>
+          </div>
+        )}
         <MenuItem onClick={openCopyModal}>
           <ListItemIcon>
             <MdOutlineLink fontSize={20} />

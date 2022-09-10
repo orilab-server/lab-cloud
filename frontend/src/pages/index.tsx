@@ -35,6 +35,7 @@ const Home: NextPage = () => {
   const baseDir = filePathsQuery.data.basedir;
   const topDirs = filePathsQuery.data.topdirs;
   const isHome = filePathsQuery.data.ishome;
+  const important = filePathsQuery.data.important;
 
   return (
     <Stack sx={{ minWidth: '1400px' }} direction="row" justifyContent="start">
@@ -45,6 +46,7 @@ const Home: NextPage = () => {
         uploads={uploads}
         requestMutation={requestMutation}
         name={userQuery.data?.name}
+        important={important}
       />
       <MainContents
         filepaths={filePaths}
@@ -53,6 +55,7 @@ const Home: NextPage = () => {
         isHome={isHome}
         uploads={uploads}
         moveDir={moveDir}
+        important={important}
       />
     </Stack>
   );

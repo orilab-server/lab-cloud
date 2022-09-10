@@ -14,13 +14,13 @@ export const getFilePaths = async (paramPath: string | null) => {
     },
   );
   const data = res.data as Storage;
-  const { filepaths, topdirs, basedir, ishome } = data;
+  const { filepaths, topdirs, basedir, ishome, important } = data;
   if (String(filepaths) === 'null') {
-    return { filepaths: [], currentdir: paramPath, topdirs, basedir, ishome };
+    return { filepaths: [], currentdir: paramPath, topdirs, basedir, ishome, important };
   }
   const parseFilePaths = JSON.parse(String(filepaths)) as Storage['filepaths'];
   const currentdir = parseFilePaths[0].path.slice(0, parseFilePaths[0].path.lastIndexOf('/'));
-  return { filepaths: parseFilePaths, currentdir, topdirs, basedir, ishome };
+  return { filepaths: parseFilePaths, currentdir, topdirs, basedir, ishome, important };
 };
 
 export const useFilePaths = () => {

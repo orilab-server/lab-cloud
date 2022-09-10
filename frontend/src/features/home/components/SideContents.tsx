@@ -30,6 +30,7 @@ type SideContentsProps = {
   topDirs: string[];
   currentDir: string;
   uploads: Uploads;
+  important?: boolean;
   requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
   moveDir: (path: string) => Promise<void>;
 };

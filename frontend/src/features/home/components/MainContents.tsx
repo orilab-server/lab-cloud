@@ -40,6 +40,7 @@ type MainContentsProps = {
   baseDir: string;
   isHome: boolean;
   uploads: Uploads;
+  important?: boolean;
   moveDir: (path: string) => Promise<void>;
 };
 
@@ -93,6 +94,7 @@ export const MainContents = ({
   baseDir,
   isHome,
   uploads,
+  important,
   moveDir,
 }: MainContentsProps) => {
   const router = useRouter();
@@ -134,6 +136,7 @@ export const MainContents = ({
     event.preventDefault();
   };
 
+  // クエリ文字列からダウンロードリンクからアクセスしたのかを判断するuseEffect
   useEffect(() => {
     const queries = router.query;
     if (Boolean(queries.share)) {
@@ -317,6 +320,7 @@ export const MainContents = ({
             requestMutation={requestMutation}
             path={currentdir}
             context={true}
+            important={important}
             anchorStyle={{ top: -180, left: 400 }}
             uploads={uploads}
           >
@@ -395,6 +399,7 @@ export const MainContents = ({
                     selects={onContextSelects}
                     path={path}
                     link={link}
+                    important={important}
                     requestItems={requestItems}
                     downloadItems={downloadItems}
                   >
@@ -435,6 +440,7 @@ export const MainContents = ({
                   selects={onContextSelects}
                   path={path}
                   link={link}
+                  important={important}
                   requestItems={requestItems}
                   downloadItems={downloadItems}
                 >
