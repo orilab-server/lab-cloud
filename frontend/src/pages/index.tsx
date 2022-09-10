@@ -3,6 +3,7 @@ import { useUser } from '@/features/auth/api/getUser';
 import { SignUpComplete } from '@/features/auth/components/SignUpForm';
 import { useFilePaths } from '@/features/home/api/getFilePaths';
 import { useSendRequest } from '@/features/home/api/sendRequest';
+import { useUpload } from '@/features/home/api/upload';
 import { MainContents } from '@/features/home/components/MainContents';
 import { SideContents } from '@/features/home/components/SideContents';
 import { Stack } from '@mui/material';
@@ -14,6 +15,8 @@ const Home: NextPage = () => {
   const requestMutation = useSendRequest();
   const userQuery = useUser();
   const router = useRouter();
+  // アップロード用
+  const uploads = useUpload();
 
   const moveDir = async (path: string) => {
     await router.push(`${router.basePath}/?path=${path}`);
@@ -39,6 +42,7 @@ const Home: NextPage = () => {
         topDirs={topDirs}
         currentDir={currentDir || '/'}
         moveDir={moveDir}
+        uploads={uploads}
         requestMutation={requestMutation}
         name={userQuery.data?.name}
       />
@@ -47,6 +51,7 @@ const Home: NextPage = () => {
         currentdir={currentDir || '/'}
         baseDir={baseDir}
         isHome={isHome}
+        uploads={uploads}
         moveDir={moveDir}
       />
     </Stack>

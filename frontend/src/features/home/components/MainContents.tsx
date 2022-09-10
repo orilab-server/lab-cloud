@@ -2,7 +2,7 @@ import { FileIcons } from '@/components/FileIcons';
 import { FilePreviewModal } from '@/components/FilePreview';
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { useSelectBox } from '@/hooks/useSelectBox';
-import { notifyState } from '@/stores';
+import { notifyState, uploadProgressesState } from '@/stores';
 import { endFilenameSlicer, relativePathSlicer, withoutLastPathSlicer } from '@/utils/slice';
 import {
   Box,
@@ -20,21 +20,26 @@ import React, { useEffect, useState } from 'react';
 import { AiFillFolder } from 'react-icons/ai';
 import { MdArrowBack } from 'react-icons/md';
 import { VscFiles } from 'react-icons/vsc';
-import { useSetRecoilState } from 'recoil';
+import { useQueryClient } from 'react-query';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useSelector } from '../../../hooks/useSelector';
 import { getPreviewFile, useDownload } from '../api/download';
 import { useSendRequest } from '../api/sendRequest';
+import { uploadFile, uploadFolder, Uploads } from '../api/upload';
 import { Storage } from '../types/storage';
+import { MyFile, MyFolder } from '../types/upload';
 import { ContextMenu } from './ContextMenu';
 import { DownloadProgressSnackBar } from './DownloadProgressBar';
 import { NewMenu } from './NewMenu';
 import { SelectList } from './SelectList';
+import { UploadProgressSnackBar } from './UploadProgressBar';
 
 type MainContentsProps = {
   filepaths: Storage['filepaths'];
   currentdir: string;
   baseDir: string;
   isHome: boolean;
+  uploads: Uploads;
   moveDir: (path: string) => Promise<void>;
 };
 
@@ -87,19 +92,31 @@ export const MainContents = ({
   currentdir,
   baseDir,
   isHome,
+  uploads,
   moveDir,
 }: MainContentsProps) => {
   const router = useRouter();
-  const setNotify = useSetRecoilState(notifyState);
+  // ダウンロード用hooks
   const { downloadProgress, downloadMutation, downloadCancelMutation } = useDownload();
-  const { selected, unSelect, onStart, onMove, onResetKeyDownEscape } = useSelector();
+  // 作成・削除リクエスト用mutation
   const requestMutation = useSendRequest();
+  const { selected, unSelect, onStart, onMove, onResetKeyDownEscape } = useSelector();
+  // セレクトボックス用hooks
   const [SortSelectForm, selectedSortValue] = useSelectBox('sort', selectSortValues);
   const [PrioritySelectForm, setctedPriorityValue] = useSelectBox('priority', selectPriorityValues);
+  // recoil
+  const [uploadProgresses, setUploadProgresses] = useRecoilState(uploadProgressesState);
+  const setNotify = useSetRecoilState(notifyState);
   const [downloadFromLink, setDownloadFromLink] = useState<boolean>(false);
   const [downloadSelectedArray, setDownloadSelectedArray] = useState<
     { name: string; type: 'dir' | 'file' }[]
   >([]);
+  const queryClient = useQueryClient();
+  const updateStorage = async () => await queryClient.invalidateQueries('storage');
+  const uploadMyFile = (target: MyFile) => uploadFile(target, setUploadProgresses, updateStorage);
+  const uploadMyFolder = (target: MyFolder) =>
+    uploadFolder(target, setUploadProgresses, updateStorage);
+  const { uploadCancelMutation } = uploads;
   const selectedArray = Array.from(selected).map((item) => ({
     name: item,
     type: filepaths.find((filepath) => filepath.path.match(`${currentdir}/${item}`))?.type as
@@ -134,6 +151,7 @@ export const MainContents = ({
     }
   }, []);
 
+  // ダウンロードリンクを開いた際の画面
   if (downloadFromLink) {
     return (
       <Box sx={{ width: '100%', height: '100vh', bgcolor: 'rgba(0,0,0,0.8)', zIndex: 100 }}>
@@ -214,6 +232,26 @@ export const MainContents = ({
             />
           );
         })}
+        {uploadProgresses.map((progress) => {
+          if (progress.target.type === 'file') {
+            return (
+              <UploadProgressSnackBar
+                key={progress.name}
+                uploadProgress={progress}
+                upload={() => uploadMyFile(progress.target as MyFile)}
+                cancel={() => uploadCancelMutation.mutate(progress.name)}
+              />
+            );
+          }
+          return (
+            <UploadProgressSnackBar
+              key={progress.name}
+              uploadProgress={progress}
+              upload={() => uploadMyFolder(progress.target as MyFolder)}
+              cancel={() => uploadCancelMutation.mutate(progress.name)}
+            />
+          );
+        })}
       </Stack>
       {!isHome ? (
         <Button color="inherit" onClick={() => moveDir(prevPath)}>
@@ -280,6 +318,7 @@ export const MainContents = ({
             path={currentdir}
             context={true}
             anchorStyle={{ top: -180, left: 400 }}
+            uploads={uploads}
           >
             <Box
               sx={{

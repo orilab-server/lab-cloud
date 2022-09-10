@@ -17,6 +17,7 @@ import { BsPersonCircle } from 'react-icons/bs';
 import { MdAdd, MdLogout } from 'react-icons/md';
 import { UseMutationResult } from 'react-query';
 import { SendRequestMutationConfig } from '../api/sendRequest';
+import { Uploads } from '../api/upload';
 import { NewMenu } from './NewMenu';
 
 const style = {
@@ -28,6 +29,7 @@ type SideContentsProps = {
   name?: string;
   topDirs: string[];
   currentDir: string;
+  uploads: Uploads;
   requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
   moveDir: (path: string) => Promise<void>;
 };
@@ -37,6 +39,7 @@ export const SideContents = ({
   topDirs,
   currentDir,
   requestMutation,
+  uploads,
   moveDir,
 }: SideContentsProps) => {
   const logoutMutation = useLogout();
@@ -70,7 +73,7 @@ export const SideContents = ({
             )}
           </Typography>
         </Stack>
-        <NewMenu requestMutation={requestMutation} path={currentDir}>
+        <NewMenu requestMutation={requestMutation} path={currentDir} uploads={uploads}>
           <Fab
             sx={{
               width: '100%',

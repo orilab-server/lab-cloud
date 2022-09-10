@@ -1,4 +1,4 @@
-import { withoutLastPathSlicer } from '@/utils/slice';
+import { startDirPathSlicer } from '@/utils/slice';
 import {
   Avatar,
   Button,
@@ -16,7 +16,7 @@ import {
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { Box, SxProps } from '@mui/system';
-import React, { useCallback, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useModal } from 'react-hooks-use-modal';
 import { AiFillFolder } from 'react-icons/ai';
@@ -28,8 +28,7 @@ import {
 } from 'react-icons/md';
 import { UseMutationResult } from 'react-query';
 import { SendRequestMutationConfig } from '../api/sendRequest';
-import { useUploadFiles } from '../api/uploadFiles';
-import { useUploadFolders } from '../api/uploadFolders';
+import { Uploads } from '../api/upload';
 
 declare module 'react' {
   interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
@@ -42,6 +41,7 @@ type ContextMenurops = {
   path: string;
   context?: boolean;
   anchorStyle?: SxProps<Theme> | undefined;
+  uploads: Uploads;
   requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
 };
 
@@ -61,7 +61,7 @@ const modalStyle = {
   px: 10,
 };
 
-interface MyFile extends File {
+interface ExtendedFile extends File {
   path: string;
 }
 
@@ -70,17 +70,35 @@ export const NewMenu = ({
   path,
   context,
   anchorStyle,
+  uploads,
   requestMutation,
 }: ContextMenurops) => {
-  const { files, addFiles, deleteFile, fileUploadMutation, resetFiles } = useUploadFiles();
-  const { folders, addFolders, deleteFolder, folderUploadMutation, resetFolders } =
-    useUploadFolders();
+  // アップロード用
+  const {
+    files,
+    folders,
+    setFiles,
+    setFolders,
+    addFiles,
+    addFolders,
+    deleteFile,
+    deleteFolder,
+    filesUploadMutation,
+    foldersUploadMutation,
+    resetFiles,
+    resetFolders,
+  } = uploads;
+  const [folderName, setFolderName] = useState<string>('');
+  const onChangeFolderName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFolderName(event.target.value);
+  };
+  // モーダル用
   const [CreateModal, openCreateModal, closeCreateModal] = useModal('create');
   const [UploadFilesModal, openUploadFilesModal, closeUploadFileModal] = useModal('file-upload');
   const [UploadFoldersModal, openUploadFoldersModal, closeUploadFolderModal] =
     useModal('folder-upload');
+  // コンテキストメニュー用state
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [folderName, setFolderName] = useState<string>('');
   const open = Boolean(anchorEl);
   const inputRef = useRef<HTMLInputElement>(null);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -90,38 +108,67 @@ export const NewMenu = ({
   const handleClose = () => {
     setAnchorEl(null);
   };
-  const onDrop = useCallback((accepted: File[]) => {
-    const files = accepted.filter((item) => (item as MyFile).path.match('/') === null);
-    const filesInFolder = accepted.filter((item) => (item as MyFile).path.match('/') !== null);
-    const relativePaths = filesInFolder.map((item) => withoutLastPathSlicer((item as MyFile).path));
+  // その他state
+  const [isDropped, setIsDropped] = useState<boolean>(false);
+
+  const onDrop = useCallback(async (accepted: File[]) => {
+    const targetFiles = accepted
+      .filter((item) => (item as ExtendedFile).path.match('/') === null)
+      .map((item) => ({ type: 'file' as 'file', path, file: item, isDrop: true }));
+    const filesInFolder = accepted.filter(
+      (item) => (item as ExtendedFile).path.match('/') !== null,
+    );
+    const relativePaths = filesInFolder.map((item) =>
+      startDirPathSlicer((item as ExtendedFile).path.slice(1)),
+    );
     const noMultiRelativePaths = new Set(relativePaths);
-    const folders = Array.from(noMultiRelativePaths).map((relativePath) => {
-      const targetFiles = filesInFolder.filter(
-        (fileInFolder) => relativePath === withoutLastPathSlicer((fileInFolder as MyFile).path),
+    const targetFolders = Array.from(noMultiRelativePaths).map((relativePath) => {
+      const files = filesInFolder.filter(
+        (fileInFolder) =>
+          relativePath === startDirPathSlicer((fileInFolder as ExtendedFile).path.slice(1)),
       );
-      const targetFileNames = targetFiles.map((item) => (item as MyFile).path);
+      const fileNames = files.map((item) => (item as ExtendedFile).path);
       return {
+        type: 'folder' as 'folder',
+        path,
         name: relativePath,
-        fileNames: targetFileNames,
-        files: targetFiles,
+        fileNames,
+        files,
+        isDrop: true,
       };
     });
-    if (files.length > 0) {
-      fileUploadMutation.mutate({ path, files });
+    if (targetFiles.length > 0) {
+      setFiles(targetFiles);
     }
-    if (folders.length > 0) {
-      folderUploadMutation.mutate({ path, folders });
+    if (targetFolders.length > 0) {
+      setFolders(targetFolders);
     }
+    setIsDropped(true);
   }, []);
   const { getRootProps } = useDropzone({ onDrop, noClick: true });
-
-  const handleChangeText = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFolderName(event.target.value);
-  };
 
   const handleFileClick = () => {
     inputRef.current?.click();
   };
+
+  // ファイル・フォルダをドロップした際にuploadProgressesにセット
+  useEffect(() => {
+    if (isDropped) {
+      const dropedFiles = files.filter((item) => item.isDrop);
+      const dropedFolders = folders.filter((item) => item.isDrop);
+      if (dropedFiles.length > 0) {
+        const convertedUnDroppedFiles = dropedFiles.map((item) => ({ ...item, isDrop: false }));
+        setFiles(convertedUnDroppedFiles);
+        filesUploadMutation.mutate(path);
+      }
+      if (dropedFolders.length > 0) {
+        const convertedUnDroppedFolders = dropedFolders.map((item) => ({ ...item, isDrop: false }));
+        setFolders(convertedUnDroppedFolders);
+        foldersUploadMutation.mutate(path);
+      }
+      setIsDropped(false);
+    }
+  }, [isDropped]);
 
   return (
     <div>
@@ -155,7 +202,7 @@ export const NewMenu = ({
                 label="フォルダ名入力"
                 variant="standard"
                 value={folderName}
-                onChange={handleChangeText}
+                onChange={onChangeFolderName}
               />
               <Stack direction="row" spacing={2}>
                 <Button
@@ -191,17 +238,15 @@ export const NewMenu = ({
         </MenuItem>
         <Box id="file-upload" sx={{ width: '100%' }}>
           <UploadFilesModal>
-            <Stack sx={modalStyle} spacing={2} alignItems="center">
-              <Button onClick={handleFileClick}>ファイルを追加</Button>
-              <input hidden multiple type="file" ref={inputRef} onChange={addFiles} />
+            <Stack sx={modalStyle} spacing={6} alignItems="center">
               <List>
-                {files.map((file) => (
+                {files.map((item) => (
                   <ListItem
-                    key={file.name}
+                    key={item.file.name}
                     secondaryAction={
                       <IconButton
                         onClick={() => {
-                          deleteFile(file.name);
+                          deleteFile(item.file.name);
                         }}
                         edge="end"
                       >
@@ -214,25 +259,42 @@ export const NewMenu = ({
                         <MdCreateNewFolder />
                       </Avatar>
                     </ListItemAvatar>
-                    <ListItemText primary={file.name} />
+                    <ListItemText primary={item.file.name} />
                   </ListItem>
                 ))}
               </List>
-              <Stack direction="row" spacing={2}>
+              <Button variant="contained" color="secondary" onClick={handleFileClick}>
+                ファイルを追加
+              </Button>
+              <input
+                hidden
+                multiple
+                type="file"
+                ref={inputRef}
+                onChange={(e) => addFiles(e, path)}
+              />
+              <Stack direction="row" spacing={2} sx={{ pt: 5 }}>
                 <Button
                   sx={{ whiteSpace: 'nowrap' }}
                   size="medium"
                   disabled={files.length === 0}
                   variant="contained"
                   onClick={() => {
-                    fileUploadMutation.mutate({ path });
+                    filesUploadMutation.mutate(path);
                     closeUploadFileModal();
                     resetFiles();
                   }}
                 >
                   アップロード
                 </Button>
-                <Button onClick={closeUploadFileModal}>閉じる</Button>
+                <Button
+                  onClick={() => {
+                    resetFiles();
+                    closeUploadFileModal();
+                  }}
+                >
+                  閉じる
+                </Button>
               </Stack>
             </Stack>
           </UploadFilesModal>
@@ -245,16 +307,7 @@ export const NewMenu = ({
         </MenuItem>
         <Box id="folder-upload" sx={{ width: '100%' }}>
           <UploadFoldersModal>
-            <Stack sx={modalStyle} spacing={2} alignItems="center">
-              <Button onClick={handleFileClick}>フォルダを追加</Button>
-              <input
-                hidden
-                multiple
-                type="file"
-                ref={inputRef}
-                onChange={addFolders}
-                webkitdirectory="true"
-              />
+            <Stack sx={modalStyle} spacing={6} alignItems="center">
               <List>
                 {folders.map((folder) => (
                   <ListItem
@@ -274,21 +327,39 @@ export const NewMenu = ({
                   </ListItem>
                 ))}
               </List>
-              <Stack direction="row" spacing={2}>
+              <Button variant="contained" color="secondary" onClick={handleFileClick}>
+                フォルダを追加
+              </Button>
+              <input
+                hidden
+                multiple
+                type="file"
+                ref={inputRef}
+                onChange={(e) => addFolders(e, path)}
+                webkitdirectory="true"
+              />
+              <Stack direction="row" spacing={2} sx={{ pt: 5 }}>
                 <Button
                   sx={{ whiteSpace: 'nowrap' }}
                   disabled={folders.length === 0}
                   size="medium"
                   variant="contained"
                   onClick={() => {
-                    folderUploadMutation.mutate({ path });
+                    foldersUploadMutation.mutate(path);
                     closeUploadFolderModal();
                     resetFolders();
                   }}
                 >
                   アップロード
                 </Button>
-                <Button onClick={closeUploadFolderModal}>閉じる</Button>
+                <Button
+                  onClick={() => {
+                    resetFolders();
+                    closeUploadFolderModal();
+                  }}
+                >
+                  閉じる
+                </Button>
               </Stack>
             </Stack>
           </UploadFoldersModal>
