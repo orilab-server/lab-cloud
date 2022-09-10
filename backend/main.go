@@ -48,6 +48,7 @@ func main() {
 	router.Use(middlewares.CorsMiddleWare(siteUrl))
 	store := cookie.NewStore([]byte(secret))
 
+	sender :=controllers.SendController{MailInfo: mailservice.MailRequest{From: from, To: to, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}}
 	auth := controllers.Authcontroller{MyDB: myDB, SessionKey: sessionKey}
 	user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey}
 	router.Use(sessions.Sessions("mysession", store))
@@ -59,6 +60,7 @@ func main() {
 		ctx.HTML(200, "login.html", nil)
 	})
 	router.GET("/user", user.GetUserController)
+	router.POST("/send", sender.MailController)
 	router.POST("/login", auth.LoginController)
 	router.POST("/signup/"+os.Getenv("SIGNUP_ROUTE"), auth.SignUpController)
 
@@ -67,7 +69,7 @@ func main() {
 	{
 		importantDirs := strings.Split(importantDirStr, "/")
 		upload := controllers.UploadController{ShareDir: shareDirPath}
-		request := controllers.RequestController{ShareDir: shareDirPath, ImportantDirs: importantDirs, MailInfo: mailservice.MailRequest{From: from, To: to, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}}
+		request := controllers.RequestController{ShareDir: shareDirPath, ImportantDirs: importantDirs}
 		home := controllers.HomeController{ShareDir: shareDirPath, ImportantDirs: importantDirs}
 		download := controllers.DownloadController{ShareDir: shareDirPath}
 		authGroup.GET("/", home.Controller)
