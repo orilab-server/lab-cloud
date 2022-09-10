@@ -4,6 +4,7 @@ import (
 	"backend/controllers"
 	"backend/db"
 	"backend/middlewares"
+	mailservice "backend/service/mail_service"
 	"log"
 	"net/http"
 	"os"
@@ -30,6 +31,11 @@ func main() {
 	shareDir := os.Getenv("SHARE_DIR")
 	siteUrl := os.Getenv("SITE_URL")
 	secret := os.Getenv("SECRET")
+	from := os.Getenv("MAIL_FROM")
+	to := os.Getenv("MAIL_TO")
+	mailPassword := os.Getenv("MAIL_PASSWORD")
+	smtpServ := os.Getenv("SMTP_SERVER")
+	smtpPort := os.Getenv("SMTP_PORT")
 	importantDirStr := os.Getenv("IMPORTANT_DIRS")
 	shareDirPath := home + "/" + shareDir
 	router := gin.New()
@@ -61,7 +67,7 @@ func main() {
 	{
 		importantDirs := strings.Split(importantDirStr, "/")
 		upload := controllers.UploadController{ShareDir: shareDirPath}
-		request := controllers.RequestController{ShareDir: shareDirPath, ImportantDirs: importantDirs}
+		request := controllers.RequestController{ShareDir: shareDirPath, ImportantDirs: importantDirs, MailInfo: mailservice.MailRequest{From: from, To: to, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}}
 		home := controllers.HomeController{ShareDir: shareDirPath, ImportantDirs: importantDirs}
 		download := controllers.DownloadController{ShareDir: shareDirPath}
 		authGroup.GET("/", home.Controller)
