@@ -18,14 +18,13 @@ func (p UploadController) Controller(ctx *gin.Context) {
 	form, err := ctx.MultipartForm()
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
 	}
 	files := form.File["files"]
 	json := upload_service.UploadRequest{RequestType: ctx.Request.FormValue("requestType"), Files: files, FilePaths: ctx.Request.FormValue("filePaths")}
 	uploadErr := json.Upload(newpath, ctx)
 	if uploadErr != nil {
-		ctx.JSON(http.StatusOK, gin.H{
-			"status": "fail",
-		})
+		ctx.JSON(http.StatusInternalServerError, gin.H{})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{})

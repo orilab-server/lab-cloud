@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
@@ -29,18 +30,28 @@ func main() {
 	shareDir := os.Getenv("SHARE_DIR")
 	siteUrl := os.Getenv("SITE_URL")
 	secret := os.Getenv("SECRET")
+	importantDirStr := os.Getenv("IMPORTANT_DIRS")
 	shareDirPath := home + "/" + shareDir
 	router := gin.New()
 	server := &http.Server{
 		Addr:    ":" + serverPort,
 		Handler: router,
 	}
+	router.Static("/_next", "_next")
+	router.LoadHTMLGlob("./*.html")
 	router.Use(middlewares.CorsMiddleWare(siteUrl))
 	store := cookie.NewStore([]byte(secret))
 
 	auth := controllers.Authcontroller{MyDB: myDB, SessionKey: sessionKey}
 	user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey}
 	router.Use(sessions.Sessions("mysession", store))
+	// ログイン・ホームページの静的ファイルを返す
+	router.GET("/", func(ctx *gin.Context) {
+		ctx.HTML(200, "index.html", nil)
+	})
+	router.GET("/login", func(ctx *gin.Context) {
+		ctx.HTML(200, "login.html", nil)
+	})
 	router.GET("/user", user.GetUserController)
 	router.POST("/login", auth.LoginController)
 	router.POST("/signup/"+os.Getenv("SIGNUP_ROUTE"), auth.SignUpController)
@@ -48,9 +59,10 @@ func main() {
 	authGroup := router.Group("/home")
 	authGroup.Use(middlewares.LoginCheckMiddleware(sessionKey))
 	{
+		importantDirs := strings.Split(importantDirStr, "/")
 		upload := controllers.UploadController{ShareDir: shareDirPath}
-		request := controllers.RequestController{ShareDir: shareDirPath}
-		home := controllers.HomeController{ShareDir: shareDirPath}
+		request := controllers.RequestController{ShareDir: shareDirPath, ImportantDirs: importantDirs}
+		home := controllers.HomeController{ShareDir: shareDirPath, ImportantDirs: importantDirs}
 		download := controllers.DownloadController{ShareDir: shareDirPath}
 		authGroup.GET("/", home.Controller)
 		authGroup.PATCH("/user", user.PatchUserController)

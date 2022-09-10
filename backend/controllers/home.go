@@ -12,8 +12,9 @@ import (
 )
 
 type HomeController struct {
-	ShareDir string
-	Items    []tools.StorageItem
+	ImportantDirs []string
+	ShareDir      string
+	Items         []tools.StorageItem
 }
 
 func (g HomeController) Controller(ctx *gin.Context) {
@@ -35,10 +36,12 @@ func (g HomeController) Controller(ctx *gin.Context) {
 	topDirs, _ := tools.GetDirs(g.ShareDir)
 	ishome := newpath == g.ShareDir
 	jsonitems, _ := json.Marshal(filepaths)
+	important := tools.Contains(g.ImportantDirs, newpath[strings.LastIndex(newpath, "/")+1:])
 	ctx.JSON(http.StatusOK, gin.H{
 		"topdirs": topDirs,
 		"basedir": g.ShareDir,
 		"filepaths":   string(jsonitems),
 		"ishome":  ishome,
+		"important": important,
 	})
 }
