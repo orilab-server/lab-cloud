@@ -20,7 +20,7 @@ export const useSelectBox = (label: string, values: string[]) => {
   const SelectForm = (props: SelectFormProps) => {
     const id = `select-${label}`;
     return (
-      <FormControl sx={{ mx: 1, my: 2, minWidth: 120 }} {...props}>
+      <FormControl sx={{ my: 2, minWidth: 120 }} {...props}>
         <InputLabel id={id}>{label}</InputLabel>
         <Select labelId={id} id={id} value={selectedValue} label={label} onChange={handleChange}>
           {values.map((value) => (

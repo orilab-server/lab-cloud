@@ -3,6 +3,7 @@ import { useLogout } from '@/features/auth/api/logout';
 import { endFilenameSlicer } from '@/utils/slice';
 import {
   Avatar,
+  createTheme,
   Divider,
   Fab,
   List,
@@ -13,17 +14,36 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import React from 'react';
+import { useModal } from 'react-hooks-use-modal';
 import { BsPersonCircle } from 'react-icons/bs';
 import { MdAdd, MdLogout } from 'react-icons/md';
 import { UseMutationResult } from 'react-query';
 import { SendRequestMutationConfig } from '../api/sendRequest';
 import { Uploads } from '../api/upload';
+import { MailInquiryForm } from './MailInquiryForm';
 import { NewMenu } from './NewMenu';
 
 const style = {
   width: '100%',
   bgcolor: 'background.paper',
 };
+
+const modalStyle = {
+  position: 'absolute' as 'absolute',
+  top: '50%',
+  left: '50%',
+  width: '50vw',
+  transform: 'translate(-50%, -50%)',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'center',
+  alignItems: 'center',
+  bgcolor: 'white',
+  boxShadow: 24,
+  p: 5,
+};
+
+const theme = createTheme();
 
 type SideContentsProps = {
   name?: string;
@@ -44,6 +64,7 @@ export const SideContents = ({
   moveDir,
 }: SideContentsProps) => {
   const logoutMutation = useLogout();
+  const [MailModal, openMailModal, closeMailModal] = useModal('mail');
 
   return (
     <Box
@@ -54,7 +75,6 @@ export const SideContents = ({
     >
       <Box
         sx={{
-          position: 'fixed',
           width: 200,
           height: '100%',
           pt: 5,
@@ -82,6 +102,7 @@ export const SideContents = ({
               mb: 1,
               minHeight: 50,
               justifyContent: 'start',
+              zIndex: 1,
             }}
             color="primary"
             variant="extended"
@@ -98,6 +119,7 @@ export const SideContents = ({
             display: 'flex',
             minHeight: 50,
             justifyContent: 'start',
+            zIndex: 1,
           }}
           onClick={() => logoutMutation.mutate()}
           color="secondary"
@@ -106,6 +128,27 @@ export const SideContents = ({
           <MdLogout size={25} style={{ marginRight: 10, marginLeft: 1 }} />
           <strong style={{ marginRight: '1rem' }}>ログアウト</strong>
         </Fab>
+        <Fab
+          sx={{
+            width: '100%',
+            mt: 1,
+            mb: 2,
+            display: 'flex',
+            minHeight: 50,
+            justifyContent: 'center',
+            zIndex: 1,
+          }}
+          onClick={openMailModal}
+          color="success"
+          variant="extended"
+        >
+          <strong style={{ marginRight: '1rem' }}>問い合わせ</strong>
+        </Fab>
+        <Box id="mail" sx={{ width: '100%' }}>
+          <MailModal>
+            <MailInquiryForm name={name} close={closeMailModal} />
+          </MailModal>
+        </Box>
         <List sx={style} component="nav">
           <ListItem>
             <ListItemText sx={{ color: 'rgba(0,0,0,0.5)' }}>Share</ListItemText>
