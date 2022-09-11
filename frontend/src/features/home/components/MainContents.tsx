@@ -128,7 +128,6 @@ export const MainContents = ({
   const prevPath = currentdir.slice(0, currentdir.lastIndexOf('/'));
   const relativePath = relativePathSlicer(currentdir, baseDir);
   const dirs = relativePath.split('/');
-  const relativeDirs = relativePath.split('/');
 
   const openMyContextMenu: React.MouseEventHandler<HTMLDivElement> = (
     event: React.MouseEvent<HTMLElement>,
@@ -281,37 +280,40 @@ export const MainContents = ({
                 },
               }}
             >
-              Share
+              *Share
             </Typography>{' '}
             /{' '}
           </Typography>
-          {dirs.map((dir, index) => {
-            let targetPath = '/';
-            if (relativePath.match(dir)) {
-              targetPath = relativeDirs.slice(0, relativeDirs.indexOf(dir) + 1).join('/');
-            }
-            return (
-              <React.Fragment key={dir + index}>
-                <Typography
-                  component="span"
-                  onClick={() => moveDir(baseDir + targetPath)}
-                  sx={{
-                    color: 'royalblue',
-                    borderBottom: '1px solid royalblue',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      color: 'rgba(0,0,0,0.3)',
-                    },
-                  }}
-                >
-                  {dir}
-                </Typography>
-                <Typography component="span" sx={{ color: 'rgba(0,0,0,0.5)' }}>
-                  {index > 0 && index + 1 !== dirs.length ? ' / ' : null}
-                </Typography>
-              </React.Fragment>
-            );
-          })}
+          {dirs
+            .filter((path) => path !== '')
+            .map((dir, index) => {
+              let targetPath = '/';
+              if (relativePath.match(dir)) {
+                targetPath = dirs.slice(0, dirs.indexOf(dir) + 1).join('/');
+              }
+              return (
+                <React.Fragment key={dir + index}>
+                  <Typography
+                    component="span"
+                    onClick={() => moveDir(baseDir + targetPath)}
+                    sx={{
+                      color: 'royalblue',
+                      borderBottom: '1px solid royalblue',
+                      cursor: 'pointer',
+                      '&:hover': {
+                        color: 'rgba(0,0,0,0.3)',
+                      },
+                    }}
+                  >
+                    {important && '*'}
+                    {dir}
+                  </Typography>
+                  <Typography component="span" sx={{ color: 'rgba(0,0,0,0.5)' }}>
+                    /{' '}
+                  </Typography>
+                </React.Fragment>
+              );
+            })}
         </Box>
         <SortSelectForm size="small" />
         <PrioritySelectForm size="small" />
