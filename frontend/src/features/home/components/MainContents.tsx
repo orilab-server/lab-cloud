@@ -156,7 +156,15 @@ export const MainContents = ({
   // ダウンロードリンクを開いた際の画面
   if (downloadFromLink) {
     return (
-      <Box sx={{ width: '100%', height: '100vh', bgcolor: 'rgba(0,0,0,0.8)', zIndex: 100 }}>
+      <Box
+        sx={{
+          position: 'absolute',
+          width: '100%',
+          height: '100vh',
+          bgcolor: 'rgba(0,0,0,0.8)',
+          zIndex: 100,
+        }}
+      >
         <Stack
           sx={{
             position: 'absolute',

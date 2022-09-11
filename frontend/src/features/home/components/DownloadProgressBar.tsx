@@ -45,6 +45,7 @@ export const DownloadProgressSnackBar = ({
         borderRadius: 1,
         color: isFromLink ? '#333' : 'white',
         position: 'relative',
+        zIndex: 1000,
       }}
       direction="row"
       alignItems="center"

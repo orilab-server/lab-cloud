@@ -57,7 +57,7 @@ const modalStyle = {
   alignItems: 'center',
   bgcolor: 'background.paper',
   boxShadow: 24,
-  width: '60vw',
+  width: '50vw',
   p: 5,
   px: 10,
 };

@@ -28,21 +28,6 @@ const style = {
   bgcolor: 'background.paper',
 };
 
-const modalStyle = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  width: '50vw',
-  transform: 'translate(-50%, -50%)',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  bgcolor: 'white',
-  boxShadow: 24,
-  p: 5,
-};
-
 const theme = createTheme();
 
 type SideContentsProps = {

@@ -51,7 +51,7 @@ export const UploadProgressSnackBar = ({
         borderRadius: 1,
         color: '#333',
         position: 'relative',
-        zIndex: 999,
+        zIndex: 1000,
       }}
       direction="row"
       alignItems="center"
