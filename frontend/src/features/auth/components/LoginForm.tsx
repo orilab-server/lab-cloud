@@ -78,7 +78,7 @@ export const LoginForm = () => {
               <MdLockOutline />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Orilab Cloud Storage
+              Orilab Cloud Storage V 1.0
             </Typography>
             <Box sx={{ mt: 1 }}>
               <Typography component="h1" variant="h5">
@@ -118,7 +118,7 @@ export const LoginForm = () => {
               <MdLockOutline />
             </Avatar>
             <Typography component="h1" variant="h5">
-              Orilab Cloud Storage
+              Orilab Cloud Storage V 1.0
             </Typography>
             <Typography component="h1" variant="h5">
               登録申請
@@ -128,20 +128,20 @@ export const LoginForm = () => {
                 margin="normal"
                 required
                 fullWidth
-                name="name"
-                label="Your Name"
-                type="text"
-                id="name"
-              />
-              <TextField
-                margin="normal"
-                required
-                fullWidth
                 id="email"
                 label="Email Address"
                 name="email"
                 autoComplete="email"
                 autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="name"
+                label="Your Name"
+                type="text"
+                id="name"
               />
               <Button
                 type="submit"
@@ -185,8 +185,8 @@ export const LoginForm = () => {
             <MdLockOutline />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Orilab Cloud Storage
-          </Typography>
+            Orilab Cloud Storage V 1.0
+          </Typography>{' '}
           <Typography component="h1" variant="h5">
             ログイン
           </Typography>

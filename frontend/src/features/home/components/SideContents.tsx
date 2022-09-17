@@ -142,7 +142,7 @@ export const SideContents = ({
             sx={{
               overflow: 'scroll',
               borderTop: '1px solid rgba(0,0,0,0.6)',
-              height: 450,
+              height: 320,
             }}
           >
             {topDirs.map((item) => (
