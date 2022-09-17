@@ -6,7 +6,6 @@ import { Box, Button, List, Stack, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { MdArrowBack } from 'react-icons/md';
-import { VscFiles } from 'react-icons/vsc';
 import { useQueryClient } from 'react-query';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { useSelector } from '../../../hooks/useSelector';
@@ -16,8 +15,8 @@ import { uploadFile, uploadFolder, Uploads } from '../api/upload';
 import { Storage } from '../types/storage';
 import { MyFile, MyFolder } from '../types/upload';
 import { DownloadProgressSnackBar } from './DownloadProgressBar';
+import { EmptyDirDisplay } from './main/EmptyDirDisplay';
 import { FilePathList } from './main/FilePathList';
-import { NewMenu } from './NewMenu';
 import { SelectList } from './SelectList';
 import { UploadProgressSnackBar } from './UploadProgressBar';
 
@@ -280,43 +279,14 @@ export const MainContents = ({
         </Box>
         <SortSelectForm size="small" />
         <PrioritySelectForm size="small" />
+        {/* 空の場所の場合(ドロップ&コンテキストメニュー使用可能) */}
         {filepaths.length === 0 && (
-          <NewMenu
+          <EmptyDirDisplay
             requestMutation={requestMutation}
-            path={currentdir}
-            context={true}
+            currentDir={currentdir}
             important={important}
-            anchorStyle={{ top: -180, left: 400 }}
             uploads={uploads}
-          >
-            <Box
-              sx={{
-                height: '80vh',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <Box
-                sx={{
-                  width: '20rem',
-                  height: '20rem',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  background: 'whitesmoke',
-                  border: '1px solid rgba(0,0,0,0)',
-                  borderRadius: 50,
-                }}
-              >
-                <VscFiles size={40} />
-                <Typography sx={{ mt: 3, color: 'rgba(0,0,0,0.6)' }} fontSize={20}>
-                  ファイルを追加してください
-                </Typography>
-              </Box>
-            </Box>
-          </NewMenu>
+          />
         )}
         <FilePathList
           filePaths={filepaths}
