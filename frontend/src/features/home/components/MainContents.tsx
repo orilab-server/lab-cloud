@@ -4,7 +4,7 @@ import { notifyState, uploadProgressesState } from '@/stores';
 import { relativePathSlicer } from '@/utils/slice';
 import { Box, Button, List, Stack, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MdArrowBack } from 'react-icons/md';
 import { useQueryClient } from 'react-query';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -15,6 +15,7 @@ import { uploadFile, uploadFolder, Uploads } from '../api/upload';
 import { Storage } from '../types/storage';
 import { MyFile, MyFolder } from '../types/upload';
 import { DownloadProgressSnackBar } from './DownloadProgressBar';
+import { DirpathNavigation } from './main/DirpathNavigation';
 import { EmptyDirDisplay } from './main/EmptyDirDisplay';
 import { FilePathList } from './main/FilePathList';
 import { SelectList } from './SelectList';
@@ -226,57 +227,13 @@ export const MainContents = ({
         </Button>
       ) : null}
       <List>
-        <Box py={2}>
-          現在のパス :{' '}
-          <Typography component="span" sx={{ color: 'rgba(0,0,0,0.5)' }}>
-            /{' '}
-            <Typography
-              component="span"
-              onClick={() => moveDir(baseDir)}
-              sx={{
-                color: 'royalblue',
-                borderBottom: '1px solid royalblue',
-                cursor: 'pointer',
-                '&:hover': {
-                  color: 'rgba(0,0,0,0.3)',
-                },
-              }}
-            >
-              *Share
-            </Typography>{' '}
-            /{' '}
-          </Typography>
-          {dirs
-            .filter((path) => path !== '')
-            .map((dir, index) => {
-              let targetPath = '/';
-              if (relativePath.match(dir)) {
-                targetPath = dirs.slice(0, dirs.indexOf(dir) + 1).join('/');
-              }
-              return (
-                <React.Fragment key={dir + index}>
-                  <Typography
-                    component="span"
-                    onClick={() => moveDir(baseDir + targetPath)}
-                    sx={{
-                      color: 'royalblue',
-                      borderBottom: '1px solid royalblue',
-                      cursor: 'pointer',
-                      '&:hover': {
-                        color: 'rgba(0,0,0,0.3)',
-                      },
-                    }}
-                  >
-                    {important && '*'}
-                    {dir}
-                  </Typography>
-                  <Typography component="span" sx={{ color: 'rgba(0,0,0,0.5)' }}>
-                    /{' '}
-                  </Typography>
-                </React.Fragment>
-              );
-            })}
-        </Box>
+        <DirpathNavigation
+          important={important}
+          baseDir={baseDir}
+          dirs={dirs}
+          relativePath={relativePath}
+          moveDir={moveDir}
+        />
         <SortSelectForm size="small" />
         <PrioritySelectForm size="small" />
         {/* 空の場所の場合(ドロップ&コンテキストメニュー使用可能) */}
