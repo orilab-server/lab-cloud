@@ -22,13 +22,9 @@ func main() {
 		panic(err)
 	}
 	defer myDB.Close()
-	home, err := os.UserHomeDir()
-	if err != nil {
-		panic(err)
-	}
 	sessionKey := os.Getenv("SESSION_KEY")
 	serverPort := os.Getenv("SERVER_PORT")
-	shareDir := os.Getenv("SHARE_DIR")
+	shareDirPath := os.Getenv("SHARE_DIR")
 	siteUrl := os.Getenv("SITE_URL")
 	secret := os.Getenv("SECRET")
 	from := os.Getenv("MAIL_FROM")
@@ -37,7 +33,6 @@ func main() {
 	smtpServ := os.Getenv("SMTP_SERVER")
 	smtpPort := os.Getenv("SMTP_PORT")
 	importantDirStr := os.Getenv("IMPORTANT_DIRS")
-	shareDirPath := home + "/" + shareDir
 	router := gin.New()
 	server := &http.Server{
 		Addr:    ":" + serverPort,
