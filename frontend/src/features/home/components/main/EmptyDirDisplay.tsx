@@ -1,5 +1,6 @@
 import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
+import React from 'react';
 import { VscFiles } from 'react-icons/vsc';
 import { UseMutationResult } from 'react-query';
 import { SendRequestMutationConfig } from '../../api/sendRequest';
@@ -13,7 +14,7 @@ type EmptyDirDisplayProps = {
   requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
 };
 
-export const EmptyDirDisplay = ({
+const EmptyDirDisplay = ({
   currentDir,
   important,
   uploads,
@@ -58,3 +59,5 @@ export const EmptyDirDisplay = ({
     </NewMenu>
   );
 };
+
+export default React.memo(EmptyDirDisplay);

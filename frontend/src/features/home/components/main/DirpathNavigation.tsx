@@ -10,7 +10,7 @@ type DirpathNavigationProps = {
   moveDir: (path: string) => Promise<void>;
 };
 
-export const DirpathNavigation = ({
+const DirpathNavigation = ({
   important,
   dirs,
   baseDir,
@@ -71,3 +71,5 @@ export const DirpathNavigation = ({
     </Box>
   );
 };
+
+export default React.memo(DirpathNavigation);

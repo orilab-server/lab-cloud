@@ -15,9 +15,9 @@ import { uploadFile, uploadFolder, Uploads } from '../api/upload';
 import { Storage } from '../types/storage';
 import { MyFile, MyFolder } from '../types/upload';
 import { DownloadProgressSnackBar } from './DownloadProgressBar';
-import { DirpathNavigation } from './main/DirpathNavigation';
-import { EmptyDirDisplay } from './main/EmptyDirDisplay';
-import { FilePathList } from './main/FilePathList';
+import DirpathNavigation from './main/DirpathNavigation';
+import EmptyDirDisplay from './main/EmptyDirDisplay';
+import FilePathList from './main/FilePathList';
 import { SelectList } from './SelectList';
 import { UploadProgressSnackBar } from './UploadProgressBar';
 

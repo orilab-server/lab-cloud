@@ -53,7 +53,7 @@ const sortFilePaths = (filePaths: { path: string; type: 'dir' | 'file' }[], valu
   }
 };
 
-export const FilePathList = ({
+const FilePathList = ({
   filePaths,
   important,
   selectedValue,
@@ -187,3 +187,5 @@ export const FilePathList = ({
     </SelectionArea>
   );
 };
+
+export default React.memo(FilePathList);
