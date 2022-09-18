@@ -4,7 +4,7 @@ import { MdAdd } from 'react-icons/md';
 import { UseMutationResult } from 'react-query';
 import { SendRequestMutationConfig } from '../../api/sendRequest';
 import { Uploads } from '../../api/upload';
-import { NewMenu } from '../misc/NewMenu';
+import { NewMenu } from '../misc/newmenu/NewMenu';
 
 type AddButtonProps = {
   currentDir: string;
