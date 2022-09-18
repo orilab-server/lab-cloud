@@ -8,7 +8,7 @@ import { AiFillFolder } from 'react-icons/ai';
 import { UseMutationResult } from 'react-query';
 import { DownloadMutationConfig, getPreviewFile } from '../../api/download';
 import { SendRequestMutationConfig } from '../../api/sendRequest';
-import { ContextMenu } from '../ContextMenu';
+import { ContextMenu } from '../misc/ContextMenu';
 
 type FilePathListProps = {
   filePaths: { path: string; type: 'dir' | 'file' }[];

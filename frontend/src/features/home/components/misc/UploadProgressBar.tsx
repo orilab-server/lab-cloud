@@ -3,7 +3,7 @@ import { IconButton, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 import { MdCancel } from 'react-icons/md';
-import { UploadProgress } from '../types/upload';
+import { UploadProgress } from '../../types/upload';
 
 type UploadProgressSnackBar = {
   uploadProgress: UploadProgress;

@@ -8,7 +8,7 @@ import { UseMutationResult } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 import { DownloadMutationConfig } from '../../api/download';
 import { DownloadProgress } from '../../types/download';
-import { SelectList } from '../SelectList';
+import { SelectList } from '../misc/SelectList';
 import ProgressBars from './ProgressBars';
 
 type DownloadFromLinkModalProps = {

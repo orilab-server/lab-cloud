@@ -27,8 +27,8 @@ import {
   MdUploadFile,
 } from 'react-icons/md';
 import { UseMutationResult } from 'react-query';
-import { SendRequestMutationConfig } from '../api/sendRequest';
-import { Uploads } from '../api/upload';
+import { SendRequestMutationConfig } from '../../api/sendRequest';
+import { Uploads } from '../../api/upload';
 
 declare module 'react' {
   interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
@@ -190,6 +190,7 @@ export const NewMenu = ({
           'aria-labelledby': 'basic-button',
         }}
       >
+        {/* フォルダ作成ボタン */}
         <MenuItem onClick={openCreateModal}>
           <ListItemIcon>
             <MdCreateNewFolder fontSize={20} />
@@ -231,6 +232,7 @@ export const NewMenu = ({
           </CreateModal>
         </Box>
         <Divider />
+        {/* ファイルアップロードボタン */}
         <MenuItem onClick={openUploadFilesModal}>
           <ListItemIcon>
             <MdUploadFile fontSize={20} />
@@ -300,6 +302,7 @@ export const NewMenu = ({
             </Stack>
           </UploadFilesModal>
         </Box>
+        {/* フォルダアップロードボタン */}
         <MenuItem onClick={openUploadFoldersModal}>
           <ListItemIcon>
             <MdOutlineDriveFolderUpload fontSize={20} />

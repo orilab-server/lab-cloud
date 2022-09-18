@@ -78,6 +78,7 @@ export const ContextMenu = ({
           'aria-labelledby': 'basic-button',
         }}
       >
+        {/* ダウンロードボタン */}
         <MenuItem onClick={openDownloadModal}>
           <ListItemIcon>
             <RiDownloadFill fontSize={20} />
@@ -142,6 +143,7 @@ export const ContextMenu = ({
             </Box>
           </div>
         )}
+        {/* リンクコピーボタン */}
         <MenuItem onClick={openCopyModal}>
           <ListItemIcon>
             <MdOutlineLink fontSize={20} />

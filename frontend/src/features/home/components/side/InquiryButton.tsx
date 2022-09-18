@@ -1,7 +1,7 @@
 import { Box, Fab } from '@mui/material';
 import React from 'react';
 import { useModal } from 'react-hooks-use-modal';
-import { MailInquiryForm } from '../MailInquiryForm';
+import { MailInquiryForm } from '../misc/MailInquiryForm';
 
 type InquiryButtonProps = {
   name?: string;

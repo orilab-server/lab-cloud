@@ -6,8 +6,8 @@ import { useRecoilState } from 'recoil';
 import { uploadFile, uploadFolder, Uploads } from '../../api/upload';
 import { DownloadProgress } from '../../types/download';
 import { MyFile, MyFolder } from '../../types/upload';
-import { DownloadProgressSnackBar } from '../DownloadProgressBar';
-import { UploadProgressSnackBar } from '../UploadProgressBar';
+import { DownloadProgressSnackBar } from '../misc/DownloadProgressBar';
+import { UploadProgressSnackBar } from '../misc/UploadProgressBar';
 
 type ProgressBarsProps = {
   downloadProgresses: DownloadProgress[];
