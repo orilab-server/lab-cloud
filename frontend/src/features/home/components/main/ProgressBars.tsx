@@ -13,12 +13,14 @@ type ProgressBarsProps = {
   downloadProgresses: DownloadProgress[];
   downloadCancelMutation: UseMutationResult<void, unknown, string, unknown>;
   uploads?: Uploads;
+  isFromLink?: boolean;
 };
 
 const ProgressBars = ({
   downloadProgresses,
   downloadCancelMutation,
   uploads,
+  isFromLink,
 }: ProgressBarsProps) => {
   const [uploadProgresses, setUploadProgresses] = useRecoilState(uploadProgressesState);
   const queryClient = useQueryClient();
@@ -42,6 +44,7 @@ const ProgressBars = ({
             key={downloadProgress.name}
             response={downloadProgress}
             cancel={() => downloadCancelMutation.mutate(downloadProgress.name)}
+            isFromLink={isFromLink}
           />
         );
       })}
