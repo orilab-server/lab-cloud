@@ -1,13 +1,13 @@
 import { CircularProgressWithLabel } from '@/components/CircularProgressWithLabel';
 import { saveFile } from '@/features/home/api/download';
-import { ResponseProgress } from '@/features/home/types/response';
+import { DownloadProgress } from '@/features/home/types/download';
 import { IconButton, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 import { MdCancel } from 'react-icons/md';
 
 type DownloadProgressSnackBar = {
-  response: ResponseProgress;
+  response: DownloadProgress;
   isFromLink?: boolean;
   cancel: () => void;
 };

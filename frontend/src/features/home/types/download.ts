@@ -4,7 +4,7 @@ export type Response = {
   data: Blob | null;
 };
 
-export type ResponseProgress = {
+export type DownloadProgress = {
   name: string;
   text: string;
   type: 'dir' | 'file';

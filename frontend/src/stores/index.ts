@@ -1,4 +1,4 @@
-import { ResponseProgress } from '@/features/home/types/response';
+import { DownloadProgress } from '@/features/home/types/download';
 import { MyFile, MyFolder, UploadProgress } from '@/features/home/types/upload';
 import { atom } from 'recoil';
 
@@ -12,7 +12,7 @@ export const notifyState = atom<NotifyType | null>({
   default: null,
 });
 
-export const downloadResponsesState = atom<ResponseProgress[]>({
+export const downloadResponsesState = atom<DownloadProgress[]>({
   key: 'downloadResponsesState',
   default: [],
 });
