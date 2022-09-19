@@ -1,16 +1,10 @@
 package tools
 
 import (
-	"os"
-	"path/filepath"
 	"reflect"
 )
 
-type StorageItem struct {
-	Path string `json:"path"`
-	Type string `json:"type"`
-}
-
+// check a elelemt is in a list
 func Contains(list interface{}, elm interface{}) bool {
 	listV := reflect.ValueOf(list)
 
@@ -29,21 +23,14 @@ func Contains(list interface{}, elm interface{}) bool {
 	return false
 }
 
-// return dir and file of paths and types
-func Getitems(dir string) ([]StorageItem, error) {
-	files, err := os.ReadDir(dir)
-	if err != nil {
-		return nil, err
+// 
+func Filter[T comparable](slice []T, elm T) []T {
+	var ret []T
+	for _, v := range slice {
+			if v == elm {
+				continue
+			}
+			ret = append(ret, v)
 	}
-
-	var items []StorageItem
-	for _, file := range files {
-		if file.IsDir() {
-			items = append(items, StorageItem{Path: filepath.Join(dir, file.Name()), Type: "dir"})
-			continue
-		}
-		items = append(items, StorageItem{Path: filepath.Join(dir, file.Name()), Type: "file"})
-	}
-
-	return items, nil
+	return ret
 }

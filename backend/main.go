@@ -25,6 +25,7 @@ func main() {
 	sessionKey := os.Getenv("SESSION_KEY")
 	serverPort := os.Getenv("SERVER_PORT")
 	shareDirPath := os.Getenv("SHARE_DIR")
+	trashDirPath := os.Getenv("TRASH_DIR_PATH")
 	siteUrl := os.Getenv("SITE_URL")
 	secret := os.Getenv("SECRET")
 	from := os.Getenv("MAIL_FROM")
@@ -65,7 +66,7 @@ func main() {
 		importantDirs := strings.Split(importantDirStr, "/")
 		upload := controllers.UploadController{ShareDir: shareDirPath}
 		request := controllers.RequestController{ShareDir: shareDirPath, ImportantDirs: importantDirs}
-		home := controllers.HomeController{ShareDir: shareDirPath, ImportantDirs: importantDirs}
+		home := controllers.HomeController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs}
 		download := controllers.DownloadController{ShareDir: shareDirPath}
 		authGroup.GET("/", home.Controller)
 		authGroup.PATCH("/user", user.PatchUserController)

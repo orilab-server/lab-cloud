@@ -14,7 +14,8 @@ import (
 type HomeController struct {
 	ImportantDirs []string
 	ShareDir      string
-	Items         []tools.StorageItem
+	TrashDir      string
+	Items         tools.StorageItem
 }
 
 func (g HomeController) Controller(ctx *gin.Context) {
@@ -28,7 +29,12 @@ func (g HomeController) Controller(ctx *gin.Context) {
 		fmt.Println("error : ", err)
 		return
 	}
-	filepaths, err := tools.Getitems(newpath)
+	filepaths, err := tools.GetDirAndFilePaths(newpath)
+	// treat trash path as a separate entity
+	trashpath := tools.StorageItem{Path: g.TrashDir, Type: "dir"}
+	if tools.Contains(filepaths, trashpath) {
+		filepaths = tools.Filter(filepaths, trashpath)
+	}
 	if err != nil {
 		ctx.String(http.StatusBadRequest, "Bad Request")
 		return
@@ -38,10 +44,12 @@ func (g HomeController) Controller(ctx *gin.Context) {
 	jsonitems, _ := json.Marshal(filepaths)
 	important := tools.Contains(g.ImportantDirs, newpath[strings.LastIndex(newpath, "/")+1:])
 	ctx.JSON(http.StatusOK, gin.H{
-		"topdirs": topDirs,
-		"basedir": g.ShareDir,
-		"filepaths":   string(jsonitems),
-		"ishome":  ishome,
+		"topdirs":   tools.Filter(topDirs, g.TrashDir),
+		"basedir":   g.ShareDir,
+		"trashdir":  g.TrashDir,
+		"filepaths": string(jsonitems),
+		"ishome":    ishome,
 		"important": important,
 	})
 }
+
