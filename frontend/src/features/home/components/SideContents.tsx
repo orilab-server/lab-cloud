@@ -2,9 +2,9 @@ import { Box } from '@mui/system';
 import { UseMutationResult } from 'react-query';
 import { SendRequestMutationConfig } from '../api/sendRequest';
 import { Uploads } from '../api/upload';
-import AddButton from './side/AddButton';
-import InquiryButton from './side/InquiryButton';
-import LogoutButton from './side/LogoutButton';
+import AddButton from './side/buttons/AddButton';
+import InquiryButton from './side/buttons/InquiryButton';
+import LogoutButton from './side/buttons/LogoutButton';
 import Profile from './side/Profile';
 import TopDirLiat from './side/TopDirLiat';
 
