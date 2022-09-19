@@ -1,3 +1,4 @@
+import { FileOrDirItem } from '@/features/home/types/storage';
 import { Button, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import React from 'react';
@@ -6,10 +7,7 @@ import { MdDelete } from 'react-icons/md';
 import { SelectList } from '../../SelectList';
 
 type DeleteButtonProps = {
-  selects: {
-    name: string;
-    type: 'dir' | 'file';
-  }[];
+  selects: FileOrDirItem[];
   requestItems: () => void;
   setAnchorEl: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
 };

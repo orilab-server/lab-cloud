@@ -1,18 +1,17 @@
-import { notifyState } from '@/stores';
+import { FileOrDirItem } from '@/features/home/types/storage';
 import Menu from '@mui/material/Menu';
-import React, { useRef, useState } from 'react';
-import { useSetRecoilState } from 'recoil';
+import React, { useState } from 'react';
 import DeleteButton from './buttons/DeleteButton';
 import DownloadButton from './buttons/DownloadButton';
 import LinkCopyButton from './buttons/LinkCopyButton';
 
 type ContextMenurops = {
-  selects: { name: string; type: 'dir' | 'file' }[];
+  selects: FileOrDirItem[];
   path: string;
   children: React.ReactNode;
   link: string;
   important?: boolean;
-  downloadItems: (targets: { name: string; type: 'dir' | 'file' }[]) => void;
+  downloadItems: (targets: FileOrDirItem[]) => void;
   requestItems: () => void;
 };
 
@@ -41,23 +40,12 @@ export const ContextMenu = ({
   requestItems,
 }: ContextMenurops) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const linkRef = useRef(null);
-  const setNotify = useSetRecoilState(notifyState);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
-  };
-
-  const handleCopyLink = () => {
-    const linkBox = document.getElementById('copy');
-    // @ts-ignore
-    linkBox?.select();
-    document.execCommand('copy');
-    setAnchorEl(null);
-    setNotify({ severity: 'info', text: 'コピーしました！' });
   };
 
   return (

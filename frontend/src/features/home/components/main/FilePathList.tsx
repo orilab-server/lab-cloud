@@ -8,17 +8,15 @@ import { AiFillFolder } from 'react-icons/ai';
 import { UseMutationResult } from 'react-query';
 import { DownloadMutationConfig, getPreviewFile } from '../../api/download';
 import { SendRequestMutationConfig } from '../../api/sendRequest';
+import { FileOrDir, FileOrDirItem, StorageFileOrDirItem } from '../../types/storage';
 import { ContextMenu } from '../misc/contextmenu/ContextMenu';
 
 type FilePathListProps = {
-  filePaths: { path: string; type: 'dir' | 'file' }[];
+  filePaths: StorageFileOrDirItem[];
   important?: boolean;
   selectedValue: string;
   selected: Set<string>;
-  selectedArray: {
-    name: string;
-    type: 'dir' | 'file';
-  }[];
+  selectedArray: FileOrDirItem[];
   downloadMutation: UseMutationResult<string[], unknown, DownloadMutationConfig, unknown>;
   requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
   onStart?: ((e: SelectionEvent) => void) | undefined;
@@ -27,7 +25,7 @@ type FilePathListProps = {
   unSelect: () => void;
 };
 
-const sortFilePaths = (filePaths: { path: string; type: 'dir' | 'file' }[], value: string) => {
+const sortFilePaths = (filePaths: { path: string; type: FileOrDir }[], value: string) => {
   if (value === '昇順-なし') {
     return filePaths;
   }
@@ -76,7 +74,7 @@ const FilePathList = ({
     <SelectionArea onStart={onStart} onMove={onMove} selectables=".selectable">
       {sortFilePaths(filePaths, selectedValue).map((item, index) => {
         const name = endFilenameSlicer(item.path);
-        const type = item.type as 'dir' | 'file';
+        const type = item.type as FileOrDir;
         const path = withoutLastPathSlicer(item.path);
         const isSelect = selected.has(name);
         const onContextSelects =
@@ -93,7 +91,7 @@ const FilePathList = ({
         }/?path=${path}&share=true&targets=${onContextSelectNames.join(
           '/',
         )}&types=${onContextSelectTypes.join('/')}`;
-        const downloadItems = (targets: { name: string; type: 'dir' | 'file' }[]) => {
+        const downloadItems = (targets: { name: string; type: FileOrDir }[]) => {
           downloadMutation.mutate({
             path,
             targets,

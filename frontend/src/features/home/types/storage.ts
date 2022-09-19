@@ -1,9 +1,17 @@
+export type FileOrDir = 'dir' | 'file';
+
+export type StorageFileOrDirItem = {
+  path: string;
+  type: FileOrDir;
+};
+
+export type FileOrDirItem = {
+  name: string;
+  type: FileOrDir;
+};
+
 export type Storage = {
-  filepaths:
-    | {
-        path: string;
-        type: 'dir' | 'file';
-      }[];
+  filepaths: StorageFileOrDirItem[];
   basedir: string;
   ishome: boolean;
   topdirs: string[];

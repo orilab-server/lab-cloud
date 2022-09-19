@@ -11,6 +11,7 @@ import CreateFolderButton from './buttons/CreateFolderButton';
 import FileUploadButton from './buttons/FileUploadButton';
 import FolderUploadButton from './buttons/FolderUploadButton';
 
+// webkitdirectory属性のビルドエラー回避
 declare module 'react' {
   interface HTMLAttributes<T> extends AriaAttributes, DOMAttributes<T> {
     webkitdirectory?: string;

@@ -1,3 +1,4 @@
+import { FileOrDirItem } from '@/features/home/types/storage';
 import { Button, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import React from 'react';
@@ -6,16 +7,8 @@ import { RiDownloadFill } from 'react-icons/ri';
 import { SelectList } from '../../SelectList';
 
 type DownloadButtonProps = {
-  selects: {
-    name: string;
-    type: 'dir' | 'file';
-  }[];
-  downloadItems: (
-    targets: {
-      name: string;
-      type: 'dir' | 'file';
-    }[],
-  ) => void;
+  selects: FileOrDirItem[];
+  downloadItems: (targets: FileOrDirItem[]) => void;
   setAnchorEl: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
 };
 

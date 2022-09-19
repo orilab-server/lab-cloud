@@ -8,8 +8,9 @@ import { Dispatch, SetStateAction } from 'react';
 import { useMutation } from 'react-query';
 import { useRecoilState } from 'recoil';
 import { DownloadProgress, Response } from '../types/download';
+import { FileOrDir, FileOrDirItem } from '../types/storage';
 
-export const downloadRequest = async (path: string, name: string, type: 'dir' | 'file') =>
+export const downloadRequest = async (path: string, name: string, type: FileOrDir) =>
   axios
     .get(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/home/download?path=${path}&target=${name}&type=${type}`,
@@ -55,7 +56,7 @@ export const saveFile = async (target: Response | null) => {
 
 export const download = async (
   path: string,
-  targets: { name: string; type: 'dir' | 'file' }[],
+  targets: FileOrDirItem[],
   setProgress: Dispatch<SetStateAction<DownloadProgress[]>>,
 ) => {
   const responses = await Promise.all(
@@ -121,7 +122,7 @@ export const cancel = async (
 
 export type DownloadMutationConfig = {
   path: string;
-  targets: { name: string; type: 'dir' | 'file' }[];
+  targets: FileOrDirItem[];
 };
 
 export const useDownload = () => {

@@ -8,15 +8,13 @@ import { UseMutationResult } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 import { DownloadMutationConfig } from '../../api/download';
 import { DownloadProgress } from '../../types/download';
+import { FileOrDirItem } from '../../types/storage';
 import { SelectList } from '../misc/SelectList';
 import ProgressBars from './ProgressBars';
 
 type DownloadFromLinkModalProps = {
   currentDir: string;
-  downloadSelectedArray: {
-    name: string;
-    type: 'dir' | 'file';
-  }[];
+  downloadSelectedArray: FileOrDirItem[];
   downloadProgresses: DownloadProgress[];
   downloadMutation: UseMutationResult<string[], unknown, DownloadMutationConfig, unknown>;
   downloadCancelMutation: UseMutationResult<void, unknown, string, unknown>;

@@ -8,7 +8,7 @@ import { useSelector } from '../../../hooks/useSelector';
 import { useDownload } from '../api/download';
 import { useSendRequest } from '../api/sendRequest';
 import { Uploads } from '../api/upload';
-import { Storage } from '../types/storage';
+import { FileOrDir, FileOrDirItem, Storage } from '../types/storage';
 import DirpathNavigation from './main/DirpathNavigation';
 import DownloadFromLinkModal from './main/DownloadFromLinkModal';
 import EmptyDirDisplay from './main/EmptyDirDisplay';
@@ -49,14 +49,11 @@ export const MainContents = ({
   const [PrioritySelectForm, setctedPriorityValue] = useSelectBox('priority', selectPriorityValues);
   // ダウンロードリンク関連
   const [downloadFromLink, setDownloadFromLink] = useState<boolean>(false);
-  const [downloadSelectedArray, setDownloadSelectedArray] = useState<
-    { name: string; type: 'dir' | 'file' }[]
-  >([]);
+  const [downloadSelectedArray, setDownloadSelectedArray] = useState<FileOrDirItem[]>([]);
   const selectedArray = Array.from(selected).map((item) => ({
     name: item,
-    type: filepaths.find((filepath) => filepath.path.match(`${currentdir}/${item}`))?.type as
-      | 'dir'
-      | 'file',
+    type: filepaths.find((filepath) => filepath.path.match(`${currentdir}/${item}`))
+      ?.type as FileOrDir,
   }));
   // ディレクトリパス関連
   const prevPath = currentdir.slice(0, currentdir.lastIndexOf('/'));
@@ -74,7 +71,7 @@ export const MainContents = ({
       const targetTypes = (queries.types as string).split('/');
       const targets = targetNames.map((item, index) => ({
         name: item,
-        type: targetTypes[index] as 'dir' | 'file',
+        type: targetTypes[index] as FileOrDir,
       }));
       setDownloadSelectedArray(targets);
       setDownloadFromLink(true);
