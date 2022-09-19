@@ -7,9 +7,10 @@ import { saveAs } from 'file-saver';
 import { Dispatch, SetStateAction } from 'react';
 import { useMutation } from 'react-query';
 import { useRecoilState } from 'recoil';
-import { Response, ResponseProgress } from '../types/response';
+import { DownloadProgress, Response } from '../types/download';
+import { FileOrDir, FileOrDirItem } from '../types/storage';
 
-export const downloadRequest = async (path: string, name: string, type: 'dir' | 'file') =>
+export const downloadRequest = async (path: string, name: string, type: FileOrDir) =>
   axios
     .get(
       `${process.env.NEXT_PUBLIC_SERVER_URL}/home/download?path=${path}&target=${name}&type=${type}`,
@@ -28,11 +29,11 @@ export const getPreviewFile = async (path: string, name: string) => {
 };
 
 const getProgress = (
-  progresses: ResponseProgress[],
+  progresses: DownloadProgress[],
   name: string,
   min: number,
   max: number,
-  params?: Partial<ResponseProgress>,
+  params?: Partial<DownloadProgress>,
 ) => {
   return progresses.map((progress) => {
     if (progress.name === name && progress.status !== 'suspended') {
@@ -55,8 +56,8 @@ export const saveFile = async (target: Response | null) => {
 
 export const download = async (
   path: string,
-  targets: { name: string; type: 'dir' | 'file' }[],
-  setProgress: Dispatch<SetStateAction<ResponseProgress[]>>,
+  targets: FileOrDirItem[],
+  setProgress: Dispatch<SetStateAction<DownloadProgress[]>>,
 ) => {
   const responses = await Promise.all(
     targets.map(async (target) => {
@@ -112,7 +113,7 @@ export const download = async (
 
 export const cancel = async (
   name: string,
-  setProgress: Dispatch<SetStateAction<ResponseProgress[]>>,
+  setProgress: Dispatch<SetStateAction<DownloadProgress[]>>,
 ) => {
   setProgress((old) => getProgress(old, name, 0, 0, { status: 'suspended', text: '中断しました' }));
   await sleep(6);
@@ -121,11 +122,11 @@ export const cancel = async (
 
 export type DownloadMutationConfig = {
   path: string;
-  targets: { name: string; type: 'dir' | 'file' }[];
+  targets: FileOrDirItem[];
 };
 
 export const useDownload = () => {
-  const [downloadProgress, setDownloadProgress] = useRecoilState(downloadResponsesState);
+  const [downloadProgresses, setDownloadProgress] = useRecoilState(downloadResponsesState);
   const downloadMutation = useMutation(
     async (config: DownloadMutationConfig) =>
       download(config.path, config.targets, setDownloadProgress),
@@ -147,5 +148,5 @@ export const useDownload = () => {
     async (name: string) => cancel(name, setDownloadProgress),
     {},
   );
-  return { downloadProgress, downloadMutation, downloadCancelMutation };
+  return { downloadProgresses, downloadMutation, downloadCancelMutation };
 };

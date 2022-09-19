@@ -1,8 +1,9 @@
 import { Avatar, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import { AiFillFile, AiFillFolder } from 'react-icons/ai';
+import { FileOrDirItem } from '../../types/storage';
 
 type SelectListProps = {
-  selects: { name: string; type: 'dir' | 'file' }[];
+  selects: FileOrDirItem[];
 };
 
 export const SelectList = ({ selects }: SelectListProps) => (

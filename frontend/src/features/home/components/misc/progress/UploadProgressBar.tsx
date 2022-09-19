@@ -1,49 +1,55 @@
 import { CircularProgressWithLabel } from '@/components/CircularProgressWithLabel';
-import { saveFile } from '@/features/home/api/download';
-import { ResponseProgress } from '@/features/home/types/response';
 import { IconButton, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';
 import { MdCancel } from 'react-icons/md';
+import { UploadProgress } from '../../../types/upload';
 
-type DownloadProgressSnackBar = {
-  response: ResponseProgress;
-  isFromLink?: boolean;
+type UploadProgressSnackBar = {
+  uploadProgress: UploadProgress;
+  upload: () => void;
   cancel: () => void;
 };
 
-export const DownloadProgressSnackBar = ({
-  response,
-  isFromLink,
+export const UploadProgressSnackBar = ({
+  uploadProgress,
+  upload,
   cancel,
-}: DownloadProgressSnackBar) => {
+}: UploadProgressSnackBar) => {
   const [isShow, setIsShow] = useState<boolean>(true);
-  const { name, text, type, data, start: isOpen, status, progress } = response;
+  const { name, text, status, progress } = uploadProgress;
+
   useEffect(() => {
-    if (status === 'finish') {
-      saveFile({ name, type, data });
+    if (status === 'start' && localStorage.getItem(name + '_uploadCancel') !== 'true') {
+      upload();
     }
   }, [status]);
 
-  if (!isOpen || !isShow) {
+  const onClickCancel = () => {
+    localStorage.setItem(name + '_uploadCancel', 'true');
+    cancel();
+  };
+
+  if (!isShow) {
     return null;
   }
 
   const action = (
-    <IconButton sx={{ color: 'white' }} onClick={cancel}>
+    <IconButton sx={{ color: 'white' }} onClick={onClickCancel}>
       <Stack alignItems="center">
         <MdCancel />
         <Box sx={{ fontSize: 3 }}>中断</Box>
       </Stack>
     </IconButton>
   );
+
   return (
     <Stack
       sx={{
-        bgcolor: isFromLink ? '#ccc' : '#333',
+        bgcolor: '#ccc',
         px: 3,
         borderRadius: 1,
-        color: isFromLink ? '#333' : 'white',
+        color: '#333',
         position: 'relative',
         zIndex: 1000,
       }}
@@ -53,7 +59,7 @@ export const DownloadProgressSnackBar = ({
     >
       <CircularProgressWithLabel value={progress} />
       <Box>{text}</Box>
-      {status === 'suspended' ? null : action}
+      {status !== 'pending' ? null : action}
       <MdCancel
         onClick={() => setIsShow(false)}
         style={{ position: 'absolute', top: -6, right: -5 }}

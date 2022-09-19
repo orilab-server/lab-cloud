@@ -1,13 +1,15 @@
+import { FileOrDir } from './storage';
+
 export type Response = {
   name: string;
-  type: 'dir' | 'file';
+  type: FileOrDir;
   data: Blob | null;
 };
 
-export type ResponseProgress = {
+export type DownloadProgress = {
   name: string;
   text: string;
-  type: 'dir' | 'file';
+  type: FileOrDir;
   start: boolean;
   progress: number;
   data: Blob | null;
