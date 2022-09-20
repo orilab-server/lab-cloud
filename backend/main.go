@@ -81,6 +81,7 @@ func main() {
 		// reuestエンドポイント
 		request := controllers.RequestController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
 		requestGroup := authGroup.Group("/request")
+		requestGroup.POST("/mkdir", request.MkDirController)
 		requestGroup.POST("/mv", request.MvController)
 		requestGroup.POST("/mv-trash", request.MvTrashController)
 		requestGroup.POST("/rm-file", request.RmFileController)
