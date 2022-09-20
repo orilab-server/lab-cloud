@@ -63,17 +63,28 @@ func main() {
 	authGroup := router.Group("/home")
 	authGroup.Use(middlewares.LoginCheckMiddleware(sessionKey))
 	{
-		importantDirs := strings.Split(importantDirStr, "/")
-		upload := controllers.UploadController{ShareDir: shareDirPath}
-		request := controllers.RequestController{ShareDir: shareDirPath, ImportantDirs: importantDirs}
-		home := controllers.HomeController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs}
-		download := controllers.DownloadController{ShareDir: shareDirPath}
-		authGroup.GET("/", home.Controller)
+		// userエンドポイント
 		authGroup.PATCH("/user", user.PatchUserController)
-		authGroup.GET("/download", download.Controller)
-		authGroup.POST("/upload", upload.Controller)
-		authGroup.POST("/request", request.Controller)
+		// logoutエンドポイント
 		authGroup.GET("/logout", auth.LogoutController)
+		
+		importantDirs := strings.Split(importantDirStr, "/")
+		// homeエンドポイント
+		home := controllers.HomeController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs}
+		authGroup.GET("/", home.Controller)
+		// downloadエンドポイント
+		download := controllers.DownloadController{ShareDir: shareDirPath}
+		authGroup.GET("/download", download.Controller)
+		// uploadエンドポイント
+		upload := controllers.UploadController{ShareDir: shareDirPath}
+		authGroup.POST("/upload", upload.Controller)
+		// reuestエンドポイント
+		request := controllers.RequestController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
+		requestGroup := authGroup.Group("/request")
+		requestGroup.POST("/mv", request.MvController)
+		requestGroup.POST("/mv-trash", request.MvTrashController)
+		requestGroup.POST("/rm-file", request.RmFileController)
+		requestGroup.POST("/rm-dir", request.RmDirController)
 	}
 	err = server.ListenAndServe()
 	if err != nil {
