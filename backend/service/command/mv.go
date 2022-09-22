@@ -10,5 +10,5 @@ func Mv(old string, new string) error {
 		fmt.Println(err)
 		return err
 	}
-	return fmt.Errorf("error: %s", "command not found")
+	return nil
 }

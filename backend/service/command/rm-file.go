@@ -14,13 +14,11 @@ type RmFileRequest struct {
 }
 
 func (r RmFileRequest) RmFile(path string, id string) error {
-	_, err := files_trash_table.DeleteRow(r.MyDB, db.DeleteQueryParam{From: "files_trash", Where: map[string]any{"id": id}})
-	if err != nil {
-		return err
-	}
+	dbErr := files_trash_table.DeleteRow(r.MyDB, db.DeleteQueryParam{From: "files_trash", Where: map[string]any{"id": id}})
 	if err := os.Remove(path); err != nil {
 		fmt.Println(err)
-		return err
+		fmt.Println(dbErr)
+		return fmt.Errorf("error: %s, db error: %s", err, dbErr)
 	}
-	return fmt.Errorf("error: command not found")
+	return nil
 }

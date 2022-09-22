@@ -8,19 +8,15 @@ import (
 	"strings"
 )
 
-func DeleteRow(myDB *sql.DB, qp db.DeleteQueryParam) (sql.Result, error) {
-	whereStrs, _ := tools.DivideParam(qp.Where)
+func DeleteRow(myDB *sql.DB, qp db.DeleteQueryParam) error {
+	whereStrs, vals := tools.DivideParam(qp.Where)
 	whereStr := strings.Join(whereStrs, "and ")
 	query := fmt.Sprintf("delete from %s where %s", "files_trash", whereStr)
-	del, err := myDB.Prepare(query)
+	res, err := myDB.Query(query, vals...)
+	defer res.Close()
 	if err != nil {
-		return nil, err
-	}
-	defer del.Close()
-	res, err := del.Exec()
-	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return res, nil
+	return nil
 }

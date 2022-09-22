@@ -10,5 +10,5 @@ func Mkdir(path string) error {
 		fmt.Println(err)
 		return err
 	}
-	return fmt.Errorf("error: command not found")
+	return nil
 }
