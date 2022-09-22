@@ -5,7 +5,7 @@ import { useSetRecoilState } from 'recoil';
 
 export const sendMkdirRequest = async (path: string) => {
   const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/home/request/mkdir?path=${path}`;
-  await axios.post(url, {
+  await axios.get(url, {
     withCredentials: true,
     headers: {
       'Content-Type': 'multipart/form-data',

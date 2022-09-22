@@ -8,7 +8,7 @@ export const sendRmRequest = async (targets: RmRequest[]) => {
   await Promise.all(
     targets.map(async (target) => {
       const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/home/request/rm-${target.type}?path=${target.path}&id=${target.id}`;
-      await axios.post(url, {
+      await axios.get(url, {
         withCredentials: true,
         headers: {
           'Content-Type': 'multipart/form-data',
