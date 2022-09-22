@@ -21,7 +21,7 @@ type RequestController struct {
 func (r RequestController) MkDirController(ctx *gin.Context) {
 	path := ctx.Query("path")  // get Qury Parameter
 	// cannot access important dir or file
-	important := tools.Contains(r.ImportantDirs, path[strings.LastIndex(path, "/")+1:])
+	important, _ := tools.Contains(r.ImportantDirs, path[strings.LastIndex(path, "/")+1:])
 	if important {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
@@ -39,7 +39,7 @@ func (r RequestController) MvController(ctx *gin.Context) {
 	oldPath, _ = url.QueryUnescape(oldPath)        // decode URL
 	newPath, _ = url.QueryUnescape(newPath)        // decode URL
 	// cannot access important dir or file
-	important := tools.Contains(r.ImportantDirs, oldPath[strings.LastIndex(oldPath, "/")+1:])
+	important, _ := tools.Contains(r.ImportantDirs, oldPath[strings.LastIndex(oldPath, "/")+1:])
 	if important {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
@@ -56,7 +56,7 @@ func (r RequestController) MvTrashController(ctx *gin.Context) {
 	itemType := ctx.Query("itemType") // get Query Parameter
 	path, _ = url.QueryUnescape(path) // decode URL
 	// cannot access important dir or file
-	important := tools.Contains(r.ImportantDirs, path[strings.LastIndex(path, "/")+1:])
+	important, _ := tools.Contains(r.ImportantDirs, path[strings.LastIndex(path, "/")+1:])
 	if important {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
@@ -74,7 +74,7 @@ func (r RequestController) RmFileController(ctx *gin.Context) {
 	id := ctx.Query("id")             // get Query Parameter
 	path, _ = url.QueryUnescape(path) // decode URL
 	// cannot access important dir or file
-	important := tools.Contains(r.ImportantDirs, path[strings.LastIndex(path, "/")+1:])
+	important, _ := tools.Contains(r.ImportantDirs, path[strings.LastIndex(path, "/")+1:])
 	if important {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
@@ -92,7 +92,7 @@ func (r RequestController) RmDirController(ctx *gin.Context) {
 	id := ctx.Query("id")             // get Query Parameter
 	path, _ = url.QueryUnescape(path) // decode URL
 	// cannot access important dir or file
-	important := tools.Contains(r.ImportantDirs, path[strings.LastIndex(path, "/")+1:])
+	important, _ := tools.Contains(r.ImportantDirs, path[strings.LastIndex(path, "/")+1:])
 	if important {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return

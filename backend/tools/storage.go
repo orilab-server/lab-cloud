@@ -9,6 +9,7 @@ import (
 type StorageItem struct {
 	Path string `json:"path"`
 	Type string `json:"type"`
+	Id   string `json:"id"`   
 }
 
 func GetDirs(dir string) ([]string, error) {
@@ -39,10 +40,10 @@ func GetDirAndFilePaths(dir string) ([]StorageItem, error) {
 	var items []StorageItem
 	for _, file := range files {
 		if file.IsDir() {
-			items = append(items, StorageItem{Path: filepath.Join(dir, file.Name()), Type: "dir"})
+			items = append(items, StorageItem{Id: "", Path: filepath.Join(dir, file.Name()), Type: "dir"})
 			continue
 		}
-		items = append(items, StorageItem{Path: filepath.Join(dir, file.Name()), Type: "file"})
+		items = append(items, StorageItem{Id: "", Path: filepath.Join(dir, file.Name()), Type: "file"})
 	}
 
 	return items, nil

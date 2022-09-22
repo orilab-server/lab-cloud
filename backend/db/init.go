@@ -19,11 +19,12 @@ type Users = struct {
 }
 
 type FilesTrash = struct {
-	Id     		   string
-	UserId       string
-	Type         string
-  PastLocation string
-	CreatedAt    string
+	Id     		   		string
+	UserId       		string
+	Type         		string
+	CurrentLocation string
+  PastLocation 		string
+	CreatedAt    		string
 }
 
 type SelectQueryParam struct {

@@ -63,29 +63,31 @@ func main() {
 	authGroup := router.Group("/home")
 	authGroup.Use(middlewares.LoginCheckMiddleware(sessionKey))
 	{
+		importantDirs := strings.Split(importantDirStr, "/")
+		home := controllers.HomeController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
+		download := controllers.DownloadController{ShareDir: shareDirPath}
+		upload := controllers.UploadController{ShareDir: shareDirPath}
+		request := controllers.RequestController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
+		
 		// userエンドポイント
 		authGroup.PATCH("/user", user.PatchUserController)
 		// logoutエンドポイント
 		authGroup.GET("/logout", auth.LogoutController)
-		
-		importantDirs := strings.Split(importantDirStr, "/")
 		// homeエンドポイント
-		home := controllers.HomeController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs}
 		authGroup.GET("/", home.Controller)
 		// downloadエンドポイント
-		download := controllers.DownloadController{ShareDir: shareDirPath}
 		authGroup.GET("/download", download.Controller)
 		// uploadエンドポイント
-		upload := controllers.UploadController{ShareDir: shareDirPath}
 		authGroup.POST("/upload", upload.Controller)
 		// reuestエンドポイント
-		request := controllers.RequestController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
 		requestGroup := authGroup.Group("/request")
-		requestGroup.POST("/mkdir", request.MkDirController)
-		requestGroup.POST("/mv", request.MvController)
-		requestGroup.POST("/mv-trash", request.MvTrashController)
-		requestGroup.POST("/rm-file", request.RmFileController)
-		requestGroup.POST("/rm-dir", request.RmDirController)
+		{
+			requestGroup.GET("/mkdir", request.MkDirController)
+			requestGroup.GET("/mv", request.MvController)
+			requestGroup.GET("/mv-trash", request.MvTrashController)
+			requestGroup.GET("/rm-file", request.RmFileController)
+			requestGroup.GET("/rm-dir", request.RmDirController)
+		}
 	}
 	err = server.ListenAndServe()
 	if err != nil {
