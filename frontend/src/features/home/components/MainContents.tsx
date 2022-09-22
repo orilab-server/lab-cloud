@@ -1,5 +1,5 @@
 import { useSelectBox } from '@/hooks/useSelectBox';
-import { relativePathSlicer } from '@/utils/slice';
+import { endFilenameSlicer, relativePathSlicer } from '@/utils/slice';
 import { Box, Button, List, Stack, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
@@ -18,6 +18,7 @@ import ProgressBars from './main/ProgressBars';
 type MainContentsProps = {
   filepaths: Storage['filepaths'];
   currentdir: string;
+  trashDir: string;
   baseDir: string;
   isHome: boolean;
   isTrash?: boolean;
@@ -33,6 +34,7 @@ const selectPriorityValues = ['なし', 'フォルダ', 'ファイル'];
 export const MainContents = ({
   filepaths,
   currentdir,
+  trashDir,
   baseDir,
   isHome,
   uploads,
@@ -83,7 +85,9 @@ export const MainContents = ({
 
   const EmptyDisplay = () =>
     isTrash ? (
-      <EmptyTrashDisplay />
+      <EmptyTrashDisplay
+        isTopTrashDir={endFilenameSlicer(trashDir) === endFilenameSlicer(currentdir)}
+      />
     ) : (
       <EmptyDirDisplay currentDir={currentdir} important={important} uploads={uploads} />
     );

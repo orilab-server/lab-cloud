@@ -52,6 +52,7 @@ const Home: NextPage = () => {
       <MainContents
         filepaths={filePaths}
         currentdir={currentDir || '/'}
+        trashDir={trashDir}
         baseDir={baseDir}
         isHome={isHome}
         uploads={uploads}

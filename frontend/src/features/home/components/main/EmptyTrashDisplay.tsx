@@ -3,7 +3,11 @@ import { Box } from '@mui/system';
 import React from 'react';
 import { BsTrash2Fill } from 'react-icons/bs';
 
-const EmptyTrashDisplay = () => {
+type EmptyTrashDisplayProps = {
+  isTopTrashDir: boolean;
+};
+
+const EmptyTrashDisplay = ({ isTopTrashDir }: EmptyTrashDisplayProps) => {
   return (
     <Box
       sx={{
@@ -28,7 +32,7 @@ const EmptyTrashDisplay = () => {
       >
         <BsTrash2Fill color="rgba(0,0,0,0.6)" size={100} />
         <Typography sx={{ mt: 3, color: 'rgba(0,0,0,0.6)' }} fontSize={20}>
-          ゴミ箱は空です
+          {isTopTrashDir ? "ゴミ箱は空です" : "空です"}
         </Typography>
       </Box>
     </Box>
