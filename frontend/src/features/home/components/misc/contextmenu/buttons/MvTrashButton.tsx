@@ -6,9 +6,9 @@ import { useModal } from 'react-hooks-use-modal';
 import { MdDelete } from 'react-icons/md';
 import { SelectList } from '../../SelectList';
 
-type DeleteButtonProps = {
+type MvTrashButtonProps = {
   selects: StorageFileOrDirItem[];
-  rmRequest: () => void;
+  mvTrashRequest: () => void;
   setAnchorEl: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
 };
 
@@ -28,7 +28,7 @@ const modalStyle = {
   px: 10,
 };
 
-const DeleteButton = ({ selects, rmRequest, setAnchorEl }: DeleteButtonProps) => {
+const DeleteButton = ({ selects, mvTrashRequest, setAnchorEl }: MvTrashButtonProps) => {
   const [DeleteModal, openDeleteModal, closeDeleteModal] = useModal('delete');
 
   return (
@@ -37,20 +37,20 @@ const DeleteButton = ({ selects, rmRequest, setAnchorEl }: DeleteButtonProps) =>
         <ListItemIcon>
           <MdDelete fontSize={20} />
         </ListItemIcon>
-        <ListItemText>削除</ListItemText>
+        <ListItemText>ゴミ箱に移動</ListItemText>
       </MenuItem>
       <Box id="delete" sx={{ width: '100%' }}>
         <DeleteModal>
           <Box sx={modalStyle}>
             <Stack sx={{ py: 2, px: 10 }} spacing={2} alignItems="center">
-              <div>以下を削除しますか？</div>
+              <div>ゴミ箱に移動しますか？</div>
               <SelectList selects={selects} />
               <Stack direction="row" spacing={2}>
                 <Button
                   size="medium"
                   variant="contained"
                   onClick={() => {
-                    rmRequest();
+                    mvTrashRequest();
                     setAnchorEl(null);
                   }}
                 >

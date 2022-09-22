@@ -4,8 +4,6 @@ import Menu from '@mui/material/Menu';
 import { SxProps } from '@mui/system';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { UseMutationResult } from 'react-query';
-import { SendRequestMutationConfig } from '../../../api/sendRequest';
 import { Uploads } from '../../../api/upload';
 import CreateFolderButton from './buttons/CreateFolderButton';
 import FileUploadButton from './buttons/FileUploadButton';
@@ -25,37 +23,13 @@ type ContextMenurops = {
   anchorStyle?: SxProps<Theme> | undefined;
   uploads: Uploads;
   important?: boolean;
-  requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
-};
-
-const modalStyle = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  width: '50vw',
-  p: 5,
-  px: 10,
 };
 
 interface ExtendedFile extends File {
   path: string;
 }
 
-export const NewMenu = ({
-  children,
-  path,
-  context,
-  anchorStyle,
-  uploads,
-  requestMutation,
-}: ContextMenurops) => {
+export const NewMenu = ({ children, path, context, anchorStyle, uploads }: ContextMenurops) => {
   // アップロード用
   const {
     files,
@@ -162,7 +136,7 @@ export const NewMenu = ({
         }}
       >
         {/* フォルダ作成ボタン */}
-        <CreateFolderButton path={path} requestMutation={requestMutation} />
+        <CreateFolderButton path={path} />
         <Divider />
         {/* ファイルアップロードボタン */}
         <FileUploadButton

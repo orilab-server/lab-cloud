@@ -1,4 +1,5 @@
-import { FileOrDirItem } from '@/features/home/types/storage';
+import { FileOrDirItem, StorageFileOrDirItem } from '@/features/home/types/storage';
+import { endFilenameSlicer } from '@/utils/slice';
 import { Button, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import React from 'react';
@@ -7,7 +8,7 @@ import { RiDownloadFill } from 'react-icons/ri';
 import { SelectList } from '../../SelectList';
 
 type DownloadButtonProps = {
-  selects: FileOrDirItem[];
+  selects: StorageFileOrDirItem[];
   downloadItems: (targets: FileOrDirItem[]) => void;
   setAnchorEl: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
 };
@@ -51,7 +52,12 @@ const DownloadButton = ({ selects, downloadItems, setAnchorEl }: DownloadButtonP
                   size="medium"
                   variant="contained"
                   onClick={() => {
-                    downloadItems(selects);
+                    downloadItems(
+                      selects.map((select) => ({
+                        name: endFilenameSlicer(select.path),
+                        type: select.type,
+                      })),
+                    );
                     setAnchorEl(null);
                   }}
                 >

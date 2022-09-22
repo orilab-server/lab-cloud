@@ -6,12 +6,12 @@ import { useEffect, useState } from 'react';
 import { MdArrowBack } from 'react-icons/md';
 import { useSelector } from '../../../hooks/useSelector';
 import { useDownload } from '../api/download';
-import { useSendRequest } from '../api/sendRequest';
 import { Uploads } from '../api/upload';
-import { FileOrDir, FileOrDirItem, Storage } from '../types/storage';
+import { FileOrDir, Storage, StorageFileOrDirItem } from '../types/storage';
 import DirpathNavigation from './main/DirpathNavigation';
 import DownloadFromLinkModal from './main/DownloadFromLinkModal';
 import EmptyDirDisplay from './main/EmptyDirDisplay';
+import EmptyTrashDisplay from './main/EmptyTrashDisplay';
 import FilePathList from './main/FilePathList';
 import ProgressBars from './main/ProgressBars';
 
@@ -20,6 +20,7 @@ type MainContentsProps = {
   currentdir: string;
   baseDir: string;
   isHome: boolean;
+  isTrash?: boolean;
   uploads: Uploads;
   important?: boolean;
   moveDir: (path: string) => Promise<void>;
@@ -36,22 +37,23 @@ export const MainContents = ({
   isHome,
   uploads,
   important,
+  isTrash,
   moveDir,
 }: MainContentsProps) => {
   const router = useRouter();
   // ダウンロード用hooks
   const { downloadProgresses, downloadMutation, downloadCancelMutation } = useDownload();
-  // 作成・削除リクエスト用mutation
-  const requestMutation = useSendRequest();
+  // リストアイテム用hooks
   const { selected, unSelect, onStart, onMove, onResetKeyDownEscape } = useSelector();
   // セレクトボックス用hooks
   const [SortSelectForm, selectedSortValue] = useSelectBox('sort', selectSortValues);
   const [PrioritySelectForm, setctedPriorityValue] = useSelectBox('priority', selectPriorityValues);
   // ダウンロードリンク関連
   const [downloadFromLink, setDownloadFromLink] = useState<boolean>(false);
-  const [downloadSelectedArray, setDownloadSelectedArray] = useState<FileOrDirItem[]>([]);
+  const [downloadSelectedArray, setDownloadSelectedArray] = useState<StorageFileOrDirItem[]>([]);
   const selectedArray = Array.from(selected).map((item) => ({
-    name: item,
+    id: filepaths.find((filepath) => filepath.path.match(`${currentdir}/${item}`))?.id || '',
+    path: currentdir + '/' + item,
     type: filepaths.find((filepath) => filepath.path.match(`${currentdir}/${item}`))
       ?.type as FileOrDir,
   }));
@@ -70,13 +72,21 @@ export const MainContents = ({
       const targetNames = (queries.targets as string).split('/');
       const targetTypes = (queries.types as string).split('/');
       const targets = targetNames.map((item, index) => ({
-        name: item,
+        id: '',
+        path: currentdir + '/' + item,
         type: targetTypes[index] as FileOrDir,
       }));
       setDownloadSelectedArray(targets);
       setDownloadFromLink(true);
     }
   }, []);
+
+  const EmptyDisplay = () =>
+    isTrash ? (
+      <EmptyTrashDisplay />
+    ) : (
+      <EmptyDirDisplay currentDir={currentdir} important={important} uploads={uploads} />
+    );
 
   // ダウンロードリンクを開いた際の画面
   if (downloadFromLink) {
@@ -119,22 +129,15 @@ export const MainContents = ({
         <SortSelectForm size="small" />
         <PrioritySelectForm size="small" />
         {/* 空の場所の場合(ドロップ&コンテキストメニュー使用可能) */}
-        {filepaths.length === 0 && (
-          <EmptyDirDisplay
-            requestMutation={requestMutation}
-            currentDir={currentdir}
-            important={important}
-            uploads={uploads}
-          />
-        )}
+        {filepaths.length === 0 && <EmptyDisplay />}
         <FilePathList
           filePaths={filepaths}
+          isTrash={isTrash}
           important={important}
           selectedValue={`${selectedSortValue}-${setctedPriorityValue}`}
           selected={selected}
           selectedArray={selectedArray}
           downloadMutation={downloadMutation}
-          requestMutation={requestMutation}
           onStart={onStart}
           onMove={onMove}
           moveDir={moveDir}

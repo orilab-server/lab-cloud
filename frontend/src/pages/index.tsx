@@ -2,7 +2,6 @@ import { ScreenLoading } from '@/components/ScreenLoading';
 import { useUser } from '@/features/auth/api/getUser';
 import { SignUpComplete } from '@/features/auth/components/SignUpForm';
 import { useFilePaths } from '@/features/home/api/getFilePaths';
-import { useSendRequest } from '@/features/home/api/sendRequest';
 import { useUpload } from '@/features/home/api/upload';
 import { MainContents } from '@/features/home/components/MainContents';
 import { SideContents } from '@/features/home/components/SideContents';
@@ -12,7 +11,6 @@ import { useRouter } from 'next/router';
 
 const Home: NextPage = () => {
   const filePathsQuery = useFilePaths();
-  const requestMutation = useSendRequest();
   const userQuery = useUser();
   const router = useRouter();
   // アップロード用
@@ -33,8 +31,10 @@ const Home: NextPage = () => {
   const filePaths = filePathsQuery.data.filepaths || [];
   const currentDir = filePathsQuery.data.currentdir;
   const baseDir = filePathsQuery.data.basedir;
+  const trashDir = filePathsQuery.data.trashdir;
   const topDirs = filePathsQuery.data.topdirs;
   const isHome = filePathsQuery.data.ishome;
+  const isTrash = filePathsQuery.data.istrash;
   const important = filePathsQuery.data.important;
 
   return (
@@ -42,10 +42,11 @@ const Home: NextPage = () => {
       <SideContents
         topDirs={topDirs}
         currentDir={currentDir || '/'}
+        trashDir={trashDir}
         moveDir={moveDir}
         uploads={uploads}
-        requestMutation={requestMutation}
         name={userQuery.data?.name}
+        isTrash={isTrash}
         important={important}
       />
       <MainContents
@@ -55,6 +56,7 @@ const Home: NextPage = () => {
         isHome={isHome}
         uploads={uploads}
         moveDir={moveDir}
+        isTrash={isTrash}
         important={important}
       />
     </Stack>

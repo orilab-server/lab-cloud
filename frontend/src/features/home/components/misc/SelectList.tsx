@@ -1,19 +1,20 @@
+import { endFilenameSlicer } from '@/utils/slice';
 import { Avatar, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import { AiFillFile, AiFillFolder } from 'react-icons/ai';
-import { FileOrDirItem } from '../../types/storage';
+import { StorageFileOrDirItem } from '../../types/storage';
 
 type SelectListProps = {
-  selects: FileOrDirItem[];
+  selects: StorageFileOrDirItem[];
 };
 
 export const SelectList = ({ selects }: SelectListProps) => (
   <List sx={{ maxHeight: '45vh', overflow: 'scroll' }}>
     {selects.map((select) => (
-      <ListItem key={select.name}>
+      <ListItem key={select.path}>
         <ListItemAvatar>
           <Avatar>{select.type === 'dir' ? <AiFillFolder /> : <AiFillFile />}</Avatar>
         </ListItemAvatar>
-        <ListItemText primary={select.name} />
+        <ListItemText primary={endFilenameSlicer(select.path)} />
       </ListItem>
     ))}
   </List>

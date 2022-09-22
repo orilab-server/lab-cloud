@@ -2,8 +2,6 @@ import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import React from 'react';
 import { VscFiles } from 'react-icons/vsc';
-import { UseMutationResult } from 'react-query';
-import { SendRequestMutationConfig } from '../../api/sendRequest';
 import { Uploads } from '../../api/upload';
 import { NewMenu } from '../misc/newmenu/NewMenu';
 
@@ -11,18 +9,11 @@ type EmptyDirDisplayProps = {
   currentDir: string;
   important?: boolean;
   uploads: Uploads;
-  requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
 };
 
-const EmptyDirDisplay = ({
-  currentDir,
-  important,
-  uploads,
-  requestMutation,
-}: EmptyDirDisplayProps) => {
+const EmptyDirDisplay = ({ currentDir, important, uploads }: EmptyDirDisplayProps) => {
   return (
     <NewMenu
-      requestMutation={requestMutation}
       path={currentDir}
       context={true}
       important={important}

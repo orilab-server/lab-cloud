@@ -7,25 +7,26 @@ import React from 'react';
 import { AiFillFolder } from 'react-icons/ai';
 import { UseMutationResult } from 'react-query';
 import { DownloadMutationConfig, getPreviewFile } from '../../api/download';
-import { SendRequestMutationConfig } from '../../api/sendRequest';
+import { useMvTrashRequest } from '../../api/request/mvTrash';
+import { useRmRequest } from '../../api/request/rm';
 import { FileOrDir, FileOrDirItem, StorageFileOrDirItem } from '../../types/storage';
 import { ContextMenu } from '../misc/contextmenu/ContextMenu';
 
 type FilePathListProps = {
   filePaths: StorageFileOrDirItem[];
+  isTrash?: boolean;
   important?: boolean;
   selectedValue: string;
   selected: Set<string>;
-  selectedArray: FileOrDirItem[];
+  selectedArray: StorageFileOrDirItem[];
   downloadMutation: UseMutationResult<string[], unknown, DownloadMutationConfig, unknown>;
-  requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
   onStart?: ((e: SelectionEvent) => void) | undefined;
   onMove?: ((e: SelectionEvent) => void) | undefined;
   moveDir: (path: string) => Promise<void>;
   unSelect: () => void;
 };
 
-const sortFilePaths = (filePaths: { path: string; type: FileOrDir }[], value: string) => {
+const sortFilePaths = (filePaths: StorageFileOrDirItem[], value: string) => {
   if (value === '昇順-なし') {
     return filePaths;
   }
@@ -53,17 +54,19 @@ const sortFilePaths = (filePaths: { path: string; type: FileOrDir }[], value: st
 
 const FilePathList = ({
   filePaths,
+  isTrash,
   important,
   selectedValue,
   selected,
   selectedArray,
   downloadMutation,
-  requestMutation,
   onStart,
   onMove,
   moveDir,
   unSelect,
 }: FilePathListProps) => {
+  const mvTrashMutation = useMvTrashRequest();
+  const rmRequestMutation = useRmRequest();
   const openMyContextMenu: React.MouseEventHandler<HTMLDivElement> = (
     event: React.MouseEvent<HTMLElement>,
   ) => {
@@ -73,39 +76,46 @@ const FilePathList = ({
   return (
     <SelectionArea onStart={onStart} onMove={onMove} selectables=".selectable">
       {sortFilePaths(filePaths, selectedValue).map((item, index) => {
+        const { id } = item;
         const name = endFilenameSlicer(item.path);
         const type = item.type as FileOrDir;
         const path = withoutLastPathSlicer(item.path);
         const isSelect = selected.has(name);
         const onContextSelects =
           selected.size === 0
-            ? [{ name, type }]
+            ? [{ id, path: item.path, type }]
             : isSelect
             ? selectedArray
-            : [...selectedArray, { name, type }];
+            : [...selectedArray, { id, path: item.path, type }];
         // リンク共有に使用するためエンコード
-        const onContextSelectNames = onContextSelects.map((item) => encodeURI(item.name));
+        const onContextSelectNames = onContextSelects.map((item) =>
+          encodeURI(endFilenameSlicer(item.path)),
+        );
         const onContextSelectTypes = onContextSelects.map((item) => item.type);
         const link = `${
           process.env.NEXT_PUBLIC_CLIENT_URL
         }/?path=${path}&share=true&targets=${onContextSelectNames.join(
           '/',
         )}&types=${onContextSelectTypes.join('/')}`;
-        const downloadItems = (targets: { name: string; type: FileOrDir }[]) => {
+        const downloadItems = (targets: FileOrDirItem[]) => {
           downloadMutation.mutate({
             path,
             targets,
           });
           unSelect();
         };
-        const requests = onContextSelects.map((select) => {
-          if (select.type === 'dir') {
-            return { requestType: 'rmdir', dirName: select.name };
-          }
-          return { requestType: 'rmfile', fileName: select.name };
-        });
-        const requestItems = () => {
-          requestMutation.mutate({ path, requests });
+        const mvTrashRequest = () => {
+          const mvTrashItems = onContextSelects.map((select) => {
+            return { path: item.path, itemType: select.type };
+          });
+          mvTrashMutation.mutate(mvTrashItems);
+          unSelect();
+        };
+        const rmRequest = () => {
+          const rmRequestItems = onContextSelects.map((select) => {
+            return { type: select.type, id: select.id, path: item.path };
+          });
+          rmRequestMutation.mutate(rmRequestItems);
           unSelect();
         };
         // show dir
@@ -116,9 +126,11 @@ const FilePathList = ({
               selects={onContextSelects}
               path={path}
               link={link}
+              isTrash={isTrash}
               important={important}
-              requestItems={requestItems}
               downloadItems={downloadItems}
+              mvTrashRequest={mvTrashRequest}
+              rmRequest={rmRequest}
             >
               <ListItem
                 onContextMenu={openMyContextMenu}
@@ -150,8 +162,10 @@ const FilePathList = ({
             selects={onContextSelects}
             path={path}
             link={link}
+            isTrash={isTrash}
             important={important}
-            requestItems={requestItems}
+            mvTrashRequest={mvTrashRequest}
+            rmRequest={rmRequest}
             downloadItems={downloadItems}
           >
             <FilePreviewModal

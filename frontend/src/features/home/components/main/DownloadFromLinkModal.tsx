@@ -1,5 +1,6 @@
 import { LoadingSpinner } from '@/components/LoadingSpinner';
 import { notifyState } from '@/stores';
+import { endFilenameSlicer } from '@/utils/slice';
 import { Button } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { useRouter } from 'next/router';
@@ -8,13 +9,13 @@ import { UseMutationResult } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 import { DownloadMutationConfig } from '../../api/download';
 import { DownloadProgress } from '../../types/download';
-import { FileOrDirItem } from '../../types/storage';
+import { StorageFileOrDirItem } from '../../types/storage';
 import { SelectList } from '../misc/SelectList';
 import ProgressBars from './ProgressBars';
 
 type DownloadFromLinkModalProps = {
   currentDir: string;
-  downloadSelectedArray: FileOrDirItem[];
+  downloadSelectedArray: StorageFileOrDirItem[];
   downloadProgresses: DownloadProgress[];
   downloadMutation: UseMutationResult<string[], unknown, DownloadMutationConfig, unknown>;
   downloadCancelMutation: UseMutationResult<void, unknown, string, unknown>;
@@ -73,7 +74,13 @@ const DownloadFromLinkModal = ({
               onClick={async () => {
                 setNotify({ severity: 'info', text: 'ダウンロード後, 移動します' });
                 await downloadMutation
-                  .mutateAsync({ path: currentDir, targets: downloadSelectedArray })
+                  .mutateAsync({
+                    path: currentDir,
+                    targets: downloadSelectedArray.map((item) => ({
+                      name: endFilenameSlicer(item.path),
+                      type: item.type,
+                    })),
+                  })
                   .finally(async () => {
                     setDownloadFromLink(false);
                     await router.push(`/?path=${router.query.path}`);
