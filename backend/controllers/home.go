@@ -44,7 +44,8 @@ func (g HomeController) Controller(ctx *gin.Context) {
 		} else {
 			for _, r := range res {
 				if exist, index := tools.Contains(filepaths, tools.StorageItem{Id: "",Path: r.CurrentLocation, Type: r.Type}); exist {
-					filepaths[index] = tools.StorageItem{Id: r.Id, Path: filepaths[index].Path, Type: filepaths[index].Type}
+					relativePastLocation := strings.Replace(r.PastLocation, g.ShareDir, "Share", 1)
+					filepaths[index] = tools.StorageItem{Id: r.Id, Path: filepaths[index].Path, Type: filepaths[index].Type, PastLocation: relativePastLocation}
 				}
 			}
 		}
