@@ -1,4 +1,5 @@
-import { StorageFileOrDirItem } from '@/features/home/types/storage';
+import { FileOrDirItem, StorageFileOrDirItem } from '@/features/home/types/storage';
+import { endFilenameSlicer } from '@/utils/slice';
 import { Button, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import React from 'react';
@@ -8,7 +9,7 @@ import { SelectList } from '../../SelectList';
 
 type MvTrashButtonProps = {
   selects: StorageFileOrDirItem[];
-  mvTrashRequest: () => void;
+  mvTrashRequest: (targets: FileOrDirItem[]) => void;
   setAnchorEl: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
 };
 
@@ -29,18 +30,18 @@ const modalStyle = {
 };
 
 const DeleteButton = ({ selects, mvTrashRequest, setAnchorEl }: MvTrashButtonProps) => {
-  const [DeleteModal, openDeleteModal, closeDeleteModal] = useModal('delete');
+  const [MvTrashModal, openMvTrashModal, closeMvTrashModal] = useModal('mv-trash');
 
   return (
     <>
-      <MenuItem onClick={openDeleteModal}>
+      <MenuItem onClick={openMvTrashModal}>
         <ListItemIcon>
           <MdDelete fontSize={20} />
         </ListItemIcon>
         <ListItemText>ゴミ箱に移動</ListItemText>
       </MenuItem>
-      <Box id="delete" sx={{ width: '100%' }}>
-        <DeleteModal>
+      <Box id="mv-trash" sx={{ width: '100%' }}>
+        <MvTrashModal>
           <Box sx={modalStyle}>
             <Stack sx={{ py: 2, px: 10 }} spacing={2} alignItems="center">
               <div>ゴミ箱に移動しますか？</div>
@@ -50,17 +51,22 @@ const DeleteButton = ({ selects, mvTrashRequest, setAnchorEl }: MvTrashButtonPro
                   size="medium"
                   variant="contained"
                   onClick={() => {
-                    mvTrashRequest();
+                    mvTrashRequest(
+                      selects.map((select) => ({
+                        name: endFilenameSlicer(select.path),
+                        type: select.type,
+                      })),
+                    );
                     setAnchorEl(null);
                   }}
                 >
                   削除
                 </Button>
-                <Button onClick={closeDeleteModal}>閉じる</Button>
+                <Button onClick={closeMvTrashModal}>閉じる</Button>
               </Stack>
             </Stack>
           </Box>
-        </DeleteModal>
+        </MvTrashModal>
       </Box>
     </>
   );

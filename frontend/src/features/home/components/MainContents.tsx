@@ -53,12 +53,15 @@ export const MainContents = ({
   // ダウンロードリンク関連
   const [downloadFromLink, setDownloadFromLink] = useState<boolean>(false);
   const [downloadSelectedArray, setDownloadSelectedArray] = useState<StorageFileOrDirItem[]>([]);
-  const selectedArray = Array.from(selected).map((item) => ({
-    id: filepaths.find((filepath) => filepath.path.match(`${currentdir}/${item}`))?.id || '',
-    path: currentdir + '/' + item,
-    type: filepaths.find((filepath) => filepath.path.match(`${currentdir}/${item}`))
-      ?.type as FileOrDir,
-  }));
+  const selectedArray = Array.from(selected).map((item) => {
+    const filepath = filepaths.find((filepath) => filepath.path.match(`${currentdir}/${item}`));
+    return {
+      id: filepath?.id || '',
+      path: currentdir + '/' + item,
+      type: filepath?.type as FileOrDir,
+      pastLocation: filepath?.pastLocation || '',
+    };
+  });
   // ディレクトリパス関連
   const prevPath = currentdir.slice(0, currentdir.lastIndexOf('/'));
   const relativePath = relativePathSlicer(currentdir, baseDir);
@@ -77,6 +80,7 @@ export const MainContents = ({
         id: '',
         path: currentdir + '/' + item,
         type: targetTypes[index] as FileOrDir,
+        pastLocation: '',
       }));
       setDownloadSelectedArray(targets);
       setDownloadFromLink(true);

@@ -4,6 +4,7 @@ export type StorageFileOrDirItem = {
   id: string;
   path: string;
   type: FileOrDir;
+  pastLocation: string;
 };
 
 export type FileOrDirItem = {

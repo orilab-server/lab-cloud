@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import DeleteButton from './buttons/DeleteButton';
 import DownloadButton from './buttons/DownloadButton';
 import LinkCopyButton from './buttons/LinkCopyButton';
+import MvPastLocation from './buttons/MvPastLocation';
 import MvTrashButton from './buttons/MvTrashButton';
 
 type ContextMenurops = {
@@ -14,8 +15,8 @@ type ContextMenurops = {
   isTrash?: boolean;
   important?: boolean;
   downloadItems: (targets: FileOrDirItem[]) => void;
-  mvTrashRequest: () => void;
-  rmRequest: () => void;
+  mvTrashRequest: (targets: FileOrDirItem[]) => void;
+  rmRequest: (targets: StorageFileOrDirItem[]) => void;
 };
 
 export const ContextMenu = ({
@@ -45,7 +46,10 @@ export const ContextMenu = ({
   );
 
   const TrashDirMenu = () => (
-    <DeleteButton selects={selects} rmRequest={rmRequest} setAnchorEl={setAnchorEl} />
+    <>
+      <MvPastLocation selects={selects} setAnchorEl={setAnchorEl} />
+      <DeleteButton selects={selects} rmRequest={rmRequest} setAnchorEl={setAnchorEl} />
+    </>
   );
 
   const GeneralMenu = () => (

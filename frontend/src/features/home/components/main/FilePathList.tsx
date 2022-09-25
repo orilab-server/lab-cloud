@@ -76,17 +76,17 @@ const FilePathList = ({
   return (
     <SelectionArea onStart={onStart} onMove={onMove} selectables=".selectable">
       {sortFilePaths(filePaths, selectedValue).map((item, index) => {
-        const { id } = item;
+        const { id, pastLocation } = item;
         const name = endFilenameSlicer(item.path);
         const type = item.type as FileOrDir;
         const path = withoutLastPathSlicer(item.path);
         const isSelect = selected.has(name);
         const onContextSelects =
           selected.size === 0
-            ? [{ id, path: item.path, type }]
+            ? [{ id, path: item.path, type, pastLocation }]
             : isSelect
             ? selectedArray
-            : [...selectedArray, { id, path: item.path, type }];
+            : [...selectedArray, { id, path: item.path, type, pastLocation }];
         // リンク共有に使用するためエンコード
         const onContextSelectNames = onContextSelects.map((item) =>
           encodeURI(endFilenameSlicer(item.path)),
@@ -104,16 +104,16 @@ const FilePathList = ({
           });
           unSelect();
         };
-        const mvTrashRequest = () => {
-          const mvTrashItems = onContextSelects.map((select) => {
-            return { path: item.path, itemType: select.type };
+        const mvTrashRequest = (targets: FileOrDirItem[]) => {
+          const mvTrashItems = targets.map((target) => {
+            return { path: path + '/' + target.name, itemType: target.type };
           });
           mvTrashMutation.mutate(mvTrashItems);
           unSelect();
         };
-        const rmRequest = () => {
-          const rmRequestItems = onContextSelects.map((select) => {
-            return { type: select.type, id: select.id, path: item.path };
+        const rmRequest = (targets: StorageFileOrDirItem[]) => {
+          const rmRequestItems = targets.map((target) => {
+            return { type: target.type, id: target.id, path: target.path };
           });
           rmRequestMutation.mutate(rmRequestItems);
           unSelect();
