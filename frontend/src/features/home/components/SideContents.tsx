@@ -1,5 +1,4 @@
 import { Box } from '@mui/system';
-import { Uploads } from '../api/upload';
 import AddButton from './side/buttons/AddButton';
 import InquiryButton from './side/buttons/InquiryButton';
 import LogoutButton from './side/buttons/LogoutButton';
@@ -12,7 +11,6 @@ type SideContentsProps = {
   topDirs: string[];
   currentDir: string;
   trashDir: string;
-  uploads: Uploads;
   isTrash?: boolean;
   important?: boolean;
   moveDir: (path: string) => Promise<void>;
@@ -38,7 +36,6 @@ export const SideContents = ({
   topDirs,
   currentDir,
   trashDir,
-  uploads,
   isTrash,
   moveDir,
 }: SideContentsProps) => {
@@ -48,7 +45,7 @@ export const SideContents = ({
         {/* プロフィール */}
         <Profile name={name} />
         {/* 各種ボタン */}
-        <AddButton currentDir={currentDir} uploads={uploads} isTrash={isTrash} />
+        <AddButton currentDir={currentDir} isTrash={isTrash} />
         <LogoutButton />
         {/* ゴミ箱 */}
         <TrashBox moveTrashDir={() => moveDir(trashDir)} />

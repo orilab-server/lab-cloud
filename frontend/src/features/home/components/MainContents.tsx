@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react';
 import { MdArrowBack } from 'react-icons/md';
 import { useSelector } from '../../../hooks/useSelector';
 import { useDownload } from '../api/download';
-import { Uploads } from '../api/upload';
 import { FileOrDir, Storage, StorageFileOrDirItem } from '../types/storage';
 import DirpathNavigation from './main/DirpathNavigation';
 import DownloadFromLinkModal from './main/DownloadFromLinkModal';
@@ -22,7 +21,6 @@ type MainContentsProps = {
   baseDir: string;
   isHome: boolean;
   isTrash?: boolean;
-  uploads: Uploads;
   important?: boolean;
   moveDir: (path: string) => Promise<void>;
 };
@@ -37,7 +35,6 @@ export const MainContents = ({
   trashDir,
   baseDir,
   isHome,
-  uploads,
   important,
   isTrash,
   moveDir,
@@ -93,7 +90,7 @@ export const MainContents = ({
         isTopTrashDir={endFilenameSlicer(trashDir) === endFilenameSlicer(currentdir)}
       />
     ) : (
-      <EmptyDirDisplay currentDir={currentdir} important={important} uploads={uploads} />
+      <EmptyDirDisplay currentDir={currentdir} important={important} />
     );
 
   // ダウンロードリンクを開いた際の画面
@@ -111,11 +108,10 @@ export const MainContents = ({
   }
 
   return (
-    <Box onKeyDown={onResetKeyDownEscape} sx={{ flex: 6, height: '100%', pt: 3 }}>
+    <Box id="main-root" onKeyDown={onResetKeyDownEscape} sx={{ flex: 6, height: '100%', pt: 3 }}>
       <ProgressBars
         downloadProgresses={downloadProgresses}
         downloadCancelMutation={downloadCancelMutation}
-        uploads={uploads}
       />
       {/* トップ階層より下は戻るボタンを用意 */}
       {!isHome ? (

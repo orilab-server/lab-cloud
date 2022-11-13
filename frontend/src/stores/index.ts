@@ -1,6 +1,6 @@
 import { DownloadProgress } from '@/features/home/types/download';
 import { MyFile, MyFolder, UploadProgress } from '@/features/home/types/upload';
-import { atom } from 'recoil';
+import { atom, selector } from 'recoil';
 
 type NotifyType = {
   severity: 'info' | 'error';
@@ -30,4 +30,22 @@ export const foldersState = atom<MyFolder[]>({
 export const uploadProgressesState = atom<UploadProgress[]>({
   key: 'uploadProgressesState',
   default: [],
+});
+
+// selector
+
+export const filesExists = selector<boolean>({
+  key: 'filesExists',
+  get: ({ get }) => {
+    const files = get(filesState);
+    return files.length > 0;
+  },
+});
+
+export const foldersExists = selector<boolean>({
+  key: 'folderExists',
+  get: ({ get }) => {
+    const folders = get(foldersState);
+    return folders.length > 0;
+  },
 });

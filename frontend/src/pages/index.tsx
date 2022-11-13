@@ -2,23 +2,21 @@ import { ScreenLoading } from '@/components/ScreenLoading';
 import { useUser } from '@/features/auth/api/getUser';
 import { SignUpComplete } from '@/features/auth/components/SignUpForm';
 import { useFilePaths } from '@/features/home/api/getFilePaths';
-import { useUpload } from '@/features/home/api/upload';
 import { MainContents } from '@/features/home/components/MainContents';
 import { SideContents } from '@/features/home/components/SideContents';
 import { Stack } from '@mui/material';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
+import { useCallback } from 'react';
 
 const Home: NextPage = () => {
   const filePathsQuery = useFilePaths();
   const userQuery = useUser();
   const router = useRouter();
-  // アップロード用
-  const uploads = useUpload();
 
-  const moveDir = async (path: string) => {
+  const moveDir = useCallback(async (path: string) => {
     await router.push(`${router.basePath}/?path=${path}`);
-  };
+  }, []);
 
   if (userQuery.data?.is_temporary) {
     return <SignUpComplete />;
@@ -38,13 +36,12 @@ const Home: NextPage = () => {
   const important = filePathsQuery.data.important;
 
   return (
-    <Stack sx={{ minWidth: '1400px' }} direction="row" justifyContent="start">
+    <Stack id="home-root" sx={{ minWidth: '1400px' }} direction="row" justifyContent="start">
       <SideContents
         topDirs={topDirs}
         currentDir={currentDir || '/'}
         trashDir={trashDir}
         moveDir={moveDir}
-        uploads={uploads}
         name={userQuery.data?.name}
         isTrash={isTrash}
         important={important}
@@ -55,7 +52,6 @@ const Home: NextPage = () => {
         trashDir={trashDir}
         baseDir={baseDir}
         isHome={isHome}
-        uploads={uploads}
         moveDir={moveDir}
         isTrash={isTrash}
         important={important}

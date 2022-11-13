@@ -1,16 +1,14 @@
 import { Fab } from '@mui/material';
 import React from 'react';
 import { MdAdd } from 'react-icons/md';
-import { Uploads } from '../../../api/upload';
 import { NewMenu } from '../../misc/newmenu/NewMenu';
 
 type AddButtonProps = {
   currentDir: string;
-  uploads: Uploads;
   isTrash?: boolean;
 };
 
-const AddButton = ({ currentDir, uploads, isTrash }: AddButtonProps) => {
+const AddButton = ({ currentDir, isTrash }: AddButtonProps) => {
   if (isTrash) {
     return (
       <Fab
@@ -32,7 +30,7 @@ const AddButton = ({ currentDir, uploads, isTrash }: AddButtonProps) => {
   }
 
   return (
-    <NewMenu path={currentDir} uploads={uploads}>
+    <NewMenu path={currentDir} anchorStyle={{ zIndex: 999 }}>
       <Fab
         sx={{
           width: '100%',
