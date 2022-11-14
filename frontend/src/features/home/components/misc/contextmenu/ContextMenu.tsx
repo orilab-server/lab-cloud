@@ -1,43 +1,33 @@
-import { FileOrDirItem } from '@/features/home/types/storage';
+import { FileOrDirItem, StorageFileOrDirItem } from '@/features/home/types/storage';
 import Menu from '@mui/material/Menu';
 import React, { useState } from 'react';
 import DeleteButton from './buttons/DeleteButton';
 import DownloadButton from './buttons/DownloadButton';
 import LinkCopyButton from './buttons/LinkCopyButton';
+import MvPastLocation from './buttons/MvPastLocation';
+import MvTrashButton from './buttons/MvTrashButton';
 
 type ContextMenurops = {
-  selects: FileOrDirItem[];
+  selects: StorageFileOrDirItem[];
   path: string;
   children: React.ReactNode;
   link: string;
+  isTrash?: boolean;
   important?: boolean;
   downloadItems: (targets: FileOrDirItem[]) => void;
-  requestItems: () => void;
-};
-
-const modalStyle = {
-  position: 'absolute' as 'absolute',
-  top: '50%',
-  left: '50%',
-  width: '50vw',
-  transform: 'translate(-50%, -50%)',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  bgcolor: 'background.paper',
-  boxShadow: 24,
-  p: 5,
-  px: 10,
+  mvTrashRequest: (targets: FileOrDirItem[]) => void;
+  rmRequest: (targets: StorageFileOrDirItem[]) => void;
 };
 
 export const ContextMenu = ({
   selects,
   children,
   link,
+  isTrash,
   important,
   downloadItems,
-  requestItems,
+  mvTrashRequest,
+  rmRequest,
 }: ContextMenurops) => {
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -47,6 +37,28 @@ export const ContextMenu = ({
   const handleClose = () => {
     setAnchorEl(null);
   };
+
+  const ImportantDirMenu = () => (
+    <>
+      <DownloadButton selects={selects} downloadItems={downloadItems} setAnchorEl={setAnchorEl} />
+      <LinkCopyButton link={link} setAnchorEl={setAnchorEl} />
+    </>
+  );
+
+  const TrashDirMenu = () => (
+    <>
+      <MvPastLocation selects={selects} setAnchorEl={setAnchorEl} />
+      <DeleteButton selects={selects} rmRequest={rmRequest} setAnchorEl={setAnchorEl} />
+    </>
+  );
+
+  const GeneralMenu = () => (
+    <>
+      <DownloadButton selects={selects} downloadItems={downloadItems} setAnchorEl={setAnchorEl} />
+      <MvTrashButton selects={selects} mvTrashRequest={mvTrashRequest} setAnchorEl={setAnchorEl} />
+      <LinkCopyButton link={link} setAnchorEl={setAnchorEl} />
+    </>
+  );
 
   return (
     <div>
@@ -60,14 +72,7 @@ export const ContextMenu = ({
           'aria-labelledby': 'basic-button',
         }}
       >
-        {/* ダウンロードボタン */}
-        <DownloadButton selects={selects} downloadItems={downloadItems} setAnchorEl={setAnchorEl} />
-        {/* 削除用ボタン (重要ディレクトリは削除できない) */}
-        {important ? null : (
-          <DeleteButton selects={selects} requestItems={requestItems} setAnchorEl={setAnchorEl} />
-        )}
-        {/* リンクコピーボタン */}
-        <LinkCopyButton link={link} setAnchorEl={setAnchorEl} />
+        {isTrash ? <TrashDirMenu /> : important ? <ImportantDirMenu /> : <GeneralMenu />}
       </Menu>
     </div>
   );

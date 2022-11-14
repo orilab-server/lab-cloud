@@ -3,7 +3,7 @@ import { Stack } from '@mui/system';
 import React from 'react';
 import { UseMutationResult, useQueryClient } from 'react-query';
 import { useRecoilState } from 'recoil';
-import { uploadFile, uploadFolder, Uploads } from '../../api/upload';
+import { uploadFile, uploadFolder, useUpload } from '../../api/upload';
 import { DownloadProgress } from '../../types/download';
 import { MyFile, MyFolder } from '../../types/upload';
 import { DownloadProgressSnackBar } from '../misc/progress/DownloadProgressBar';
@@ -12,16 +12,15 @@ import { UploadProgressSnackBar } from '../misc/progress/UploadProgressBar';
 type ProgressBarsProps = {
   downloadProgresses: DownloadProgress[];
   downloadCancelMutation: UseMutationResult<void, unknown, string, unknown>;
-  uploads?: Uploads;
   isFromLink?: boolean;
 };
 
 const ProgressBars = ({
   downloadProgresses,
   downloadCancelMutation,
-  uploads,
   isFromLink,
 }: ProgressBarsProps) => {
+  const { uploadCancelMutation } = useUpload();
   const [uploadProgresses, setUploadProgresses] = useRecoilState(uploadProgressesState);
   const queryClient = useQueryClient();
   const updateStorage = async () => await queryClient.invalidateQueries('storage');
@@ -48,27 +47,26 @@ const ProgressBars = ({
           />
         );
       })}
-      {uploads &&
-        uploadProgresses.map((progress) => {
-          if (progress.target.type === 'file') {
-            return (
-              <UploadProgressSnackBar
-                key={progress.name}
-                uploadProgress={progress}
-                upload={() => uploadMyFile(progress.target as MyFile)}
-                cancel={() => uploads.uploadCancelMutation.mutate(progress.name)}
-              />
-            );
-          }
+      {uploadProgresses.map((progress) => {
+        if (progress.target.type === 'file') {
           return (
             <UploadProgressSnackBar
               key={progress.name}
               uploadProgress={progress}
-              upload={() => uploadMyFolder(progress.target as MyFolder)}
-              cancel={() => uploads.uploadCancelMutation.mutate(progress.name)}
+              upload={() => uploadMyFile(progress.target as MyFile)}
+              cancel={() => uploadCancelMutation.mutate(progress.name)}
             />
           );
-        })}
+        }
+        return (
+          <UploadProgressSnackBar
+            key={progress.name}
+            uploadProgress={progress}
+            upload={() => uploadMyFolder(progress.target as MyFolder)}
+            cancel={() => uploadCancelMutation.mutate(progress.name)}
+          />
+        );
+      })}
     </Stack>
   );
 };

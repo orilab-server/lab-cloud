@@ -25,6 +25,7 @@ func main() {
 	sessionKey := os.Getenv("SESSION_KEY")
 	serverPort := os.Getenv("SERVER_PORT")
 	shareDirPath := os.Getenv("SHARE_DIR")
+	trashDirPath := os.Getenv("TRASH_DIR_PATH")
 	siteUrl := os.Getenv("SITE_URL")
 	secret := os.Getenv("SECRET")
 	from := os.Getenv("MAIL_FROM")
@@ -63,16 +64,30 @@ func main() {
 	authGroup.Use(middlewares.LoginCheckMiddleware(sessionKey))
 	{
 		importantDirs := strings.Split(importantDirStr, "/")
-		upload := controllers.UploadController{ShareDir: shareDirPath}
-		request := controllers.RequestController{ShareDir: shareDirPath, ImportantDirs: importantDirs}
-		home := controllers.HomeController{ShareDir: shareDirPath, ImportantDirs: importantDirs}
+		home := controllers.HomeController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
 		download := controllers.DownloadController{ShareDir: shareDirPath}
-		authGroup.GET("/", home.Controller)
+		upload := controllers.UploadController{ShareDir: shareDirPath}
+		request := controllers.RequestController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
+		
+		// userエンドポイント
 		authGroup.PATCH("/user", user.PatchUserController)
-		authGroup.GET("/download", download.Controller)
-		authGroup.POST("/upload", upload.Controller)
-		authGroup.POST("/request", request.Controller)
+		// logoutエンドポイント
 		authGroup.GET("/logout", auth.LogoutController)
+		// homeエンドポイント
+		authGroup.GET("/", home.Controller)
+		// downloadエンドポイント
+		authGroup.GET("/download", download.Controller)
+		// uploadエンドポイント
+		authGroup.POST("/upload", upload.Controller)
+		// reuestエンドポイント
+		requestGroup := authGroup.Group("/request")
+		{
+			requestGroup.GET("/mkdir", request.MkDirController)
+			requestGroup.GET("/mv", request.MvController)
+			requestGroup.GET("/mv-trash", request.MvTrashController)
+			requestGroup.GET("/rm-file", request.RmFileController)
+			requestGroup.GET("/rm-dir", request.RmDirController)
+		}
 	}
 	err = server.ListenAndServe()
 	if err != nil {

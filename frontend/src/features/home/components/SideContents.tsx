@@ -1,10 +1,8 @@
 import { Box } from '@mui/system';
-import { UseMutationResult } from 'react-query';
-import { SendRequestMutationConfig } from '../api/sendRequest';
-import { Uploads } from '../api/upload';
 import AddButton from './side/buttons/AddButton';
 import InquiryButton from './side/buttons/InquiryButton';
 import LogoutButton from './side/buttons/LogoutButton';
+import TrashBox from './side/buttons/TrashDirButton';
 import Profile from './side/Profile';
 import TopDirLiat from './side/TopDirLiat';
 
@@ -12,9 +10,9 @@ type SideContentsProps = {
   name?: string;
   topDirs: string[];
   currentDir: string;
-  uploads: Uploads;
+  trashDir: string;
+  isTrash?: boolean;
   important?: boolean;
-  requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
   moveDir: (path: string) => Promise<void>;
 };
 
@@ -37,8 +35,8 @@ export const SideContents = ({
   name,
   topDirs,
   currentDir,
-  requestMutation,
-  uploads,
+  trashDir,
+  isTrash,
   moveDir,
 }: SideContentsProps) => {
   return (
@@ -47,8 +45,10 @@ export const SideContents = ({
         {/* プロフィール */}
         <Profile name={name} />
         {/* 各種ボタン */}
-        <AddButton currentDir={currentDir} requestMutation={requestMutation} uploads={uploads} />
+        <AddButton currentDir={currentDir} isTrash={isTrash} />
         <LogoutButton />
+        {/* ゴミ箱 */}
+        <TrashBox moveTrashDir={() => moveDir(trashDir)} />
         <InquiryButton name={name} />
         {/* トップ階層のディレクトリ遷移リスト */}
         <TopDirLiat topDirs={topDirs} moveDir={moveDir} />

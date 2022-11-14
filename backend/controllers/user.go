@@ -40,6 +40,7 @@ func (u UserController) GetUserController(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"is_login":     true,
+		"id":           user.Id,
 		"name":         user.Name,
 		"is_temporary": user.IsTemporary,
 	})

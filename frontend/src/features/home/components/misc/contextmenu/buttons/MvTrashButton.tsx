@@ -4,12 +4,12 @@ import { Button, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import React from 'react';
 import { useModal } from 'react-hooks-use-modal';
-import { RiDownloadFill } from 'react-icons/ri';
+import { MdDelete } from 'react-icons/md';
 import { SelectList } from '../../SelectList';
 
-type DownloadButtonProps = {
+type MvTrashButtonProps = {
   selects: StorageFileOrDirItem[];
-  downloadItems: (targets: FileOrDirItem[]) => void;
+  mvTrashRequest: (targets: FileOrDirItem[]) => void;
   setAnchorEl: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
 };
 
@@ -29,30 +29,29 @@ const modalStyle = {
   px: 10,
 };
 
-const DownloadButton = ({ selects, downloadItems, setAnchorEl }: DownloadButtonProps) => {
-  const [DownloadModal, openDownloadModal, closeDownloadModal] = useModal('download');
+const DeleteButton = ({ selects, mvTrashRequest, setAnchorEl }: MvTrashButtonProps) => {
+  const [MvTrashModal, openMvTrashModal, closeMvTrashModal] = useModal('mv-trash');
 
   return (
     <>
-      <MenuItem onClick={openDownloadModal}>
+      <MenuItem onClick={openMvTrashModal}>
         <ListItemIcon>
-          <RiDownloadFill fontSize={20} />
+          <MdDelete fontSize={20} />
         </ListItemIcon>
-        <ListItemText>ダウンロード</ListItemText>
+        <ListItemText>ゴミ箱に移動</ListItemText>
       </MenuItem>
-      <Box id="download" sx={{ width: '100%' }}>
-        <DownloadModal>
+      <Box id="mv-trash" sx={{ width: '100%' }}>
+        <MvTrashModal>
           <Box sx={modalStyle}>
             <Stack sx={{ py: 2, px: 10 }} spacing={2} alignItems="center">
-              <div>以下をダウンロードしますか？</div>
+              <div>ゴミ箱に移動しますか？</div>
               <SelectList selects={selects} />
               <Stack direction="row" spacing={2}>
                 <Button
-                  sx={{ whiteSpace: 'nowrap' }}
                   size="medium"
                   variant="contained"
                   onClick={() => {
-                    downloadItems(
+                    mvTrashRequest(
                       selects.map((select) => ({
                         name: endFilenameSlicer(select.path),
                         type: select.type,
@@ -61,16 +60,16 @@ const DownloadButton = ({ selects, downloadItems, setAnchorEl }: DownloadButtonP
                     setAnchorEl(null);
                   }}
                 >
-                  ダウンロード
+                  削除
                 </Button>
-                <Button onClick={closeDownloadModal}>閉じる</Button>
+                <Button onClick={closeMvTrashModal}>閉じる</Button>
               </Stack>
             </Stack>
           </Box>
-        </DownloadModal>
+        </MvTrashModal>
       </Box>
     </>
   );
 };
 
-export default React.memo(DownloadButton);
+export default React.memo(DeleteButton);

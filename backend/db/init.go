@@ -18,6 +18,15 @@ type Users = struct {
 	UpdatedAt   string
 }
 
+type FilesTrash = struct {
+	Id     		   		string
+	UserId       		string
+	Type         		string
+	CurrentLocation string
+  PastLocation 		string
+	CreatedAt    		string
+}
+
 type SelectQueryParam struct {
 	From   string
 	Column []string
@@ -33,6 +42,11 @@ type InsertQueryParam struct {
 type UpdateQueryParam struct {
 	From  string
 	Set   map[string]any
+	Where map[string]any
+}
+
+type DeleteQueryParam struct {
+	From  string
 	Where map[string]any
 }
 

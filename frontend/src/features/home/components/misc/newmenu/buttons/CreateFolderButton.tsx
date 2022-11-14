@@ -1,14 +1,12 @@
-import { SendRequestMutationConfig } from '@/features/home/api/sendRequest';
+import { useMkdirhRequest } from '@/features/home/api/request/mkdir';
 import { Button, ListItemIcon, ListItemText, MenuItem, TextField } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import React, { useState } from 'react';
 import { useModal } from 'react-hooks-use-modal';
 import { MdCreateNewFolder } from 'react-icons/md';
-import { UseMutationResult } from 'react-query';
 
 type CreateFolderButtonProps = {
   path: string;
-  requestMutation: UseMutationResult<string[], unknown, SendRequestMutationConfig, unknown>;
 };
 
 const modalStyle = {
@@ -27,7 +25,8 @@ const modalStyle = {
   px: 10,
 };
 
-const CreateFolderButton = ({ path, requestMutation }: CreateFolderButtonProps) => {
+const CreateFolderButton = ({ path }: CreateFolderButtonProps) => {
+  const mkdirMutation = useMkdirhRequest();
   const [CreateModal, openCreateModal, closeCreateModal] = useModal('create');
   const [folderName, setFolderName] = useState<string>('');
   const onChangeFolderName = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,15 +55,8 @@ const CreateFolderButton = ({ path, requestMutation }: CreateFolderButtonProps) 
                 size="medium"
                 variant="contained"
                 onClick={() => {
-                  requestMutation.mutate({
-                    path,
-                    requests: [
-                      {
-                        requestType: 'mkdir',
-                        dirName: folderName,
-                      },
-                    ],
-                  });
+                  // ファイル作成のmutation
+                  mkdirMutation.mutate(path + '/' + folderName);
                   setFolderName('');
                   closeCreateModal();
                 }}
