@@ -107,7 +107,7 @@ const FilePathList = ({
                   <Box
                     sx={{ border: '2px dotted #fff', width: '100%', mx: 2, borderRadius: '5px' }}
                   >
-                    <Box sx={{ py: 3, px: 2, color: '#fff', width: '100%' }}>
+                    <Box sx={{ py: 4, px: 2, color: '#fff', width: '100%' }}>
                       {filesAndFolders.length <= 0 ? (
                         <>
                           <Typography>ドラッグ&ドロップでファイルを追加</Typography>
