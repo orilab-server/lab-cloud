@@ -118,11 +118,12 @@ const FilePathList = ({
                             alignItems: 'center',
                           }}
                         >
-                          {filesAndFolders.map((item) => {
+                          {filesAndFolders.map((item, index) => {
                             const isFolder = item.type === 'folder';
                             const name = isFolder ? item.name : item.file.name;
                             return (
                               <Box
+                                key={`${name}-${index}`}
                                 sx={{
                                   px: 1,
                                   display: 'flex',
