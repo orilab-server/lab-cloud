@@ -11,7 +11,8 @@ import {
 import { Box, Stack } from '@mui/system';
 import { useRef } from 'react';
 import { useModal } from 'react-hooks-use-modal';
-import { MdCreateNewFolder, MdDelete } from 'react-icons/md';
+import { FiFilePlus } from 'react-icons/fi';
+import { MdDelete } from 'react-icons/md';
 
 const modalStyle = {
   position: 'absolute' as 'absolute',
@@ -70,7 +71,7 @@ export const useUploadFileList = (): ReturnType => {
                   >
                     <ListItemAvatar>
                       <Avatar>
-                        <MdCreateNewFolder />
+                        <FiFilePlus />
                       </Avatar>
                     </ListItemAvatar>
                     <ListItemText primary={item.file.name} />
