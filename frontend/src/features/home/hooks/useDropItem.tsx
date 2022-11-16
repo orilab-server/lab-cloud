@@ -1,4 +1,4 @@
-import { filesState, foldersState } from '@/stores/index';
+import { filesState, foldersState, inDropAreaState } from '@/stores/index';
 import { startDirPathSlicer } from '@/utils/slice';
 import { Box } from '@mui/material';
 import { ReactElement, useCallback, useState } from 'react';
@@ -10,7 +10,7 @@ interface ExtendedFile extends File {
 }
 
 type DropAreaProps = {
-  children: ReactElement;
+  children?: ReactElement;
 };
 
 type ReturnType = [({ children }: DropAreaProps) => JSX.Element, boolean];
@@ -18,6 +18,7 @@ type ReturnType = [({ children }: DropAreaProps) => JSX.Element, boolean];
 export const useDropItem = (path: string): ReturnType => {
   const setFiles = useSetRecoilState(filesState);
   const setFolders = useSetRecoilState(foldersState);
+  const setInDropArea = useSetRecoilState(inDropAreaState);
   const [isDrop, setIsDrop] = useState<boolean>(false);
 
   const onDrop = useCallback(async (accepted: File[]) => {
@@ -47,19 +48,20 @@ export const useDropItem = (path: string): ReturnType => {
       };
     });
     if (targetFiles.length > 0) {
-      setFiles(targetFiles);
+      setFiles((old) => [...old, ...targetFiles]);
     }
     if (targetFolders.length > 0) {
-      setFolders(targetFolders);
+      setFolders((old) => [...old, ...targetFolders]);
     }
     setIsDrop(true);
+    setInDropArea(false);
   }, []);
 
   const DropArea = ({ children }: DropAreaProps) => {
     return (
       <Dropzone onDrop={onDrop} noClick={true}>
         {({ getRootProps, getInputProps }) => (
-          <Box {...getRootProps()}>
+          <Box sx={{ h: '100%', w: '100%' }} {...getRootProps()}>
             <input {...getInputProps()} />
             {children}
           </Box>

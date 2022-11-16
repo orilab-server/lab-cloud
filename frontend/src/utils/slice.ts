@@ -24,3 +24,11 @@ export const relativePathSlicer = (current: string, base: string) => {
   }
   return current.replace(base, '');
 };
+
+// 入力文字列を任意の長さでスライス, オプション引数の ellipsis で省略記法 ... を選択できる
+export const freeLengthStrSlicer = (str: string, length: number, ellipsis?: boolean) => {
+  if (Array.from(str).length <= length) {
+    return str;
+  }
+  return `${str.slice(0, length)}${ellipsis ? '...' : ''}`;
+};

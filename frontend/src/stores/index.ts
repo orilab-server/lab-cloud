@@ -32,6 +32,8 @@ export const uploadProgressesState = atom<UploadProgress[]>({
   default: [],
 });
 
+export const inDropAreaState = atom<boolean>({ key: 'inDropAreaState', default: false });
+
 // selector
 
 export const filesExists = selector<boolean>({

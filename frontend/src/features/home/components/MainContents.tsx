@@ -1,11 +1,15 @@
 import { useSelectBox } from '@/hooks/useSelectBox';
+import { filesExists, filesState, foldersExists, foldersState } from '@/stores';
 import { endFilenameSlicer, relativePathSlicer } from '@/utils/slice';
-import { Box, Button, List, Stack, Typography } from '@mui/material';
+import { Box, Button, List, Snackbar, Stack, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { MdArrowBack } from 'react-icons/md';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { useSelector } from '../../../hooks/useSelector';
 import { useDownload } from '../api/download';
+import { useUploadFileList } from '../hooks/useUploadFileList';
+import { useUploadFolderList } from '../hooks/useUploadFolderList';
 import { FileOrDir, Storage, StorageFileOrDirItem } from '../types/storage';
 import DirpathNavigation from './main/DirpathNavigation';
 import DownloadFromLinkModal from './main/DownloadFromLinkModal';
@@ -13,6 +17,7 @@ import EmptyDirDisplay from './main/EmptyDirDisplay';
 import EmptyTrashDisplay from './main/EmptyTrashDisplay';
 import FilePathList from './main/FilePathList';
 import ProgressBars from './main/ProgressBars';
+import { UploadableListSnackbar } from './misc/UploadableListSnackbar';
 
 type MainContentsProps = {
   filepaths: Storage['filepaths'];
@@ -63,6 +68,15 @@ export const MainContents = ({
   const prevPath = currentdir.slice(0, currentdir.lastIndexOf('/'));
   const relativePath = relativePathSlicer(currentdir, baseDir);
   const dirs = relativePath.split('/');
+  // ドロップ専用
+  const [UploadFileListModal, openUploadFileListModal] = useUploadFileList();
+  const [UploadFolderListModal, openUploadFolderListModal] = useUploadFolderList();
+  const [files, setFiles] = useRecoilState(filesState);
+  const [folders, setFolders] = useRecoilState(foldersState);
+  const filesEx = useRecoilValue(filesExists);
+  const foldersEx = useRecoilValue(foldersExists);
+  const handleDeleteFiles = () => setFiles([]);
+  const handleDeleteFolders = () => setFolders([]);
 
   // クエリ文字列からダウンロードリンクからアクセスしたのかを判断するuseEffect
   useEffect(() => {
@@ -108,7 +122,11 @@ export const MainContents = ({
   }
 
   return (
-    <Box id="main-root" onKeyDown={onResetKeyDownEscape} sx={{ flex: 6, height: '100%', pt: 3 }}>
+    <Box
+      id="main-root"
+      onKeyDown={onResetKeyDownEscape}
+      sx={{ flex: 6, height: '100%', pt: 3, position: 'relative' }}
+    >
       <ProgressBars
         downloadProgresses={downloadProgresses}
         downloadCancelMutation={downloadCancelMutation}
@@ -122,6 +140,37 @@ export const MainContents = ({
           </Stack>
         </Button>
       ) : null}
+      {/* アップロード候補をスナックバーで表示 */}
+      {(files.length > 0 || folders.length > 0) && (
+        <Snackbar
+          open={filesEx || foldersEx}
+          autoHideDuration={Infinity}
+          message={
+            <Box sx={{ py: 1 }}>
+              {filesEx && (
+                <UploadableListSnackbar
+                  itemText="ファイル"
+                  itemList={files}
+                  openModal={openUploadFileListModal}
+                  handleDelete={handleDeleteFiles}
+                />
+              )}
+              {foldersEx && (
+                <UploadableListSnackbar
+                  itemText="フォルダ"
+                  itemList={folders}
+                  openModal={openUploadFolderListModal}
+                  handleDelete={handleDeleteFolders}
+                />
+              )}
+              <Typography fontSize={5}>※再読み込みすると自動で消えます</Typography>
+            </Box>
+          }
+          anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+        />
+      )}
+      <UploadFileListModal path={currentdir} />
+      <UploadFolderListModal path={currentdir} />
       <List>
         <DirpathNavigation
           important={important}
@@ -132,9 +181,8 @@ export const MainContents = ({
         />
         <SortSelectForm size="small" />
         <PrioritySelectForm size="small" />
-        {/* 空の場所の場合(ドロップ&コンテキストメニュー使用可能) */}
-        {filepaths.length === 0 && <EmptyDisplay />}
         <FilePathList
+          currentDir={currentdir}
           filePaths={filepaths}
           isTrash={isTrash}
           important={important}
@@ -147,6 +195,8 @@ export const MainContents = ({
           moveDir={moveDir}
           unSelect={unSelect}
         />
+        {/* 空の場所の場合(ドロップ&コンテキストメニュー使用可能) */}
+        {filepaths.length === 0 && <EmptyDisplay />}
       </List>
     </Box>
   );
