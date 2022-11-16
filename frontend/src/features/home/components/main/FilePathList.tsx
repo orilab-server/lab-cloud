@@ -83,8 +83,6 @@ const FilePathList = ({
   const { files, folders, deleteFile, deleteFolder } = useUpload();
   const filesAndFolders = [...files, ...folders];
 
-  console.log(filePaths.length);
-
   return (
     <>
       {isTrash || important
