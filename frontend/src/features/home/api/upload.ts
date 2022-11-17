@@ -1,8 +1,8 @@
 import { filesState, foldersState, notifyState, uploadProgressesState } from '@/shared/stores';
+import { myAxiosPost } from '@/shared/utils/axios';
 import { getRandom } from '@/shared/utils/random';
 import { sleep } from '@/shared/utils/sleep';
 import { startDirPathSlicer } from '@/shared/utils/slice';
-import axios from 'axios';
 import React from 'react';
 import { useMutation, UseMutationResult } from 'react-query';
 import { SetterOrUpdater, useRecoilState, useSetRecoilState } from 'recoil';
@@ -77,16 +77,11 @@ export const uploadFile = async (
   formData.append('files', myFile.file);
   const fileName = myFile.file.name;
   try {
-    await axios.post(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/home/upload?path=${myFile.path}`,
-      formData,
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+    await myAxiosPost(`home/upload?path=${myFile.path}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
       },
-    );
+    });
     await updateState();
     setProgresses((old) =>
       getProgresses(old, fileName, {
@@ -163,16 +158,11 @@ export const uploadFolder = async (
   );
   formData.append('filePaths', folder.fileNames.join(' // '));
   try {
-    await axios.post(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/home/upload?path=${folder.path}`,
-      formData,
-      {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+    await myAxiosPost(`home/upload?path=${folder.path}`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
       },
-    );
+    });
     await updateState();
     setProgresses((old) =>
       getProgresses(old, folderName, {

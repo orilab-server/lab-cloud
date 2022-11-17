@@ -1,7 +1,7 @@
 import { downloadResponsesState } from '@/shared/stores';
+import { myAxiosGet } from '@/shared/utils/axios';
 import { getRandom } from '@/shared/utils/random';
 import { sleep } from '@/shared/utils/sleep';
-import axios from 'axios';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver';
 import { Dispatch, SetStateAction } from 'react';
@@ -11,15 +11,9 @@ import { DownloadProgress, Response } from '../types/download';
 import { FileOrDir, FileOrDirItem } from '../types/storage';
 
 export const downloadRequest = async (path: string, name: string, type: FileOrDir) =>
-  axios
-    .get(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/home/download?path=${path}&target=${name}&type=${type}`,
-      {
-        withCredentials: true,
-        responseType: 'blob',
-      },
-    )
-    .then((res) => res.data);
+  myAxiosGet<Blob>(`home/download?path=${path}&target=${name}&type=${type}`, {
+    responseType: 'blob',
+  }).then((res) => res.data);
 
 export const getPreviewFile = async (path: string, name: string) => {
   const requestPromise = downloadRequest(path, name, 'file');

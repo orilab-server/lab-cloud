@@ -1,12 +1,10 @@
 import { notifyState } from '@/shared/stores';
-import axios from 'axios';
+import { myAxiosGet } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
 export const sendRenameRequest = async (oldName: string, newName: string) => {
-  const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/home/request/rename?oldName=${oldName}&newName=${newName}`;
-  await axios.get(url, {
-    withCredentials: true,
+  await myAxiosGet(`home/request/rename?oldName=${oldName}&newName=${newName}`, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

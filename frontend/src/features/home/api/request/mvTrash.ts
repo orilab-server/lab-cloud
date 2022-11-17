@@ -1,5 +1,5 @@
 import { notifyState } from '@/shared/stores';
-import axios from 'axios';
+import { myAxiosGet } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 import { MvTrashRequest } from '../../types/request';
@@ -7,9 +7,7 @@ import { MvTrashRequest } from '../../types/request';
 export const sendMvTrashRequest = async (targets: MvTrashRequest[]) => {
   await Promise.all(
     targets.map(async (target) => {
-      const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/home/request/mv-trash?path=${target.path}&itemType=${target.itemType}`;
-      await axios.get(url, {
-        withCredentials: true,
+      await myAxiosGet(`home/request/mv-trash?path=${target.path}&itemType=${target.itemType}`, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

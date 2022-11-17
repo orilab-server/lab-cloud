@@ -1,5 +1,5 @@
 import { notifyState } from '@/shared/stores';
-import axios from 'axios';
+import { myAxiosGet } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
@@ -7,9 +7,7 @@ import { useSetRecoilState } from 'recoil';
 export const sendMvPastLocationRequest = async (ids: string[]) => {
   await Promise.all(
     ids.map(async (id) => {
-      const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/home/request/mv?byTrash=true&id=${id}`;
-      await axios.get(url, {
-        withCredentials: true,
+      await myAxiosGet(`home/request/mv?byTrash=true&id=${id}`, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

@@ -1,6 +1,6 @@
 import { notifyState } from '@/shared/stores';
+import { myAxiosPost } from '@/shared/utils/axios';
 import { sleep } from '@/shared/utils/sleep';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';
 import { useSetRecoilState } from 'recoil';
@@ -9,11 +9,9 @@ export const Login = async (email: string, password: string) => {
   const params = new URLSearchParams();
   params.append('email', email);
   params.append('password', password);
-  const loginPost = axios.create({
+  await myAxiosPost(`login`, params, {
     xsrfHeaderName: 'X-CSRF-Token',
-    withCredentials: true,
   });
-  await loginPost.post(`${process.env.NEXT_PUBLIC_SERVER_URL}/login`, params);
 };
 
 type LoginMutationConfig = {
