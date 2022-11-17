@@ -1,4 +1,4 @@
-import { notifyState } from '@/stores';
+import { notifyState } from '@/shared/stores';
 import axios from 'axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';

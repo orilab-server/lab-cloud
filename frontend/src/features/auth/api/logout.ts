@@ -1,5 +1,5 @@
-import { notifyState } from '@/stores';
-import { sleep } from '@/utils/sleep';
+import { notifyState } from '@/shared/stores';
+import { sleep } from '@/shared/utils/sleep';
 import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useMutation } from 'react-query';

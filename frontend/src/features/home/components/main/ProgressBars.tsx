@@ -1,4 +1,4 @@
-import { uploadProgressesState } from '@/stores';
+import { uploadProgressesState } from '@/shared/stores';
 import { Stack } from '@mui/system';
 import React from 'react';
 import { UseMutationResult, useQueryClient } from 'react-query';

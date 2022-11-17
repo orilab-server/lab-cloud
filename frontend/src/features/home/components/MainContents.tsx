@@ -1,12 +1,12 @@
-import { useSelectBox } from '@/hooks/useSelectBox';
-import { filesExists, filesState, foldersExists, foldersState } from '@/stores';
-import { endFilenameSlicer, relativePathSlicer } from '@/utils/slice';
+import { useSelectBox } from '@/shared/hooks/useSelectBox';
+import { useSelector } from '@/shared/hooks/useSelector';
+import { filesExists, filesState, foldersExists, foldersState } from '@/shared/stores';
+import { endFilenameSlicer, relativePathSlicer } from '@/shared/utils/slice';
 import { Box, Button, List, Snackbar, Stack, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import { MdArrowBack } from 'react-icons/md';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { useSelector } from '../../../hooks/useSelector';
 import { useDownload } from '../api/download';
 import { useUploadFileList } from '../hooks/useUploadFileList';
 import { useUploadFolderList } from '../hooks/useUploadFolderList';

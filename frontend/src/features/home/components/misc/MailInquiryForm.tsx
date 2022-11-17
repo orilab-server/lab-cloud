@@ -1,6 +1,6 @@
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { useMailSender } from '@/hooks/useMailSender';
-import { useSelectBox } from '@/hooks/useSelectBox';
+import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
+import { useMailSender } from '@/shared/hooks/useMailSender';
+import { useSelectBox } from '@/shared/hooks/useSelectBox';
 import {
   Button,
   Container,

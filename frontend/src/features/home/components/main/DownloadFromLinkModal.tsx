@@ -1,6 +1,6 @@
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { notifyState } from '@/stores';
-import { endFilenameSlicer } from '@/utils/slice';
+import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
+import { notifyState } from '@/shared/stores';
+import { endFilenameSlicer } from '@/shared/utils/slice';
 import { Button } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { useRouter } from 'next/router';

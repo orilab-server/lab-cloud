@@ -1,4 +1,4 @@
-import { notifyState } from '@/stores';
+import { notifyState } from '@/shared/stores';
 import { Button, Input, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import React, { useRef } from 'react';

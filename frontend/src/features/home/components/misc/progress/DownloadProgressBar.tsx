@@ -1,6 +1,6 @@
-import { CircularProgressWithLabel } from '@/components/CircularProgressWithLabel';
 import { saveFile } from '@/features/home/api/download';
 import { DownloadProgress } from '@/features/home/types/download';
+import { CircularProgressWithLabel } from '@/shared/components/CircularProgressWithLabel';
 import { IconButton, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
 import { useEffect, useState } from 'react';

@@ -1,5 +1,5 @@
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { useMailSender } from '@/hooks/useMailSender';
+import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
+import { useMailSender } from '@/shared/hooks/useMailSender';
 import {
   Avatar,
   Box,

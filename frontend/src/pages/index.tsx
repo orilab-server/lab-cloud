@@ -1,9 +1,9 @@
-import { ScreenLoading } from '@/components/ScreenLoading';
 import { useUser } from '@/features/auth/api/getUser';
 import { SignUpComplete } from '@/features/auth/components/SignUpForm';
 import { useFilePaths } from '@/features/home/api/getFilePaths';
 import { MainContents } from '@/features/home/components/MainContents';
 import { SideContents } from '@/features/home/components/SideContents';
+import { ScreenLoading } from '@/shared/components/ScreenLoading';
 import { Stack } from '@mui/material';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';

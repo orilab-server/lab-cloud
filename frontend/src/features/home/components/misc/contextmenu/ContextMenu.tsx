@@ -1,5 +1,5 @@
 import { FileOrDirItem, StorageFileOrDirItem } from '@/features/home/types/storage';
-import { endFilenameSlicer } from '@/utils/slice';
+import { endFilenameSlicer } from '@/shared/utils/slice';
 import Menu from '@mui/material/Menu';
 import React, { useState } from 'react';
 import DeleteButton from './buttons/DeleteButton';

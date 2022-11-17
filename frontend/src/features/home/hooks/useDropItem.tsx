@@ -1,5 +1,5 @@
-import { filesState, foldersState, inDropAreaState } from '@/stores/index';
-import { startDirPathSlicer } from '@/utils/slice';
+import { filesState, foldersState, inDropAreaState } from '@/shared/stores/index';
+import { startDirPathSlicer } from '@/shared/utils/slice';
 import { Box } from '@mui/material';
 import { ReactElement, useCallback, useState } from 'react';
 import Dropzone from 'react-dropzone';

@@ -1,7 +1,7 @@
-import { filesState, foldersState, notifyState, uploadProgressesState } from '@/stores';
-import { getRandom } from '@/utils/random';
-import { sleep } from '@/utils/sleep';
-import { startDirPathSlicer } from '@/utils/slice';
+import { filesState, foldersState, notifyState, uploadProgressesState } from '@/shared/stores';
+import { getRandom } from '@/shared/utils/random';
+import { sleep } from '@/shared/utils/sleep';
+import { startDirPathSlicer } from '@/shared/utils/slice';
 import axios from 'axios';
 import React from 'react';
 import { useMutation, UseMutationResult } from 'react-query';

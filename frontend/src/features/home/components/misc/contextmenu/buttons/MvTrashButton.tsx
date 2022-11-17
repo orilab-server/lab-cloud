@@ -1,5 +1,5 @@
 import { FileOrDirItem, StorageFileOrDirItem } from '@/features/home/types/storage';
-import { endFilenameSlicer } from '@/utils/slice';
+import { endFilenameSlicer } from '@/shared/utils/slice';
 import { Button, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import React from 'react';

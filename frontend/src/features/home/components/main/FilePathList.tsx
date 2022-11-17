@@ -1,6 +1,10 @@
-import { FileIcons } from '@/components/FileIcons';
-import { FilePreviewModal } from '@/components/FilePreview';
-import { endFilenameSlicer, freeLengthStrSlicer, withoutLastPathSlicer } from '@/utils/slice';
+import { FileIcons } from '@/shared/components/FileIcons';
+import { FilePreviewModal } from '@/shared/components/FilePreview';
+import {
+  endFilenameSlicer,
+  freeLengthStrSlicer,
+  withoutLastPathSlicer,
+} from '@/shared/utils/slice';
 import { IconButton, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import SelectionArea, { SelectionEvent } from '@viselect/react';

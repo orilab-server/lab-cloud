@@ -1,4 +1,4 @@
-import { notifyState } from '@/stores';
+import { notifyState } from '@/shared/stores';
 import MuiAlert, { AlertProps } from '@mui/material/Alert';
 import Snackbar from '@mui/material/Snackbar';
 import React, { useEffect, useState } from 'react';

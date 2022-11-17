@@ -1,4 +1,4 @@
-import { TextSkelton } from '@/components/TextSkelton';
+import { TextSkelton } from '@/shared/components/TextSkelton';
 import { Avatar, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { BsPersonCircle } from 'react-icons/bs';

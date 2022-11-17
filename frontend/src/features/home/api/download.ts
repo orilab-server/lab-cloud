@@ -1,6 +1,6 @@
-import { downloadResponsesState } from '@/stores';
-import { getRandom } from '@/utils/random';
-import { sleep } from '@/utils/sleep';
+import { downloadResponsesState } from '@/shared/stores';
+import { getRandom } from '@/shared/utils/random';
+import { sleep } from '@/shared/utils/sleep';
 import axios from 'axios';
 import { format } from 'date-fns';
 import { saveAs } from 'file-saver';

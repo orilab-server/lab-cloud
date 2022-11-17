@@ -1,4 +1,4 @@
-import { getCookie } from '@/utils/cookie';
+import { getCookie } from '@/shared/utils/cookie';
 import { useRouter } from 'next/router';
 import { ReactElement, useEffect, useState } from 'react';
 import { ScreenLoading } from './ScreenLoading';
