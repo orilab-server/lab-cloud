@@ -83,6 +83,7 @@ func main() {
 		requestGroup := authGroup.Group("/request")
 		{
 			requestGroup.GET("/mkdir", request.MkDirController)
+			requestGroup.GET("/rename", request.RenameController)
 			requestGroup.GET("/mv", request.MvController)
 			requestGroup.GET("/mv-trash", request.MvTrashController)
 			requestGroup.GET("/rm-file", request.RmFileController)
