@@ -23,7 +23,7 @@ type RequestController struct {
 }
 
 func (r RequestController) MkDirController(ctx *gin.Context) {
-	path := ctx.Query("path")  // get Qury Parameter
+	path := ctx.Query("path") // get Qury Parameter
 	// cannot access important dir or file
 	important, _ := tools.Contains(r.ImportantDirs, path[strings.LastIndex(path, "/")+1:])
 	if important {
@@ -37,8 +37,23 @@ func (r RequestController) MkDirController(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{})
 }
 
+func (r RequestController) RenameController(ctx *gin.Context) {
+	oldName := ctx.Query("oldName") // get Query Parameter
+	newName := ctx.Query("newName") // get Query Parameter
+	// cannot access important dir or file
+	important, _ := tools.Contains(r.ImportantDirs, oldName[strings.LastIndex(oldName, "/")+1:])
+	if important {
+		ctx.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+	if err := command_service.Mv(oldName, newName); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{})
+		return
+	}
+}
+
 func (r RequestController) MvController(ctx *gin.Context) {
-	strByTrash := ctx.Query("byTrash")		  // get Query Parameter
+	strByTrash := ctx.Query("byTrash") // get Query Parameter
 	byTrash, _ := strconv.ParseBool(strByTrash)
 	// ゴミ箱から元の場所に戻す時
 	if byTrash {
@@ -53,7 +68,7 @@ func (r RequestController) MvController(ctx *gin.Context) {
 		}
 	} else {
 		oldPath := ctx.Query("oldPath")         // get Query Parameter
-		newPath := ctx.Query("newPath")  			  // get Query Parameter
+		newPath := ctx.Query("newPath")         // get Query Parameter
 		oldPath, _ = url.QueryUnescape(oldPath) // decode URL
 		newPath, _ = url.QueryUnescape(newPath) // decode URL
 		// cannot access important dir or file
@@ -63,9 +78,9 @@ func (r RequestController) MvController(ctx *gin.Context) {
 			return
 		}
 		if err := command_service.Mv(oldPath, newPath); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{})
-		return
-	}
+			ctx.JSON(http.StatusInternalServerError, gin.H{})
+			return
+		}
 	}
 	ctx.JSON(http.StatusOK, gin.H{})
 }
