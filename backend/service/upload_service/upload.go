@@ -55,7 +55,7 @@ func getMkPaths(list []string) []string {
 	var paths []string
 	for _, item := range list {
 		path := item[0:strings.LastIndex(item, "/")]
-		if exist, _ := tools.Contains(paths, path); exist {
+		if exist, _ := tools.Contains(paths, path); !exist {
 			paths = append(paths, path)
 		}
 	}
