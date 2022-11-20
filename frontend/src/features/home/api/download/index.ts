@@ -44,7 +44,7 @@ export const useDownload = () => {
                 setDownloadProgress((olds) =>
                   olds.map((old) => {
                     if (target.name === old.name) {
-                      if (progress === 100) {
+                      if (progress >= 99) {
                         return {
                           ...old,
                           text: `${freeLengthStrSlicer(
@@ -87,7 +87,7 @@ export const useDownload = () => {
         } else {
           setNotify({ severity: 'error', text: 'ダウンロードに失敗しました' });
         }
-        await sleep(10);
+        await sleep(6);
         setDownloadProgress([]);
       },
     },

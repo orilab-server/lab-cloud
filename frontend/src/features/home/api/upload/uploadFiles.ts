@@ -25,7 +25,7 @@ export const useUploadFiles = () => {
           status: 'pending',
         })) as UploadFileProgress[]),
       ];
-      setFileUploadProgresses(uploadProgresses);
+      setFileUploadProgresses(uploadProgresses.filter((item) => item.status !== 'finish'));
       setFiles([]);
       await sleep(5);
       setFileUploadProgresses((olds) => olds.map((old) => ({ ...old, status: 'start' })));
@@ -101,7 +101,7 @@ export const useUploadFiles = () => {
             setNotify({ severity: 'info', text: 'アップロードしました' });
           }
         }
-        await sleep(10);
+        await sleep(6);
         setFileUploadProgresses([]);
       },
     },

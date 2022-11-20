@@ -37,7 +37,7 @@ export const useUploadFolders = () => {
           };
         }),
       ] as UploadFolderProgress[];
-      setFolderUploadProgresses(uploadProgresses);
+      setFolderUploadProgresses(uploadProgresses.filter((item) => item.status !== 'finish'));
       setFolders([]);
       await sleep(6);
       setFolderUploadProgresses((olds) => olds.map((old) => ({ ...old, status: 'start' })));
@@ -125,7 +125,7 @@ export const useUploadFolders = () => {
             setNotify({ severity: 'info', text: 'アップロードしました' });
           }
         }
-        await sleep(10);
+        await sleep(6);
         setFolderUploadProgresses([]);
       },
     },
