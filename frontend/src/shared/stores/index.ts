@@ -1,5 +1,10 @@
 import { DownloadProgress } from '@/features/home/types/download';
-import { MyFile, MyFolder, UploadProgress } from '@/features/home/types/upload';
+import {
+  MyFile,
+  MyFolder,
+  UploadFileProgress,
+  UploadFolderProgress,
+} from '@/features/home/types/upload';
 import { atom, selector } from 'recoil';
 
 type NotifyType = {
@@ -27,11 +32,6 @@ export const foldersState = atom<MyFolder[]>({
   default: [],
 });
 
-export const uploadProgressesState = atom<UploadProgress[]>({
-  key: 'uploadProgressesState',
-  default: [],
-});
-
 export const inDropAreaState = atom<boolean>({ key: 'inDropAreaState', default: false });
 
 // selector
@@ -50,4 +50,14 @@ export const foldersExists = selector<boolean>({
     const folders = get(foldersState);
     return folders.length > 0;
   },
+});
+
+export const fileUploadProgressesState = atom<UploadFileProgress[]>({
+  key: 'fileUploadProgressesState',
+  default: [],
+});
+
+export const folderUploadProgressesState = atom<UploadFolderProgress[]>({
+  key: 'folderUploadProgressesState',
+  default: [],
 });

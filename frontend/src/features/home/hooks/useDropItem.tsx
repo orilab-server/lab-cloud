@@ -1,9 +1,10 @@
-import { filesState, foldersState, inDropAreaState } from '@/shared/stores/index';
+import { inDropAreaState } from '@/shared/stores/index';
 import { startDirPathSlicer } from '@/shared/utils/slice';
 import { Box } from '@mui/material';
 import { ReactElement, useCallback, useState } from 'react';
 import Dropzone from 'react-dropzone';
 import { useSetRecoilState } from 'recoil';
+import { useUpload } from '../api/upload';
 
 interface ExtendedFile extends File {
   path: string;
@@ -16,8 +17,7 @@ type DropAreaProps = {
 type ReturnType = [({ children }: DropAreaProps) => JSX.Element, boolean];
 
 export const useDropItem = (path: string): ReturnType => {
-  const setFiles = useSetRecoilState(filesState);
-  const setFolders = useSetRecoilState(foldersState);
+  const { setFiles, setFolders } = useUpload();
   const setInDropArea = useSetRecoilState(inDropAreaState);
   const [isDrop, setIsDrop] = useState<boolean>(false);
 

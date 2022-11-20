@@ -1,13 +1,14 @@
 import { useSelectBox } from '@/shared/hooks/useSelectBox';
 import { useSelector } from '@/shared/hooks/useSelector';
-import { filesExists, filesState, foldersExists, foldersState } from '@/shared/stores';
+import { filesExists, foldersExists } from '@/shared/stores';
 import { endFilenameSlicer, relativePathSlicer } from '@/shared/utils/slice';
 import { Box, Button, List, Snackbar, Stack, Typography } from '@mui/material';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { MdArrowBack } from 'react-icons/md';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { useDownload } from '../api/download';
+import { useUpload } from '../api/upload';
 import { useUploadFileList } from '../hooks/useUploadFileList';
 import { useUploadFolderList } from '../hooks/useUploadFolderList';
 import { FileOrDir, Storage, StorageFileOrDirItem } from '../types/storage';
@@ -16,7 +17,6 @@ import DownloadFromLinkModal from './main/DownloadFromLinkModal';
 import EmptyDirDisplay from './main/EmptyDirDisplay';
 import EmptyTrashDisplay from './main/EmptyTrashDisplay';
 import FilePathList from './main/FilePathList';
-import ProgressBars from './main/ProgressBars';
 import { UploadableListSnackbar } from './misc/UploadableListSnackbar';
 
 type MainContentsProps = {
@@ -71,8 +71,7 @@ export const MainContents = ({
   // ドロップ専用
   const [UploadFileListModal, openUploadFileListModal] = useUploadFileList();
   const [UploadFolderListModal, openUploadFolderListModal] = useUploadFolderList();
-  const [files, setFiles] = useRecoilState(filesState);
-  const [folders, setFolders] = useRecoilState(foldersState);
+  const { files, folders, setFiles, setFolders } = useUpload();
   const filesEx = useRecoilValue(filesExists);
   const foldersEx = useRecoilValue(foldersExists);
   const handleDeleteFiles = () => setFiles([]);
@@ -107,6 +106,17 @@ export const MainContents = ({
       <EmptyDirDisplay currentDir={currentdir} important={important} />
     );
 
+  const BackButton = React.memo(() => {
+    return (
+      <Button color="inherit" onClick={() => moveDir(prevPath)}>
+        <Stack direction="row" alignItems="center" spacing={2}>
+          <MdArrowBack />
+          <Typography>戻る</Typography>
+        </Stack>
+      </Button>
+    );
+  });
+
   // ダウンロードリンクを開いた際の画面
   if (downloadFromLink) {
     return (
@@ -127,19 +137,8 @@ export const MainContents = ({
       onKeyDown={onResetKeyDownEscape}
       sx={{ flex: 6, height: '100%', pt: 3, position: 'relative' }}
     >
-      <ProgressBars
-        downloadProgresses={downloadProgresses}
-        downloadCancelMutation={downloadCancelMutation}
-      />
       {/* トップ階層より下は戻るボタンを用意 */}
-      {!isHome ? (
-        <Button color="inherit" onClick={() => moveDir(prevPath)}>
-          <Stack direction="row" alignItems="center" spacing={2}>
-            <MdArrowBack />
-            <Typography>戻る</Typography>
-          </Stack>
-        </Button>
-      ) : null}
+      {!isHome ? <BackButton /> : null}
       {/* アップロード候補をスナックバーで表示 */}
       {(files.length > 0 || folders.length > 0) && (
         <Snackbar
