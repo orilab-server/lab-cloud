@@ -12,6 +12,7 @@ import { Box, Stack } from '@mui/system';
 import { useRef } from 'react';
 import { useModal } from 'react-hooks-use-modal';
 import { MdCreateNewFolder, MdDelete } from 'react-icons/md';
+import { useUploadFolders } from '../api/upload/uploadFolders';
 
 const modalStyle = {
   position: 'absolute' as 'absolute',
@@ -38,7 +39,8 @@ type UploadFileList = {
 type ReturnType = [({ path, modalButton }: UploadFileList) => JSX.Element, () => void, boolean];
 
 export const useUploadFolderList = (): ReturnType => {
-  const { folders, foldersUploadMutation, addFolders, deleteFolder, resetFolders } = useUpload();
+  const { folders, addFolders, deleteFolder } = useUpload();
+  const foldersUploadMutation = useUploadFolders();
   const [UploadFolderListModal, openUploadFolderListModal, closeUploadFolderListModal, isOpen] =
     useModal('home-root');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -89,10 +91,9 @@ export const useUploadFolderList = (): ReturnType => {
                   disabled={folders.length === 0}
                   size="medium"
                   variant="contained"
-                  onClick={() => {
-                    foldersUploadMutation.mutate(path);
+                  onClick={async () => {
                     closeUploadFolderListModal();
-                    resetFolders();
+                    foldersUploadMutation.mutate();
                   }}
                 >
                   アップロード

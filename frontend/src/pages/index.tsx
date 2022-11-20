@@ -1,6 +1,7 @@
 import { useUser } from '@/features/auth/api/getUser';
 import { SignUpComplete } from '@/features/auth/components/SignUpForm';
 import { useFilePaths } from '@/features/home/api/getFilePaths';
+import ProgressBars from '@/features/home/components/main/ProgressBars';
 import { MainContents } from '@/features/home/components/MainContents';
 import { SideContents } from '@/features/home/components/SideContents';
 import { ScreenLoading } from '@/shared/components/ScreenLoading';
@@ -14,9 +15,12 @@ const Home: NextPage = () => {
   const userQuery = useUser();
   const router = useRouter();
 
-  const moveDir = useCallback(async (path: string) => {
-    await router.push(`${router.basePath}/?path=${path}`);
-  }, []);
+  const moveDir = useCallback(
+    async (path: string) => {
+      await router.push(`${router.basePath}/?path=${path}`);
+    },
+    [router],
+  );
 
   if (userQuery.data?.is_temporary) {
     return <SignUpComplete />;
@@ -56,6 +60,7 @@ const Home: NextPage = () => {
         isTrash={isTrash}
         important={important}
       />
+      <ProgressBars />
     </Stack>
   );
 };

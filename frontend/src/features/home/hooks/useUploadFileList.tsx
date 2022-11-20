@@ -9,10 +9,11 @@ import {
   ListItemText,
 } from '@mui/material';
 import { Box, Stack } from '@mui/system';
-import { useRef } from 'react';
+import React, { useRef } from 'react';
 import { useModal } from 'react-hooks-use-modal';
 import { FiFilePlus } from 'react-icons/fi';
 import { MdDelete } from 'react-icons/md';
+import { useUploadFiles } from '../api/upload/uploadFiles';
 
 const modalStyle = {
   position: 'absolute' as 'absolute',
@@ -36,10 +37,15 @@ type UploadFileList = {
   modalButton?: JSX.Element;
 };
 
-type ReturnType = [({ path, modalButton }: UploadFileList) => JSX.Element, () => void, boolean];
+type ReturnType = [
+  React.MemoExoticComponent<({ path, modalButton }: UploadFileList) => JSX.Element>,
+  () => void,
+  boolean,
+];
 
 export const useUploadFileList = (): ReturnType => {
-  const { files, addFiles, deleteFile, resetFiles, filesUploadMutation } = useUpload();
+  const { files, addFiles, deleteFile } = useUpload();
+  const filesUploadMutation = useUploadFiles();
   const [UploadFilesModal, openUploadFilesModal, closeUploadFileModal, isOpen] =
     useModal('home-root');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -47,7 +53,7 @@ export const useUploadFileList = (): ReturnType => {
     inputRef.current?.click();
   };
 
-  const UploadFileList = ({ path, modalButton }: UploadFileList) => {
+  const UploadFileList = React.memo(({ path, modalButton }: UploadFileList) => {
     return (
       <>
         {modalButton && <div onClick={openUploadFilesModal}>{modalButton}</div>}
@@ -95,9 +101,8 @@ export const useUploadFileList = (): ReturnType => {
                   disabled={files.length === 0}
                   variant="contained"
                   onClick={() => {
-                    filesUploadMutation.mutate(path);
                     closeUploadFileModal();
-                    resetFiles();
+                    filesUploadMutation.mutate();
                   }}
                 >
                   アップロード
@@ -115,7 +120,7 @@ export const useUploadFileList = (): ReturnType => {
         </Box>
       </>
     );
-  };
+  });
 
   return [UploadFileList, openUploadFilesModal, isOpen];
 };
