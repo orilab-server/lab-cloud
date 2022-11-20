@@ -1,6 +1,6 @@
 import { myAxiosGet } from '@/shared/utils/axios';
 import { getMimeType } from '@/shared/utils/mime';
-import { useQuery } from 'react-query';
+import { useEffect, useState } from 'react';
 
 export const getPreviewFile = async (path: string, name: string) => {
   const blobData = await myAxiosGet<Blob>(`home/download?path=${path}&target=${name}&type=file`, {
@@ -13,8 +13,28 @@ export const getPreviewFile = async (path: string, name: string) => {
 };
 
 export const usePreviewFile = (path: string, name: string) => {
-  return useQuery({
-    queryKey: ['storage', { path, name }],
-    queryFn: async () => getPreviewFile(path, name),
-  });
+  const [url, setUrl] = useState<string>('');
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+
+  useEffect(() => {
+    if (open) {
+      getPreviewFile(path, name).then(async (res) => {
+        setUrl(res);
+      });
+    }
+    if (!open && url) {
+      URL.revokeObjectURL(url);
+      setUrl('');
+    }
+    return () => {
+      if (url) {
+        URL.revokeObjectURL(url);
+        setUrl('');
+      }
+    };
+  }, [open]);
+
+  return { url, open, handleOpen, handleClose };
 };

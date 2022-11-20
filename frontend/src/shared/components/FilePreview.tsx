@@ -1,7 +1,7 @@
 import { usePreviewFile } from '@/features/home/api/download/previewFile';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 
 const modalStyle = {
@@ -38,27 +38,7 @@ type FilePreviewModalProps = {
 };
 
 export const FilePreviewModal = ({ path, fileName, button }: FilePreviewModalProps) => {
-  const [open, setOpen] = useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const previewFileQuery = usePreviewFile(path, fileName);
-  const url = previewFileQuery.data;
-
-  useEffect(() => {
-    if (!open && url) {
-      URL.revokeObjectURL(url);
-    }
-    return () => {
-      if (url) {
-        URL.revokeObjectURL(url);
-      }
-    };
-  }, [open]);
-
-  if (previewFileQuery.isLoading || !url) {
-    return null;
-  }
+  const { url, open, handleOpen, handleClose } = usePreviewFile(path, fileName);
 
   return (
     <div>
