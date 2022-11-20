@@ -16,6 +16,10 @@ type UploadRequest struct {
 	FilePaths   string                  `json:"filePaths"`
 }
 
+func (p UploadRequest) UploadCancel(dir string, ctx *gin.Context) error {
+	return p.uploadCancel(dir)
+}
+
 func (p UploadRequest) Upload(dir string, ctx *gin.Context) error {
 	switch p.RequestType {
 	case "files":
@@ -25,8 +29,7 @@ func (p UploadRequest) Upload(dir string, ctx *gin.Context) error {
 		}
 	case "dirs":
 		{
-			p.uploaddir(dir, ctx)
-			return nil
+			return p.uploaddir(dir, ctx)
 		}
 	}
 	return fmt.Errorf("error: %s", "cannot upload")
@@ -38,24 +41,35 @@ func (p UploadRequest) uploadfiles(dir string, ctx *gin.Context) {
 	}
 }
 
-func (p UploadRequest) uploaddir(dir string, ctx *gin.Context) {
+func (p UploadRequest) uploaddir(dir string, ctx *gin.Context) error {
 	fileNameList := strings.Split(p.FilePaths, " // ")
 	mkPaths := getMkPaths(fileNameList)
 	for _, path := range mkPaths {
 		if err := os.MkdirAll(dir+"/"+path, 0777); err != nil {
-			fmt.Println(err)
+			return err
 		}
 	}
 	for index, file := range p.Files {
 		ctx.SaveUploadedFile(file, dir+"/"+fileNameList[index])
 	}
+	return nil
+}
+
+func (p UploadRequest) uploadCancel(dir string) error {
+	if _, err := os.Stat(dir); err != nil {
+		return err
+	}
+	if err := os.RemoveAll(dir+"/"); err != nil {
+		return err
+	}
+	return nil
 }
 
 func getMkPaths(list []string) []string {
 	var paths []string
 	for _, item := range list {
 		path := item[0:strings.LastIndex(item, "/")]
-		if exist, _ := tools.Contains(paths, path); exist {
+		if exist, _ := tools.Contains(paths, path); !exist {
 			paths = append(paths, path)
 		}
 	}

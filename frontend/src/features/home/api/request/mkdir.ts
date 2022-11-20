@@ -1,12 +1,10 @@
-import { notifyState } from '@/stores';
-import axios from 'axios';
+import { notifyState } from '@/shared/stores';
+import { myAxiosGet } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
 export const sendMkdirRequest = async (path: string) => {
-  const url = `${process.env.NEXT_PUBLIC_SERVER_URL}/home/request/mkdir?path=${path}`;
-  await axios.get(url, {
-    withCredentials: true,
+  await myAxiosGet(`home/request/mkdir?path=${path}`, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

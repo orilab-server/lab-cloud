@@ -1,5 +1,5 @@
-import { NotifyBar } from '@/components/NotifyBar';
-import { RouteGuard } from '@/components/RouteGuard';
+import { NotifyBar } from '@/shared/components/NotifyBar';
+import { RouteGuard } from '@/shared/components/RouteGuard';
 import type { AppProps } from 'next/app';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { RecoilRoot } from 'recoil';

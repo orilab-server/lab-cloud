@@ -1,5 +1,6 @@
-import { FileOrDirItem, StorageFileOrDirItem } from '@/features/home/types/storage';
-import { endFilenameSlicer } from '@/utils/slice';
+import { useDownload } from '@/features/home/api/download';
+import { StorageFileOrDirItem } from '@/features/home/types/storage';
+import { endFilenameSlicer } from '@/shared/utils/slice';
 import { Button, ListItemIcon, ListItemText, MenuItem } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import React from 'react';
@@ -8,8 +9,8 @@ import { RiDownloadFill } from 'react-icons/ri';
 import { SelectList } from '../../SelectList';
 
 type DownloadButtonProps = {
+  path: string;
   selects: StorageFileOrDirItem[];
-  downloadItems: (targets: FileOrDirItem[]) => void;
   setAnchorEl: React.Dispatch<React.SetStateAction<HTMLElement | null>>;
 };
 
@@ -29,8 +30,10 @@ const modalStyle = {
   px: 10,
 };
 
-const DownloadButton = ({ selects, downloadItems, setAnchorEl }: DownloadButtonProps) => {
+const DownloadButton = ({ path, selects, setAnchorEl }: DownloadButtonProps) => {
   const [DownloadModal, openDownloadModal, closeDownloadModal] = useModal('download');
+
+  const downloadMutation = useDownload();
 
   return (
     <>
@@ -52,12 +55,14 @@ const DownloadButton = ({ selects, downloadItems, setAnchorEl }: DownloadButtonP
                   size="medium"
                   variant="contained"
                   onClick={() => {
-                    downloadItems(
-                      selects.map((select) => ({
+                    closeDownloadModal();
+                    downloadMutation.mutate({
+                      path,
+                      targets: selects.map((select) => ({
                         name: endFilenameSlicer(select.path),
                         type: select.type,
                       })),
-                    );
+                    });
                     setAnchorEl(null);
                   }}
                 >

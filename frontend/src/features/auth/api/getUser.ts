@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios';
+import { myAxiosGet } from '@/shared/utils/axios';
 import { useQuery } from 'react-query';
 
 type User = {
@@ -8,15 +8,11 @@ type User = {
 };
 
 export const getUser = async () => {
-  const res = await axios.get<any, AxiosResponse<User>>(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/user`,
-    {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+  const res = await myAxiosGet<User>(`user`, {
+    headers: {
+      'Content-Type': 'application/json',
     },
-  );
+  });
   return res.data;
 };
 

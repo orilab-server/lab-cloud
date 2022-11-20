@@ -1,18 +1,14 @@
-import axios from 'axios';
+import { myAxiosGet } from '@/shared/utils/axios';
 import { useRouter } from 'next/router';
 import { useQuery } from 'react-query';
 import { Storage } from '../types/storage';
 
 export const getFilePaths = async (paramPath: string | null) => {
-  const res = await axios.get(
-    `${process.env.NEXT_PUBLIC_SERVER_URL}/home/?path=${paramPath || '/'}`,
-    {
-      withCredentials: true,
-      headers: {
-        'Content-Type': 'application/json',
-      },
+  const res = await myAxiosGet(`home/?path=${paramPath || '/'}`, {
+    headers: {
+      'Content-Type': 'application/json',
     },
-  );
+  });
   const data = res.data as Storage;
   const { filepaths, topdirs, basedir, trashdir, ishome, istrash, important } = data;
   if (String(filepaths) === 'null') {

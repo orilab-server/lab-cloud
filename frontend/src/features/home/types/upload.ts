@@ -14,11 +14,25 @@ export type MyFile = {
   isDrop?: boolean;
 };
 
-export type UploadProgress = {
+export type UploadStatus = 'pending' | 'start' | 'suspended' | 'finish';
+
+export type UploadFileProgress = {
   name: string;
   path: string;
-  target: MyFile | MyFolder;
+  target: MyFile;
   progress: number;
   text: string;
-  status: 'pending' | 'start' | 'suspended' | 'finish';
+  status: UploadStatus;
+};
+
+export type UploadFolderProgress = {
+  name: string;
+  path: string;
+  target: MyFolder;
+  progress: number;
+  totalSize: number;
+  totalLoadedSize: number;
+  loadedSize: number;
+  text: string;
+  status: UploadStatus;
 };

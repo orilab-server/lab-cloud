@@ -1,24 +1,16 @@
-import { LoadingSpinner } from '@/components/LoadingSpinner';
-import { notifyState } from '@/stores';
-import { endFilenameSlicer } from '@/utils/slice';
-import { Button } from '@mui/material';
+import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
+import { endFilenameSlicer } from '@/shared/utils/slice';
+import { Button, Typography } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { useRouter } from 'next/router';
 import React, { SetStateAction } from 'react';
-import { UseMutationResult } from 'react-query';
-import { useSetRecoilState } from 'recoil';
-import { DownloadMutationConfig } from '../../api/download';
-import { DownloadProgress } from '../../types/download';
+import { useDownload } from '../../api/download';
 import { StorageFileOrDirItem } from '../../types/storage';
 import { SelectList } from '../misc/SelectList';
-import ProgressBars from './ProgressBars';
 
 type DownloadFromLinkModalProps = {
   currentDir: string;
   downloadSelectedArray: StorageFileOrDirItem[];
-  downloadProgresses: DownloadProgress[];
-  downloadMutation: UseMutationResult<string[], unknown, DownloadMutationConfig, unknown>;
-  downloadCancelMutation: UseMutationResult<void, unknown, string, unknown>;
   setDownloadFromLink: (value: SetStateAction<boolean>) => void;
 };
 
@@ -39,13 +31,10 @@ const modalStyle = {
 const DownloadFromLinkModal = ({
   currentDir,
   downloadSelectedArray,
-  downloadProgresses,
-  downloadMutation,
-  downloadCancelMutation,
   setDownloadFromLink,
 }: DownloadFromLinkModalProps) => {
   const router = useRouter();
-  const setNotify = useSetRecoilState(notifyState);
+  const downloadMutation = useDownload();
 
   return (
     <Box
@@ -57,14 +46,16 @@ const DownloadFromLinkModal = ({
         zIndex: 100,
       }}
     >
-      <ProgressBars
-        downloadProgresses={downloadProgresses}
-        downloadCancelMutation={downloadCancelMutation}
-        isFromLink={true}
-      />
       <Box sx={modalStyle}>
         <Stack sx={{ py: 2, px: 10 }} spacing={2} alignItems="center">
-          <div>以下をダウンロードしますか？</div>
+          <Stack>
+            <Typography sx={{ fontSize: 18, fontWeight: 'bold' }}>
+              以下をダウンロードしますか？
+            </Typography>
+            {downloadMutation.isLoading && (
+              <Typography sx={{ fontSize: 14 }}>※ダウンロード後, 移動します</Typography>
+            )}
+          </Stack>
           <SelectList selects={downloadSelectedArray} />
           <Stack direction="row" spacing={2}>
             <Button
@@ -72,7 +63,6 @@ const DownloadFromLinkModal = ({
               size="medium"
               variant="contained"
               onClick={async () => {
-                setNotify({ severity: 'info', text: 'ダウンロード後, 移動します' });
                 await downloadMutation
                   .mutateAsync({
                     path: currentDir,

@@ -1,4 +1,4 @@
-import { endFilenameSlicer } from '@/utils/slice';
+import { endFilenameSlicer } from '@/shared/utils/slice';
 import { Avatar, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
 import { AiFillFile, AiFillFolder } from 'react-icons/ai';
 import { StorageFileOrDirItem } from '../../types/storage';

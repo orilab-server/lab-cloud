@@ -1,5 +1,5 @@
 import { FileOrDirItem, StorageFileOrDirItem } from '@/features/home/types/storage';
-import { endFilenameSlicer } from '@/utils/slice';
+import { endFilenameSlicer } from '@/shared/utils/slice';
 import Menu from '@mui/material/Menu';
 import React, { useState } from 'react';
 import DeleteButton from './buttons/DeleteButton';
@@ -16,7 +16,6 @@ type ContextMenurops = {
   link: string;
   isTrash?: boolean;
   important?: boolean;
-  downloadItems: (targets: FileOrDirItem[]) => void;
   mvTrashRequest: (targets: FileOrDirItem[]) => void;
   rmRequest: (targets: StorageFileOrDirItem[]) => void;
 };
@@ -28,7 +27,6 @@ export const ContextMenu = ({
   link,
   isTrash,
   important,
-  downloadItems,
   mvTrashRequest,
   rmRequest,
 }: ContextMenurops) => {
@@ -43,7 +41,7 @@ export const ContextMenu = ({
 
   const ImportantDirMenu = () => (
     <>
-      <DownloadButton selects={selects} downloadItems={downloadItems} setAnchorEl={setAnchorEl} />
+      <DownloadButton path={path} selects={selects} setAnchorEl={setAnchorEl} />
       <LinkCopyButton link={link} setAnchorEl={setAnchorEl} />
     </>
   );
@@ -57,7 +55,7 @@ export const ContextMenu = ({
 
   const GeneralMenu = () => (
     <>
-      <DownloadButton selects={selects} downloadItems={downloadItems} setAnchorEl={setAnchorEl} />
+      <DownloadButton path={path} selects={selects} setAnchorEl={setAnchorEl} />
       {selects.length === 1 && (
         <RenameButton
           type={selects[0].type}

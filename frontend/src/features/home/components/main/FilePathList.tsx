@@ -1,14 +1,16 @@
-import { FileIcons } from '@/components/FileIcons';
-import { FilePreviewModal } from '@/components/FilePreview';
-import { endFilenameSlicer, freeLengthStrSlicer, withoutLastPathSlicer } from '@/utils/slice';
+import { FileIcons } from '@/shared/components/FileIcons';
+import { FilePreviewModal } from '@/shared/components/FilePreview';
+import {
+  endFilenameSlicer,
+  freeLengthStrSlicer,
+  withoutLastPathSlicer,
+} from '@/shared/utils/slice';
 import { IconButton, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import SelectionArea, { SelectionEvent } from '@viselect/react';
 import React from 'react';
 import { AiFillFile, AiFillFolder } from 'react-icons/ai';
 import { TiDelete } from 'react-icons/ti';
-import { UseMutationResult } from 'react-query';
-import { DownloadMutationConfig, getPreviewFile } from '../../api/download';
 import { useMvTrashRequest } from '../../api/request/mvTrash';
 import { useRmRequest } from '../../api/request/rm';
 import { useUpload } from '../../api/upload';
@@ -25,7 +27,6 @@ type FilePathListProps = {
   selectedValue: string;
   selected: Set<string>;
   selectedArray: StorageFileOrDirItem[];
-  downloadMutation: UseMutationResult<string[], unknown, DownloadMutationConfig, unknown>;
   onStart?: ((e: SelectionEvent) => void) | undefined;
   onMove?: ((e: SelectionEvent) => void) | undefined;
   moveDir: (path: string) => Promise<void>;
@@ -66,7 +67,6 @@ const FilePathList = ({
   selectedValue,
   selected,
   selectedArray,
-  downloadMutation,
   onStart,
   onMove,
   moveDir,
@@ -190,13 +190,6 @@ const FilePathList = ({
           }/?path=${path}&share=true&targets=${onContextSelectNames.join(
             '/',
           )}&types=${onContextSelectTypes.join('/')}`;
-          const downloadItems = (targets: FileOrDirItem[]) => {
-            downloadMutation.mutate({
-              path,
-              targets,
-            });
-            unSelect();
-          };
           const mvTrashRequest = (targets: FileOrDirItem[]) => {
             const mvTrashItems = targets.map((target) => {
               return { path: path + '/' + target.name, itemType: target.type };
@@ -221,7 +214,6 @@ const FilePathList = ({
                 link={link}
                 isTrash={isTrash}
                 important={important}
-                downloadItems={downloadItems}
                 mvTrashRequest={mvTrashRequest}
                 rmRequest={rmRequest}
               >
@@ -259,10 +251,9 @@ const FilePathList = ({
               important={important}
               mvTrashRequest={mvTrashRequest}
               rmRequest={rmRequest}
-              downloadItems={downloadItems}
             >
               <FilePreviewModal
-                onFetchFile={() => getPreviewFile(path, name)}
+                path={path}
                 fileName={name}
                 button={
                   <ListItem

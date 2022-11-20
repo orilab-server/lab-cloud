@@ -1,70 +1,78 @@
-import { CircularProgressWithLabel } from '@/components/CircularProgressWithLabel';
-import { IconButton, Stack } from '@mui/material';
-import Box from '@mui/material/Box';
-import { useEffect, useState } from 'react';
-import { MdCancel } from 'react-icons/md';
-import { UploadProgress } from '../../../types/upload';
+import { CircularProgressWithLabel } from '@/shared/components/CircularProgressWithLabel';
+import {
+  fileUploadProgressesState,
+  folderUploadProgressesState,
+  notifyState,
+} from '@/shared/stores';
+import { Accordion, AccordionDetails, AccordionSummary, Stack, Typography } from '@mui/material';
+import { useCallback } from 'react';
+import { MdCancel, MdExpandLess } from 'react-icons/md';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
-type UploadProgressSnackBar = {
-  uploadProgress: UploadProgress;
-  upload: () => void;
-  cancel: () => void;
-};
+export const UploadProgressSnackBar = () => {
+  const [fileUploadProgresses, setFileUploadProgresses] = useRecoilState(fileUploadProgressesState);
+  const [folderUploadProgresses, setFolderUploadProgresses] = useRecoilState(
+    folderUploadProgressesState,
+  );
+  const setNotify = useSetRecoilState(notifyState);
 
-export const UploadProgressSnackBar = ({
-  uploadProgress,
-  upload,
-  cancel,
-}: UploadProgressSnackBar) => {
-  const [isShow, setIsShow] = useState<boolean>(true);
-  const { name, text, status, progress } = uploadProgress;
+  const fileAndFolderProgresses = [...fileUploadProgresses, ...folderUploadProgresses];
 
-  useEffect(() => {
-    if (status === 'start' && localStorage.getItem(name + '_uploadCancel') !== 'true') {
-      upload();
-    }
-  }, [status]);
+  const cancelFileUpload = useCallback(async (name: string) => {
+    setFileUploadProgresses((olds) => olds.filter((old) => old.name !== name));
+    localStorage.setItem(`cancel_upload_${name}`, 'true');
+    setNotify({ severity: 'info', text: 'アップロードをキャンセルしました' });
+  }, []);
 
-  const onClickCancel = () => {
-    localStorage.setItem(name + '_uploadCancel', 'true');
-    cancel();
-  };
+  const cancelFolderUpload = useCallback(async (name: string) => {
+    setFolderUploadProgresses((olds) => olds.filter((old) => old.name !== name));
+    localStorage.setItem(`cancel_upload_${name}`, 'true');
+    setNotify({ severity: 'info', text: 'アップロードをキャンセルしました' });
+  }, []);
 
-  if (!isShow) {
+  if (fileAndFolderProgresses.length === 0) {
     return null;
   }
 
-  const action = (
-    <IconButton sx={{ color: 'white' }} onClick={onClickCancel}>
-      <Stack alignItems="center">
-        <MdCancel />
-        <Box sx={{ fontSize: 3 }}>中断</Box>
-      </Stack>
-    </IconButton>
-  );
-
   return (
-    <Stack
-      sx={{
-        bgcolor: '#ccc',
-        px: 3,
-        borderRadius: 1,
-        color: '#333',
-        position: 'relative',
-        zIndex: 1000,
-      }}
-      direction="row"
-      alignItems="center"
-      spacing={3}
+    <Accordion
+      sx={{ background: 'rgba(0,0,0,0.3)', borderTopLeftRadius: 3, borderTopRightRadius: 3 }}
     >
-      <CircularProgressWithLabel value={progress} />
-      <Box>{text}</Box>
-      {status !== 'pending' ? null : action}
-      <MdCancel
-        onClick={() => setIsShow(false)}
-        style={{ position: 'absolute', top: -6, right: -5 }}
-        fontSize={20}
-      />
-    </Stack>
+      <AccordionSummary expandIcon={<MdExpandLess />}>
+        <Typography sx={{ px: 1, fontWeight: 'bold' }}>Uploads</Typography>
+      </AccordionSummary>
+      {fileAndFolderProgresses.map((target) => {
+        return (
+          <AccordionDetails key={target.name}>
+            <Stack sx={{ px: 1 }} direction="row" alignItems="center" spacing={1}>
+              <CircularProgressWithLabel value={target.progress} />
+              <Typography sx={{ fontSize: 12 }}>{target.text}</Typography>
+              {target.status !== 'finish' ? (
+                <Stack
+                  justifyContent="center"
+                  alignItems="center"
+                  sx={{
+                    width: '2.5rem',
+                    height: '2.5rem',
+                    borderRadius: '100%',
+                    '&:hover': { background: 'rgba(0,0,0,0.1)' },
+                  }}
+                >
+                  <MdCancel
+                    onClick={() =>
+                      target.target.type === 'folder'
+                        ? cancelFolderUpload(target.name)
+                        : cancelFileUpload(target.name)
+                    }
+                    fontSize={20}
+                  />
+                  <Typography sx={{ fontSize: 10, color: '#333' }}>中断</Typography>
+                </Stack>
+              ) : null}
+            </Stack>
+          </AccordionDetails>
+        );
+      })}
+    </Accordion>
   );
 };
