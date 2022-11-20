@@ -1,61 +1,64 @@
-import { saveFile } from '@/features/home/api/download';
-import { DownloadProgress } from '@/features/home/types/download';
 import { CircularProgressWithLabel } from '@/shared/components/CircularProgressWithLabel';
-import { IconButton, Stack } from '@mui/material';
-import Box from '@mui/material/Box';
-import React, { useEffect, useState } from "react";
-import { MdCancel } from 'react-icons/md';
+import { downloadProgressesState, notifyState } from '@/shared/stores';
+import { Accordion, AccordionDetails, AccordionSummary, Stack, Typography } from '@mui/material';
+import React from 'react';
+import { MdCancel, MdExpandLess } from 'react-icons/md';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
-type DownloadProgressSnackBar = {
-  response: DownloadProgress;
-  isFromLink?: boolean;
-  cancel: () => void;
-};
+const DownloadProgressSnackBar = () => {
+  const [downloadProgresses, setDownloadProgresses] = useRecoilState(downloadProgressesState);
+  const setNotify = useSetRecoilState(notifyState);
 
-const DownloadProgressSnackBar = ({ response, isFromLink, cancel }: DownloadProgressSnackBar) => {
-  const [isShow, setIsShow] = useState<boolean>(true);
-  const { name, text, type, data, start: isOpen, status, progress } = response;
-  useEffect(() => {
-    if (status === 'finish') {
-      saveFile({ name, type, data });
-    }
-  }, [status]);
+  const cancelDownload = (name: string) => {
+    setDownloadProgresses((olds) => olds.filter((item) => item.name !== name));
+    localStorage.setItem(`download_cancel_${name}`, 'ture');
+    setNotify({ severity: 'info', text: `${name}のダウンロードを中断しました` });
+  };
 
-  if (!isOpen || !isShow) {
+  if (downloadProgresses.length === 0) {
     return null;
   }
 
-  const action = (
-    <IconButton sx={{ color: 'white' }} onClick={cancel}>
-      <Stack alignItems="center">
-        <MdCancel />
-        <Box sx={{ fontSize: 3 }}>中断</Box>
-      </Stack>
-    </IconButton>
-  );
   return (
-    <Stack
+    <Accordion
       sx={{
-        bgcolor: isFromLink ? '#ccc' : '#333',
-        px: 3,
-        borderRadius: 1,
-        color: isFromLink ? '#333' : 'white',
-        position: 'relative',
-        zIndex: 1000,
+        background: 'rgba(0,0,0,0.2)',
+        borderBottomLeftRadius: 3,
+        borderBottomRightRadius: 3,
       }}
-      direction="row"
-      alignItems="center"
-      spacing={3}
     >
-      <CircularProgressWithLabel value={progress} />
-      <Box>{text}</Box>
-      {status === 'suspended' ? null : action}
-      <MdCancel
-        onClick={() => setIsShow(false)}
-        style={{ position: 'absolute', top: -6, right: -5 }}
-        fontSize={20}
-      />
-    </Stack>
+      <AccordionSummary expandIcon={<MdExpandLess />}>
+        <Stack sx={{ px: 1 }}>
+          <Typography sx={{ fontWeight: 'bold' }}>Downloads</Typography>
+          <Typography sx={{ fontSize: 10 }}>
+            ※大容量フォルダは開始までに時間がかかることがあります
+          </Typography>
+        </Stack>
+      </AccordionSummary>
+      {downloadProgresses.map((target) => (
+        <AccordionDetails key={target.name}>
+          <Stack sx={{ px: 1 }} direction="row" alignItems="center" spacing={1}>
+            <CircularProgressWithLabel value={target.progress} />
+            <Typography sx={{ fontSize: 13 }}>{target.text}</Typography>
+            {target.status !== 'finish' ? (
+              <Stack
+                justifyContent="center"
+                alignItems="center"
+                sx={{
+                  width: '2.5rem',
+                  height: '2.5rem',
+                  borderRadius: '100%',
+                  '&:hover': { background: 'rgba(0,0,0,0.1)' },
+                }}
+              >
+                <MdCancel onClick={() => cancelDownload(target.name)} fontSize={20} />
+                <Typography sx={{ fontSize: 10, color: '#333' }}>中断</Typography>
+              </Stack>
+            ) : null}
+          </Stack>
+        </AccordionDetails>
+      ))}
+    </Accordion>
   );
 };
 
