@@ -1,14 +1,15 @@
 import {
-  Avatar,
   Box,
+  Chip,
   Container,
   createTheme,
   CssBaseline,
   ThemeProvider,
   Typography,
 } from '@mui/material';
+import { Stack } from '@mui/system';
 import { useState } from 'react';
-import { MdLockOutline } from 'react-icons/md';
+import LabIcon from '../../../../public/oritaken_logo.png';
 import { LoginForm } from './LoginForm';
 import { RegisterForm } from './RegisterForm';
 
@@ -29,12 +30,18 @@ export const BeforeLoginForms = () => {
             alignItems: 'center',
           }}
         >
-          <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-            <MdLockOutline />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Orilab Cloud Storage V 1.1
-          </Typography>{' '}
+          <Box sx={{ m: 1 }}>
+            <img width="180px" style={{ aspectRatio: '16/9' }} src={LabIcon.src} alt="" />
+          </Box>
+          <Stack direction="row" sx={{}}>
+            <Typography component="h1" variant="h5">
+              Orilab Cloud Storage
+            </Typography>
+            <Chip
+              label="v1.1"
+              sx={{ fontWeight: 600, fontSize: 24, mx: 1, py: 1, color: 'rgba(0,0,0,0.6)' }}
+            />
+          </Stack>
           <Typography component="h1" variant="h5">
             {isRegisterForm ? '登録申請' : 'ログイン'}
           </Typography>
