@@ -17,11 +17,6 @@ export const notifyState = atom<NotifyType | null>({
   default: null,
 });
 
-export const downloadResponsesState = atom<DownloadProgress[]>({
-  key: 'downloadResponsesState',
-  default: [],
-});
-
 export const filesState = atom<MyFile[]>({
   key: 'filesState',
   default: [],
@@ -33,6 +28,21 @@ export const foldersState = atom<MyFolder[]>({
 });
 
 export const inDropAreaState = atom<boolean>({ key: 'inDropAreaState', default: false });
+
+export const fileUploadProgressesState = atom<UploadFileProgress[]>({
+  key: 'fileUploadProgressesState',
+  default: [],
+});
+
+export const folderUploadProgressesState = atom<UploadFolderProgress[]>({
+  key: 'folderUploadProgressesState',
+  default: [],
+});
+
+export const downloadProgressesState = atom<DownloadProgress[]>({
+  key: 'downloadProgressesState',
+  default: [],
+});
 
 // selector
 
@@ -50,14 +60,4 @@ export const foldersExists = selector<boolean>({
     const folders = get(foldersState);
     return folders.length > 0;
   },
-});
-
-export const fileUploadProgressesState = atom<UploadFileProgress[]>({
-  key: 'fileUploadProgressesState',
-  default: [],
-});
-
-export const folderUploadProgressesState = atom<UploadFolderProgress[]>({
-  key: 'folderUploadProgressesState',
-  default: [],
 });

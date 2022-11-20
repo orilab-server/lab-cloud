@@ -6,12 +6,12 @@ export type Response = {
   data: Blob | null;
 };
 
+export type DownloadStatus = 'pending' | 'suspended' | 'finish';
+
 export type DownloadProgress = {
   name: string;
   text: string;
   type: FileOrDir;
-  start: boolean;
   progress: number;
-  data: Blob | null;
-  status: 'pending' | 'suspended' | 'finish';
+  status: DownloadStatus;
 };

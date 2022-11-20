@@ -7,7 +7,6 @@ import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
 import { MdArrowBack } from 'react-icons/md';
 import { useRecoilValue } from 'recoil';
-import { useDownload } from '../api/download';
 import { useUpload } from '../api/upload';
 import { useUploadFileList } from '../hooks/useUploadFileList';
 import { useUploadFolderList } from '../hooks/useUploadFolderList';
@@ -45,8 +44,6 @@ export const MainContents = ({
   moveDir,
 }: MainContentsProps) => {
   const router = useRouter();
-  // ダウンロード用hooks
-  const { downloadProgresses, downloadMutation, downloadCancelMutation } = useDownload();
   // リストアイテム用hooks
   const { selected, unSelect, onStart, onMove, onResetKeyDownEscape } = useSelector();
   // セレクトボックス用hooks
@@ -123,9 +120,6 @@ export const MainContents = ({
       <DownloadFromLinkModal
         currentDir={currentdir}
         downloadSelectedArray={downloadSelectedArray}
-        downloadProgresses={downloadProgresses}
-        downloadMutation={downloadMutation}
-        downloadCancelMutation={downloadCancelMutation}
         setDownloadFromLink={setDownloadFromLink}
       />
     );
@@ -188,7 +182,6 @@ export const MainContents = ({
           selectedValue={`${selectedSortValue}-${setctedPriorityValue}`}
           selected={selected}
           selectedArray={selectedArray}
-          downloadMutation={downloadMutation}
           onStart={onStart}
           onMove={onMove}
           moveDir={moveDir}
