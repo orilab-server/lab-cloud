@@ -3,7 +3,7 @@ import { DownloadProgress } from '@/features/home/types/download';
 import { CircularProgressWithLabel } from '@/shared/components/CircularProgressWithLabel';
 import { IconButton, Stack } from '@mui/material';
 import Box from '@mui/material/Box';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { MdCancel } from 'react-icons/md';
 
 type DownloadProgressSnackBar = {
@@ -12,11 +12,7 @@ type DownloadProgressSnackBar = {
   cancel: () => void;
 };
 
-export const DownloadProgressSnackBar = ({
-  response,
-  isFromLink,
-  cancel,
-}: DownloadProgressSnackBar) => {
+const DownloadProgressSnackBar = ({ response, isFromLink, cancel }: DownloadProgressSnackBar) => {
   const [isShow, setIsShow] = useState<boolean>(true);
   const { name, text, type, data, start: isOpen, status, progress } = response;
   useEffect(() => {
@@ -62,3 +58,5 @@ export const DownloadProgressSnackBar = ({
     </Stack>
   );
 };
+
+export default React.memo(DownloadProgressSnackBar);

@@ -1,17 +1,15 @@
-import { uploadProgressesState } from '@/shared/stores';
+import { Accordion, AccordionSummary, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import React from 'react';
-import { UseMutationResult, useQueryClient } from 'react-query';
-import { useRecoilState } from 'recoil';
-import { uploadFile, uploadFolder, useUpload } from '../../api/upload';
+import { MdExpandLess } from 'react-icons/md';
+import { UseMutationResult } from 'react-query';
 import { DownloadProgress } from '../../types/download';
-import { MyFile, MyFolder } from '../../types/upload';
-import { DownloadProgressSnackBar } from '../misc/progress/DownloadProgressBar';
+import DownloadProgressSnackBar from '../misc/progress/DownloadProgressBar';
 import { UploadProgressSnackBar } from '../misc/progress/UploadProgressBar';
 
 type ProgressBarsProps = {
-  downloadProgresses: DownloadProgress[];
-  downloadCancelMutation: UseMutationResult<void, unknown, string, unknown>;
+  downloadProgresses?: DownloadProgress[];
+  downloadCancelMutation?: UseMutationResult<void, unknown, string, unknown>;
   isFromLink?: boolean;
 };
 
@@ -20,53 +18,41 @@ const ProgressBars = ({
   downloadCancelMutation,
   isFromLink,
 }: ProgressBarsProps) => {
-  const { uploadCancelMutation } = useUpload();
-  const [uploadProgresses, setUploadProgresses] = useRecoilState(uploadProgressesState);
-  const queryClient = useQueryClient();
-  const updateStorage = async () => await queryClient.invalidateQueries('storage');
-  const uploadMyFile = (target: MyFile) => uploadFile(target, setUploadProgresses, updateStorage);
-  const uploadMyFolder = (target: MyFolder) =>
-    uploadFolder(target, setUploadProgresses, updateStorage);
+  const DownloadProgressBar = React.memo(() => (
+    <Accordion
+      sx={{
+        background: 'rgba(0,0,0,0.2)',
+        borderBottomLeftRadius: 3,
+        borderBottomRightRadius: 3,
+      }}
+    >
+      <AccordionSummary expandIcon={<MdExpandLess />}>
+        <Typography sx={{ px: 1, fontWeight: 'bold' }}>Downloads</Typography>
+      </AccordionSummary>
+      {downloadProgresses?.map((downloadProgress) => {
+        return (
+          <DownloadProgressSnackBar
+            key={downloadProgress.name}
+            response={downloadProgress}
+            cancel={() => downloadCancelMutation?.mutate(downloadProgress.name)}
+            isFromLink={isFromLink}
+          />
+        );
+      })}
+    </Accordion>
+  ));
 
   return (
     <Stack
       sx={{
-        position: 'absolute',
+        position: 'fixed',
         bottom: 20,
         right: 20,
       }}
       spacing={1}
     >
-      {downloadProgresses.map((downloadProgress) => {
-        return (
-          <DownloadProgressSnackBar
-            key={downloadProgress.name}
-            response={downloadProgress}
-            cancel={() => downloadCancelMutation.mutate(downloadProgress.name)}
-            isFromLink={isFromLink}
-          />
-        );
-      })}
-      {uploadProgresses.map((progress) => {
-        if (progress.target.type === 'file') {
-          return (
-            <UploadProgressSnackBar
-              key={progress.name}
-              uploadProgress={progress}
-              upload={() => uploadMyFile(progress.target as MyFile)}
-              cancel={() => uploadCancelMutation.mutate(progress.name)}
-            />
-          );
-        }
-        return (
-          <UploadProgressSnackBar
-            key={progress.name}
-            uploadProgress={progress}
-            upload={() => uploadMyFolder(progress.target as MyFolder)}
-            cancel={() => uploadCancelMutation.mutate(progress.name)}
-          />
-        );
-      })}
+      <DownloadProgressBar />
+      <UploadProgressSnackBar />
     </Stack>
   );
 };
