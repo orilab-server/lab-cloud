@@ -1,8 +1,8 @@
+import { usePreviewFile } from '@/features/home/api/download/previewFile';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import React, { useEffect, useState } from 'react';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
-import { getMimeType } from '../utils/mime';
 
 const modalStyle = {
   position: 'absolute' as 'absolute',
@@ -32,34 +32,33 @@ const iconStyle = {
 } as React.CSSProperties;
 
 type FilePreviewModalProps = {
-  button: React.ReactNode;
+  path: string;
   fileName: string;
-  onFetchFile: () => Promise<Blob>;
+  button: React.ReactNode;
 };
 
-export const FilePreviewModal = ({ button, fileName, onFetchFile }: FilePreviewModalProps) => {
+export const FilePreviewModal = ({ path, fileName, button }: FilePreviewModalProps) => {
   const [open, setOpen] = useState(false);
-  const [url, setUrl] = useState<string>('');
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const previewFileQuery = usePreviewFile(path, fileName);
+  const url = previewFileQuery.data;
+
   useEffect(() => {
-    if (open) {
-      onFetchFile().then(async (data) => {
-        const file = new File([data], fileName, {
-          type: getMimeType(fileName),
-        });
-        const url = URL.createObjectURL(file);
-        setUrl(url);
-      });
+    if (!open && url) {
+      URL.revokeObjectURL(url);
     }
-    if (!open) {
-      if (url !== '') {
+    return () => {
+      if (url) {
         URL.revokeObjectURL(url);
-        setUrl('');
       }
-    }
+    };
   }, [open]);
+
+  if (previewFileQuery.isLoading || !url) {
+    return null;
+  }
 
   return (
     <div>
