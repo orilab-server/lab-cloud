@@ -2,7 +2,7 @@ import { filesState, foldersState } from '@/shared/stores';
 import { startDirPathSlicer } from '@/shared/utils/slice';
 import React from 'react';
 import { SetterOrUpdater, useRecoilState } from 'recoil';
-import { MyFile, MyFolder } from '../types/upload';
+import { MyFile, MyFolder } from '../../types/upload';
 
 export type Uploads = {
   files: MyFile[];
