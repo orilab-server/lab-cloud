@@ -22,6 +22,7 @@ type LoginMutationConfig = {
 export const useLogin = () => {
   const router = useRouter();
   const setNotify = useSetRecoilState(notifyState);
+
   return useMutation(async (config: LoginMutationConfig) => Login(config.email, config.password), {
     onSuccess: async () => {
       setNotify({ severity: 'info', text: 'ログインしました' });

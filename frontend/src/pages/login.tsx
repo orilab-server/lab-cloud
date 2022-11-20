@@ -1,11 +1,8 @@
-import { LoginForm } from '@/features/auth/components/LoginForm';
-import { createTheme } from '@mui/material';
+import { BeforeLoginForms } from '@/features/auth/components/BeforeLoginForms';
 import { NextPage } from 'next';
 
-const theme = createTheme();
-
 const Login: NextPage = () => {
-  return <LoginForm />;
+  return <BeforeLoginForms />;
 };
 
 export default Login;
