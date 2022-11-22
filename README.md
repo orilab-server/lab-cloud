@@ -8,22 +8,25 @@ Google Drive をちょっと参考にしています。
 搭載機能は以下の通りです。
 
 - 認証
-- ファイル・フォルダのアップロード
+- ファイル・フォルダのアップロード(ドラッグ&ドロップ可能)
 - ファイル・フォルダのダウンロード
 - フォルダの作成
 - 基本的な種類(pdf, png とか)のファイルの閲覧
 - リンクコピー&共有
+- ファイル名変更
+- ゴミ箱機能
 
-Google Drive に比べると少ないので今後余裕があったら増やします。
+今後機能追加予定
 
 # 使用技術
 
-フロントエンドを`React`, バックエンドを`Gin(Golang)`で開発しました。
+フロントエンドを`Next.js`, バックエンドを`Gin(Golang)`で開発しました。
 
 詳細を以下に列挙します。
 
 ## フロントエンド
 
+- Next.js
 - React
 - Material UI, Icons
 - Recoil
@@ -40,6 +43,7 @@ Google Drive に比べると少ないので今後余裕があったら増やし�
 - sessions
 - bcrypt
 - godotenv
+- google/uuid
 - その他
 
 # 環境変数
@@ -47,8 +51,8 @@ Google Drive に比べると少ないので今後余裕があったら増やし�
 ## フロントエンド
 
 ```env
-VITE_CLIENT_URL=
-VITE_SERVER_URL=
+NEXT_PUBLIC_CLIENT_URL=
+NEXT_PUBLIC_SERVER_URL=
 ```
 
 ## バックエンド
@@ -59,6 +63,16 @@ SERVER_PORT=
 SHARE_DIR=
 
 SITE_URL=
+
+IMPORTANT_DIRS=
+
+TRASH_DIR_PATH=
+
+MAIL_FROM=
+MAIL_TO=
+MAIL_PASSWORD=
+SMTP_SERVER=
+SMTP_PORT=
 
 DB_IP=
 DB_PORT=
