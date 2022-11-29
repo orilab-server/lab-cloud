@@ -5,7 +5,7 @@ import ProgressBars from '@/features/home/components/main/ProgressBars';
 import { MainContents } from '@/features/home/components/MainContents';
 import { SideContents } from '@/features/home/components/SideContents';
 import { ScreenLoading } from '@/shared/components/ScreenLoading';
-import { Stack } from '@mui/material';
+import { Box, Button, Stack } from '@mui/material';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useCallback } from 'react';
@@ -41,6 +41,11 @@ const Home: NextPage = () => {
 
   return (
     <Stack id="home-root" sx={{ minWidth: '1400px' }} direction="row" justifyContent="start">
+      <Box sx={{ position: 'absolute', top: 0, right: 0, zIndex: 99 }}>
+        <Button onClick={() => router.push('/admin')} sx={{ m: 1 }}>
+          管理者ページ
+        </Button>
+      </Box>
       <SideContents
         topDirs={topDirs}
         currentDir={currentDir || '/'}
