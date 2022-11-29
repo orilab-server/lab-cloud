@@ -31,17 +31,24 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
     const path = url.split('/')[1];
     const session = getCookie('mysession');
 
+    console.log('session', session, ', path: ', url);
+
     if (!publicPaths.includes(path)) {
       if (!session) {
         // 未ログイン状態でリンクにアクセスした場合
         if (url.match('path=') !== null) {
           localStorage.setItem('path', url);
         }
-        void router.push('/login');
+        // /adminページはsessionを保持できないためスルー
+        if (url.match('/admin') === null) {
+          void router.push('/login');
+        }
       }
     } else {
       if (session) {
-        void router.push('/');
+        // home → loginページへの遷移は不可, それ以外は許可
+        const to = publicPaths.includes(path) ? '/' : path;
+        void router.push(to);
       }
     }
 
