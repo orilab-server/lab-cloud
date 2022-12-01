@@ -3,7 +3,7 @@ import { Grid, Typography } from '@mui/material';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 
-const collectionNames = ['news', 'researches', 'users'];
+const collectionNames = ['news', 'researches', 'members'];
 
 const Admin: NextPage = () => {
   const router = useRouter();

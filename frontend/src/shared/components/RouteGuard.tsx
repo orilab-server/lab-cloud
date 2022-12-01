@@ -31,8 +31,6 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
     const path = url.split('/')[1];
     const session = getCookie('mysession');
 
-    console.log('session', session, ', path: ', url);
-
     if (!publicPaths.includes(path)) {
       if (!session) {
         // 未ログイン状態でリンクにアクセスした場合
