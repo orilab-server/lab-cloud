@@ -1,5 +1,6 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
 import { auth } from '@/shared/lib/firebase';
+import { getCookie } from '@/shared/utils/cookie';
 import { Button, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { onAuthStateChanged } from 'firebase/auth';
@@ -19,6 +20,7 @@ export const AdminLayout = ({ children, isUnLogin }: AdminLayoutProps) => {
   const isLoginPath = router.asPath.match('/admin/login') !== null;
   const [authorized, setAuthorized] = useState<boolean>(isLoginPath ? true : false);
   const logoutMutation = useAdminLogout();
+  const session = getCookie('mysession');
 
   useEffect(() => {
     const authCheck = () => {
@@ -31,6 +33,14 @@ export const AdminLayout = ({ children, isUnLogin }: AdminLayoutProps) => {
       });
       setAuthorized(true);
     };
+
+    // adminページではサーバーからのsessionを受け取れないため
+    // 再読み込みなどがされた状態でホームに戻るとログイン画面に戻ってしまうため
+    // localstorageでログイン画面に戻ってもホームに遷移するように実装
+    // TODO: もう少しスマートなやり方
+    if (session === '' && !Boolean(localStorage.getItem('no_session'))) {
+      localStorage.setItem('no_session', 'true');
+    }
 
     return () => {
       authCheck();

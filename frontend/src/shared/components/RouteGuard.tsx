@@ -43,6 +43,11 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
         }
       }
     } else {
+      if (Boolean(localStorage.getItem('no_session'))) {
+        localStorage.removeItem('no_session');
+        router.reload();
+        return;
+      }
       if (session) {
         // home → loginページへの遷移は不可, それ以外は許可
         const to = publicPaths.includes(path) ? '/' : path;
