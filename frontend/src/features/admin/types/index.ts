@@ -9,6 +9,7 @@ export type News = {
   title: string;
   description: string;
   links: string[];
+  createdat: Timestamp;
 };
 
 export type Research = {
@@ -17,6 +18,7 @@ export type Research = {
   title: string;
   description: string;
   links: string[];
+  createdat: Timestamp;
 };
 
 export type Member = {
@@ -33,4 +35,9 @@ export type CollectionTypes = {
   news: News;
   researches: Research;
   members: Member;
+};
+
+export type Update = {
+  date: Timestamp;
+  title: string;
 };

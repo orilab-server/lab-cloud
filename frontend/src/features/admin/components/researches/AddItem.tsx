@@ -4,6 +4,7 @@ import { Box, Stack } from '@mui/system';
 import React, { useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useAddNewItem } from '../../api/addNewItem';
+import { useAddUpdate } from '../../api/addUpdates';
 import { useCollection } from '../../api/getCollection';
 import { useUpdateItem } from '../../api/updateItem';
 import { LinksInput } from '../misc/LinksInput';
@@ -29,13 +30,14 @@ interface FormData {
   memberId: string;
 }
 
-type NewItem = Omit<FormData, 'memberId'> & { links: string[] };
+type NewItem = Omit<FormData, 'memberId'> & { links: string[]; createdat: Date };
 
 export const AddItem = ({ children, modals }: AddItemProps) => {
   const [Modal, openM, closeM] = modals;
   const [links, setLinks] = useState<{ [key: string]: string }>({ 'link-0': '' });
   const [file, setFile] = useState<File | null>(null);
   const addNewItemMutation = useAddNewItem<NewItem>('researches', 'hp');
+  const addUpdateMutation = useAddUpdate();
   const updateMemberMutation = useUpdateItem('members');
   const membersQuery = useCollection('members');
   const members = membersQuery.data || [];
@@ -52,7 +54,11 @@ export const AddItem = ({ children, modals }: AddItemProps) => {
       alert('画像を選択してください');
       return;
     }
-    const dispatchData = { title, description, links: Object.values(links) };
+    await addUpdateMutation.mutateAsync({
+      collectionName: 'researches',
+      title: 'RESEARCHページを更新しました',
+    });
+    const dispatchData = { title, description, links: Object.values(links), createdat: new Date() };
     const id = await addNewItemMutation
       .mutateAsync({
         data: dispatchData,

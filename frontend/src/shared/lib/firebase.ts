@@ -53,7 +53,7 @@ export const storage = getStorage(app);
 
 export type GetCollectionOptions = {
   limit?: Limit;
-  where?: Where;
+  where?: Where | Where[];
   orderby?: OrderBy;
 };
 
@@ -61,7 +61,7 @@ type Limit = number;
 type Where = {
   target: string;
   threthhold: WhereFilterOp;
-  base: string | number;
+  base: unknown;
 };
 type OrderBy = {
   target: string;
@@ -77,6 +77,9 @@ export const getCollection = async <T>(collectionName: string, options?: GetColl
         if (key === 'limit') {
           return limit(val as Limit);
         } else if (key === 'where') {
+          if (Array.isArray(val)) {
+            return val.map((item) => where(item.target, item.threthhold, item.base));
+          }
           const wheres = val as Where;
           return where(wheres.target, wheres.threthhold, wheres.base);
         }
@@ -86,7 +89,7 @@ export const getCollection = async <T>(collectionName: string, options?: GetColl
         }
         return orderBy(orderbys.target);
       });
-      const q = query(collRef, ...params);
+      const q = query(collRef, ...params.flatMap((param) => param));
       return await getDocs(q);
     }
     return await getDocs(collRef);

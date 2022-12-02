@@ -4,6 +4,7 @@ import { Stack } from '@mui/system';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { useAddNewItem } from '../../api/addNewItem';
+import { useAddUpdate } from '../../api/addUpdates';
 import { LinksInput } from '../misc/LinksInput';
 import { ModalLayout } from '../misc/ModalLayout';
 import { TypographyOrTextField } from '../misc/TypographyOrTextField';
@@ -27,13 +28,14 @@ interface FormData {
   description: string;
 }
 
-type NewDoc = Omit<FormData, 'dateStr'> & { links: string[]; date: Date };
+type NewDoc = Omit<FormData, 'dateStr'> & { links: string[]; date: Date; createdat: Date };
 
 export const AddItem = ({ button, modals }: AddItemProps) => {
   const [Modal, openM, closeM] = modals;
   const [links, setLinks] = useState<{ [key: string]: string }>({ 'link-0': '' });
   const [file, setFile] = useState<File | null>(null);
   const addNewItemMutation = useAddNewItem<NewDoc>('news', 'hp');
+  const addUpdateMutation = useAddUpdate();
 
   const { control, handleSubmit, getValues } = useForm<FormData>({
     defaultValues: {
@@ -49,9 +51,16 @@ export const AddItem = ({ button, modals }: AddItemProps) => {
       return;
     }
     const { dateStr, title, description } = data;
+    await addUpdateMutation.mutateAsync({ collectionName: 'news', title: 'Newsを更新しました' });
     await addNewItemMutation
       .mutateAsync({
-        data: { title, description, date: new Date(dateStr), links: Object.values(links) },
+        data: {
+          title,
+          description,
+          date: new Date(dateStr),
+          links: Object.values(links),
+          createdat: new Date(),
+        },
         file,
       })
       .finally(() => closeM());
