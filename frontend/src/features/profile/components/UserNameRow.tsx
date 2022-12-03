@@ -70,7 +70,12 @@ const UserNameRow = ({ userName }: UserNameRowProps) => {
           <Typography sx={{ fontSize: 24 }}>{userName}</Typography>
         </>
       )}
-      <Button sx={{ py: 2 }} variant="outlined" color="info" onClick={onToggleEdit}>
+      <Button
+        sx={{ py: 2 }}
+        variant="outlined"
+        color={edit ? 'error' : 'info'}
+        onClick={onToggleEdit}
+      >
         {edit ? '編集をやめる' : '編集する'}
       </Button>
     </Stack>
