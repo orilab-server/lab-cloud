@@ -37,11 +37,21 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
         if (url.match('path=') !== null) {
           localStorage.setItem('path', url);
         }
-        void router.push('/login');
+        // /adminページはsessionを保持できないためスルー
+        if (url.match('/admin') === null) {
+          void router.push('/login');
+        }
       }
     } else {
+      if (Boolean(localStorage.getItem('no_session'))) {
+        localStorage.removeItem('no_session');
+        router.reload();
+        return;
+      }
       if (session) {
-        void router.push('/');
+        // home → loginページへの遷移は不可, それ以外は許可
+        const to = publicPaths.includes(path) ? '/' : path;
+        void router.push(to);
       }
     }
 
