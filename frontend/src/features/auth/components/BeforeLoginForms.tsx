@@ -1,5 +1,6 @@
 import {
   Box,
+  Button,
   Chip,
   Container,
   createTheme,
@@ -8,6 +9,7 @@ import {
   Typography,
 } from '@mui/material';
 import { Stack } from '@mui/system';
+import { useRouter } from 'next/router';
 import { useState } from 'react';
 import LabIcon from '../../../../public/oritaken_logo.png';
 import { LoginForm } from './LoginForm';
@@ -16,6 +18,7 @@ import { RegisterForm } from './RegisterForm';
 const theme = createTheme();
 
 export const BeforeLoginForms = () => {
+  const router = useRouter();
   const [isRegisterForm, setIsRegisterForm] = useState<boolean>(false);
 
   return (
@@ -50,6 +53,9 @@ export const BeforeLoginForms = () => {
           ) : (
             <LoginForm setIsRegisterForm={setIsRegisterForm} />
           )}
+          <Button onClick={() => router.push('/reset-password/request')}>
+            パスワードを忘れた方
+          </Button>
         </Box>
       </Container>
     </ThemeProvider>
