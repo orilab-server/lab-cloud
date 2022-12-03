@@ -1,5 +1,6 @@
 import { TextSkelton } from '@/shared/components/TextSkelton';
 import { Avatar, Stack, Typography } from '@mui/material';
+import { useRouter } from 'next/router';
 import React from 'react';
 import { BsPersonCircle } from 'react-icons/bs';
 
@@ -8,8 +9,25 @@ type ProfileProps = {
 };
 
 const Profile = ({ name }: ProfileProps) => {
+  const router = useRouter();
+
   return (
-    <Stack direction="row" alignItems="center" spacing={2} pb={3}>
+    <Stack
+      onClick={() => router.push('/profile')}
+      direction="row"
+      alignItems="center"
+      spacing={2}
+      sx={{
+        p: 1,
+        my: 2,
+        boxShadow: '1px 1px 1px 1px #ccc',
+        borderRadius: 20,
+        cursor: 'pointer',
+        '&:hover': {
+          background: '#ccc',
+        },
+      }}
+    >
       <Avatar sx={{ bgcolor: 'green' }}>
         <BsPersonCircle />
       </Avatar>
