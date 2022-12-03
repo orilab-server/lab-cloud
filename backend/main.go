@@ -71,6 +71,7 @@ func main() {
 		
 		// userエンドポイント
 		authGroup.PATCH("/user", user.PatchUserController)
+		authGroup.PATCH("/user/rename", user.UserRenameController)
 		// logoutエンドポイント
 		authGroup.GET("/logout", auth.LogoutController)
 		// homeエンドポイント

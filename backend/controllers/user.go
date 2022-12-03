@@ -74,3 +74,27 @@ func (u UserController) PatchUserController(ctx *gin.Context) {
 		"message": "successfully update",
 	})
 }
+
+func (u UserController) UserRenameController(ctx *gin.Context) {
+	newName := strings.TrimSpace(ctx.PostForm("newName"))
+	if newName == "" {
+		ctx.Status(http.StatusBadRequest)
+		return
+	}
+	session := sessions.Default(ctx)
+	jsonLoginUser, err := dproxy.New(session.Get(u.SessionKey)).String()
+	if err != nil {
+		ctx.Status(http.StatusUnauthorized)
+		return
+	}
+	json.Unmarshal([]byte(jsonLoginUser), &loginUser)
+	if _, err := users_table.UpdateRow(u.MyDB, db.UpdateQueryParam{From: "users", Set: map[string]any{"name": newName}, Where: map[string]any{"email": loginUser.Email}}); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "user not found",
+		})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "successfully update username",
+	})
+}
