@@ -163,7 +163,7 @@ func (u UserController) ResetPasswordController(ctx *gin.Context) {
 		return
 	}
 	row, err := reset_tokens.SelectRow(u.MyDB, db.SelectQueryParam{From: "reset_tokens", Column: []string{"id", "email"}, Where: map[string]any{"token": token}})
-	if err != nil {
+	if err != nil || (row.Id == "" && row.Email == "") {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "invalid token",
 		})
