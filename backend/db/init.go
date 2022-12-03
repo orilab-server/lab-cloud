@@ -27,6 +27,12 @@ type FilesTrash = struct {
 	CreatedAt    		string
 }
 
+type ResetTokens = struct {
+	Id    string
+	Email string
+	Token string
+}
+
 type SelectQueryParam struct {
 	From   string
 	Column []string
