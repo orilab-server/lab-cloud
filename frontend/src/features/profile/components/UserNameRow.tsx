@@ -1,7 +1,9 @@
-import { Button, TextField, Typography } from '@mui/material';
+import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
+import { Button, FormControl, FormHelperText, TextField, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import React, { useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { useRename } from '../api/rename';
 
 type UserNameRowProps = {
   userName: string;
@@ -14,14 +16,22 @@ interface UserNameInput {
 const UserNameRow = ({ userName }: UserNameRowProps) => {
   const [edit, setEdit] = useState<boolean>(false);
   const onToggleEdit = () => setEdit(!edit);
+  const renameMutation = useRename();
   const { control, handleSubmit } = useForm<UserNameInput>({
     defaultValues: {
       userName,
     },
   });
 
-  const onSubmit: SubmitHandler<UserNameInput> = ({ userName }) => {
-    console.log(userName);
+  const userNamerule = {
+    required: true,
+    validate: (value: string) => value !== userName || '名前を変更してください',
+  };
+
+  const onSubmit: SubmitHandler<UserNameInput> = async ({ userName }) => {
+    const param = new URLSearchParams();
+    param.append('newName', userName);
+    renameMutation.mutateAsync({ param }).finally(() => setEdit(false));
   };
 
   return (
@@ -40,11 +50,19 @@ const UserNameRow = ({ userName }: UserNameRowProps) => {
           <Controller
             control={control}
             name="userName"
-            rules={{ required: true }}
-            render={({ field }) => <TextField {...field} />}
+            rules={userNamerule}
+            render={({ field, fieldState }) => (
+              <FormControl>
+                <TextField {...field} />
+                <FormHelperText sx={{ color: 'red', position: 'absolute', top: 56, left: -10 }}>
+                  {fieldState.error?.message}
+                </FormHelperText>
+              </FormControl>
+            )}
           />
           <Button sx={{ py: 2 }} variant="contained" type="submit">
-            更新
+            {renameMutation.isLoading && <LoadingSpinner color="inherit" size="sm" />}
+            <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>更新</Typography>
           </Button>
         </>
       ) : (
