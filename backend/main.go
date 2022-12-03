@@ -43,10 +43,10 @@ func main() {
 	router.LoadHTMLGlob("./*.html")
 	router.Use(middlewares.CorsMiddleWare(siteUrl))
 	store := cookie.NewStore([]byte(secret))
-
-	sender :=controllers.SendController{MailInfo: mailservice.MailRequest{From: from, To: to, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}}
+	mailInfo := mailservice.MailRequest{From: from, To: to, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}
+	sender :=controllers.SendController{MailInfo: mailInfo}
 	auth := controllers.Authcontroller{MyDB: myDB, SessionKey: sessionKey}
-	user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey}
+	user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey, Url: siteUrl, MailInfo: mailInfo}
 	router.Use(sessions.Sessions("mysession", store))
 	// ログイン・ホームページの静的ファイルを返す
 	router.GET("/", func(ctx *gin.Context) {
@@ -56,6 +56,8 @@ func main() {
 		ctx.HTML(200, "login.html", nil)
 	})
 	router.GET("/user", user.GetUserController)
+	router.POST("/user/reset-password/request", user.ResetPasswordRequestController)
+	router.PATCH("/user/reset-password", user.ResetPasswordController)
 	router.POST("/send", sender.MailController)
 	router.POST("/login", auth.LoginController)
 	router.POST("/signup/"+os.Getenv("SIGNUP_ROUTE"), auth.SignUpController)

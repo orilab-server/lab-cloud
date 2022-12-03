@@ -18,3 +18,11 @@ create table files_trash(id varchar(36) not null,
   primary key (id), 
   foreign key (user_id) references users(id)
 );
+
+-- パスワードリセット機能用のトークンを保存するテーブル
+create table reset_tokens(
+  id varchar(36) not null,
+  email varchar(254) not null, 
+  token varchar(254) not null,
+  primary key (id)
+);

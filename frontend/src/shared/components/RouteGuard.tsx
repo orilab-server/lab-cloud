@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { ReactElement, useEffect, useState } from 'react';
 import { ScreenLoading } from './ScreenLoading';
 
-const publicPaths = ['login'];
+const publicPaths = ['login', 'reset-password'];
 
 type RouteGuardProps = {
   children: ReactElement;
@@ -28,7 +28,14 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
   }, []);
 
   const authCheck = (url: string) => {
-    const path = url.split('/')[1];
+    const path = (() => {
+      const topPath = url.split('/')[1];
+      if (topPath.match('\\?')) {
+        return topPath.split('?')[0];
+      }
+      return topPath;
+    })();
+    console.log(path);
     const session = getCookie('mysession');
 
     if (!publicPaths.includes(path)) {
