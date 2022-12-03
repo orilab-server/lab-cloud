@@ -17,7 +17,7 @@ const adminPath = '/admin';
 
 export const AdminLayout = ({ children, isUnLogin }: AdminLayoutProps) => {
   const router = useRouter();
-  const isLoginPath = router.asPath.match('/admin/login') !== null;
+  const isLoginPath = router.asPath.match(`${adminPath}/login`) !== null;
   const [authorized, setAuthorized] = useState<boolean>(isLoginPath ? true : false);
   const logoutMutation = useAdminLogout();
   const session = getCookie('mysession');
