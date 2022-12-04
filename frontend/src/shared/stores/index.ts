@@ -44,6 +44,16 @@ export const downloadProgressesState = atom<DownloadProgress[]>({
   default: [],
 });
 
+export type PdfReviewState = {
+  path: string;
+  fileName: string;
+};
+
+export const pdfReviewState = atom<PdfReviewState | null>({
+  key: 'pdfReviewState',
+  default: null,
+});
+
 // selector
 
 export const filesExists = selector<boolean>({

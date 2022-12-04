@@ -1,5 +1,5 @@
 import { FileIcons } from '@/shared/components/FileIcons';
-import { FilePreviewModal } from '@/shared/components/FilePreview';
+import { pdfReviewState } from '@/shared/stores';
 import {
   endFilenameSlicer,
   freeLengthStrSlicer,
@@ -11,6 +11,7 @@ import SelectionArea, { SelectionEvent } from '@viselect/react';
 import React from 'react';
 import { AiFillFile, AiFillFolder } from 'react-icons/ai';
 import { TiDelete } from 'react-icons/ti';
+import { useSetRecoilState } from 'recoil';
 import { useMvTrashRequest } from '../../api/request/mvTrash';
 import { useRmRequest } from '../../api/request/rm';
 import { useUpload } from '../../api/upload';
@@ -82,6 +83,7 @@ const FilePathList = ({
   const [DropArea] = useDropItem(currentDir);
   const { files, folders, deleteFile, deleteFolder } = useUpload();
   const filesAndFolders = [...files, ...folders];
+  const setPdfReview = useSetRecoilState(pdfReviewState);
 
   return (
     <>
@@ -252,31 +254,33 @@ const FilePathList = ({
               mvTrashRequest={mvTrashRequest}
               rmRequest={rmRequest}
             >
-              <FilePreviewModal
+              {/* TODO : 通常用・確認用でダブルクリック時の表示を分ける */}
+              {/* ※現在は確認用の動作 */}
+              {/* <FilePreviewModal
                 path={path}
                 fileName={name}
-                button={
-                  <ListItem
-                    onContextMenu={openMyContextMenu}
-                    sx={{
-                      background: isSelect ? 'skyblue' : index % 2 === 0 ? 'whitesmoke' : '',
-                      color: isSelect ? 'rgba(0,0,0,0.5)' : '',
-                      '&:hover': {
-                        background: isSelect ? 'skyblue' : index % 2 === 0 ? 'whitesmoke' : 'white',
-                      },
-                      borderRadius: 1,
-                    }}
-                    className={selected.has(name) ? 'selected selectable' : 'selectable'}
-                    data-key={name}
-                    button
-                  >
-                    <ListItemIcon>
-                      <FileIcons fileName={name} />
-                    </ListItemIcon>
-                    <ListItemText className="list-item-text" primary={name} />
-                  </ListItem>
-                }
-              />
+                button={}
+              /> */}
+              <ListItem
+                onDoubleClick={() => setPdfReview({ path, fileName: name })}
+                onContextMenu={openMyContextMenu}
+                sx={{
+                  background: isSelect ? 'skyblue' : index % 2 === 0 ? 'whitesmoke' : '',
+                  color: isSelect ? 'rgba(0,0,0,0.5)' : '',
+                  '&:hover': {
+                    background: isSelect ? 'skyblue' : index % 2 === 0 ? 'whitesmoke' : 'white',
+                  },
+                  borderRadius: 1,
+                }}
+                className={selected.has(name) ? 'selected selectable' : 'selectable'}
+                data-key={name}
+                button
+              >
+                <ListItemIcon>
+                  <FileIcons fileName={name} />
+                </ListItemIcon>
+                <ListItemText className="list-item-text" primary={name} />
+              </ListItem>
             </ContextMenu>
           );
         })}
