@@ -1,15 +1,24 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
 import { useMailSender } from '@/shared/hooks/useMailSender';
 import { Avatar, Box, Button, TextField, Typography } from '@mui/material';
-import React, { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MdLockOutline } from 'react-icons/md';
+import { useRequestRegister } from '../api/request-register';
 
 type RegisterFormProps = {
   setIsRegisterForm: Dispatch<SetStateAction<boolean>>;
 };
 
+interface RegisterFormInputs {
+  name: string;
+  email: string;
+  grade: string;
+}
+
 export const RegisterForm = ({ setIsRegisterForm }: RegisterFormProps) => {
   const sendMailMutation = useMailSender();
+  const registerRequestMutation = useRequestRegister();
   const [isRegisterSend, setIsRegisterSend] = useState<boolean>(false);
   const backLoginForm = () => setIsRegisterForm(false);
   const confirmSendAndBack = () => {
@@ -17,24 +26,40 @@ export const RegisterForm = ({ setIsRegisterForm }: RegisterFormProps) => {
     setIsRegisterSend(false);
   };
 
-  const onSendRegistrationRequest = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const name = data.get('name')?.toString();
-    const email = data.get('email')?.toString();
-    if (name && email) {
-      await sendMailMutation
-        .mutateAsync({
-          name,
-          subject: '登録申請',
-          body: `登録申請がきています。\n\n名前 : ${name}\nメールアドレス : ${email}`,
-        })
-        .then(() => {
-          setIsRegisterSend(true);
-        });
-    } else {
-      alert('名前とメールアドレスを入力してください');
-    }
+  const { control, handleSubmit } = useForm<RegisterFormInputs>({
+    defaultValues: {
+      name: '',
+      email: '',
+      grade: '',
+    },
+  });
+
+  const onSubmit: SubmitHandler<RegisterFormInputs> = async ({ name, email, grade }) => {
+    const formData = new FormData();
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('grade', grade);
+    await registerRequestMutation.mutateAsync({ formData });
+    await sendMailMutation
+      .mutateAsync({
+        name,
+        subject: '登録申請',
+        mime: 'MIME-version: 1.0;\nContent-Type: text/html; charset="UTF-8";\n\n',
+        body: `
+      <html>
+        <body>
+        <h2>登録申請が来ています</h2>
+        <p>名前 : ${name}</p>
+        <p>メールアドレス : ${email}</p>
+        <p>============================</p><br/>
+        <a href="${process.env.NEXT_PUBLIC_CLIENT_URL}/admin">リンクからアクセス</a>
+        </body>
+      </html>
+      `,
+      })
+      .then(() => {
+        setIsRegisterSend(true);
+      });
   };
 
   if (isRegisterSend) {
@@ -72,26 +97,47 @@ export const RegisterForm = ({ setIsRegisterForm }: RegisterFormProps) => {
   }
 
   return (
-    <Box component="form" onSubmit={onSendRegistrationRequest} noValidate sx={{ mt: 1 }}>
-      <TextField
-        margin="normal"
-        required
-        fullWidth
-        id="email"
-        label="Email Address"
+    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
+      <Controller
+        control={control}
         name="email"
-        autoComplete="email"
-        autoFocus
+        rules={{ required: true }}
+        render={({ field }) => (
+          <TextField
+            id="email"
+            margin="normal"
+            fullWidth
+            label="Email Address"
+            autoComplete="email"
+            autoFocus
+            {...field}
+          />
+        )}
       />
-      <TextField
-        margin="normal"
-        required
-        fullWidth
+      <Controller
+        control={control}
         name="name"
-        label="Your Name"
-        type="text"
-        id="name"
+        rules={{ required: true }}
+        render={({ field }) => (
+          <TextField id="name" margin="normal" fullWidth label="Your Name" {...field} />
+        )}
       />
+      <Controller
+        control={control}
+        name="grade"
+        rules={{ required: true }}
+        render={({ field }) => (
+          <TextField
+            id="grade"
+            margin="normal"
+            fullWidth
+            label="Your Grade"
+            placeholder="入学年度を入力 (例) 2019"
+            {...field}
+          />
+        )}
+      />
+      <Typography sx={{ fontSize: 12 }}>※教職員の方は数字の1を入力してください</Typography>
       <Button
         type="submit"
         fullWidth

@@ -1,3 +1,4 @@
+import ConfirmRequestsModal from '@/features/admin/components/misc/ConfirmRequestsModal';
 import { AdminLayout } from '@/features/admin/components/misc/Layout';
 import { Grid, Typography } from '@mui/material';
 import { NextPage } from 'next';
@@ -11,7 +12,7 @@ const Admin: NextPage = () => {
   return (
     <AdminLayout>
       {/* コンテンツ */}
-      <Grid container sx={{ width: '90vw' }} columns={12} spacing={1}>
+      <Grid id="grid" container sx={{ width: '90vw' }} columns={12} spacing={1}>
         {collectionNames.map((colName) => (
           <Grid
             key={colName}
@@ -35,6 +36,7 @@ const Admin: NextPage = () => {
             <Typography sx={{ p: 1, color: '#fff', fontSize: 18 }}>{colName}を編集</Typography>
           </Grid>
         ))}
+        <ConfirmRequestsModal />
       </Grid>
     </AdminLayout>
   );

@@ -45,7 +45,7 @@ func main() {
 	store := cookie.NewStore([]byte(secret))
 	mailInfo := mailservice.MailRequest{From: from, To: to, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}
 	sender :=controllers.SendController{MailInfo: mailInfo}
-	auth := controllers.Authcontroller{MyDB: myDB, SessionKey: sessionKey}
+	auth := controllers.Authcontroller{MyDB: myDB, SessionKey: sessionKey, MailInfo: mailInfo, SiteUrl: siteUrl+"/login"}
 	user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey, Url: siteUrl, MailInfo: mailInfo}
 	router.Use(sessions.Sessions("mysession", store))
 	// ログイン・ホームページの静的ファイルを返す
@@ -60,7 +60,14 @@ func main() {
 	router.PATCH("/user/reset-password", user.ResetPasswordController)
 	router.POST("/send", sender.MailController)
 	router.POST("/login", auth.LoginController)
-	router.POST("/signup/"+os.Getenv("SIGNUP_ROUTE"), auth.SignUpController)
+
+	router.POST("/register-requests", auth.RequestRegister)
+	// basic認証を要する
+	adminGroup := router.Group("/admin", gin.BasicAuth(gin.Accounts{
+		os.Getenv("ADMIN_NAME"): os.Getenv("ADMIN_PASS"),
+	}))
+	adminGroup.POST("/accept-register", auth.SignUpController)
+	adminGroup.GET("/register-requests", auth.GetRegisterRequests)
 
 	authGroup := router.Group("/home")
 	authGroup.Use(middlewares.LoginCheckMiddleware(sessionKey))
@@ -72,7 +79,7 @@ func main() {
 		request := controllers.RequestController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
 		
 		// userエンドポイント
-		authGroup.PATCH("/user", user.PatchUserController)
+		authGroup.PATCH("/user/password", user.PatchPasswordController)
 		authGroup.PATCH("/user/rename", user.UserRenameController)
 		// logoutエンドポイント
 		authGroup.GET("/logout", auth.LogoutController)

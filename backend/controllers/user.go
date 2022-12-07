@@ -4,8 +4,10 @@ import (
 	"backend/db"
 	"backend/db/reset_tokens"
 	users_table "backend/db/users"
+	"backend/models"
 	mailservice "backend/service/mail_service"
 	"backend/tools"
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -16,6 +18,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 	"github.com/koron/go-dproxy"
+	"github.com/volatiletech/sqlboiler/v4/boil"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -39,7 +42,8 @@ func (u UserController) GetUserController(ctx *gin.Context) {
 		return
 	}
 	json.Unmarshal([]byte(jsonLoginUser), &loginUser)
-	user, err := users_table.SelectRow(u.MyDB, db.SelectQueryParam{From: "users", Column: []string{"name", "is_temporary"}, Where: map[string]any{"email": loginUser.Email}})
+	m_ctx := context.Background()
+	user, err :=  models.Users(models.UserWhere.Email.EQ(loginUser.Email)).One(m_ctx, u.MyDB)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "user not found",
@@ -47,13 +51,14 @@ func (u UserController) GetUserController(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"is_login":     true,
-		"id":           user.Id,
+		"id":           user.ID,
 		"name":         user.Name,
+		"grade":        user.Grade,
 		"is_temporary": user.IsTemporary,
 	})
 }
 
-func (u UserController) PatchUserController(ctx *gin.Context) {
+func (u UserController) PatchPasswordController(ctx *gin.Context) {
 	newPassword := strings.TrimSpace(ctx.PostForm("newPassword"))
 	if newPassword == "" {
 		ctx.Status(http.StatusBadRequest)
@@ -71,7 +76,11 @@ func (u UserController) PatchUserController(ctx *gin.Context) {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
-	if _, err := users_table.UpdateRow(u.MyDB, db.UpdateQueryParam{From: "users", Set: map[string]any{"password": string(hashed), "is_temporary": false}, Where: map[string]any{"email": loginUser.Email}}); err != nil {
+	m_ctx := context.Background()
+	user, _ := models.Users(models.UserWhere.Email.EQ(loginUser.Email)).One(m_ctx, u.MyDB)
+	user.Password = string(hashed)
+	user.IsTemporary = false
+	if _, err := user.Update(m_ctx, u.MyDB, boil.Infer()); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "user not found",
 		})
