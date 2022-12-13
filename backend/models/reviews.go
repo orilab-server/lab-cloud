@@ -25,6 +25,7 @@ import (
 // Review is an object representing the database table.
 type Review struct {
 	ID        string    `boil:"id" json:"id" toml:"id" yaml:"id"`
+	Name      string    `boil:"name" json:"name" toml:"name" yaml:"name"`
 	Target    int       `boil:"target" json:"target" toml:"target" yaml:"target"`
 	CreatedAt time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
@@ -35,11 +36,13 @@ type Review struct {
 
 var ReviewColumns = struct {
 	ID        string
+	Name      string
 	Target    string
 	CreatedAt string
 	UpdatedAt string
 }{
 	ID:        "id",
+	Name:      "name",
 	Target:    "target",
 	CreatedAt: "created_at",
 	UpdatedAt: "updated_at",
@@ -47,11 +50,13 @@ var ReviewColumns = struct {
 
 var ReviewTableColumns = struct {
 	ID        string
+	Name      string
 	Target    string
 	CreatedAt string
 	UpdatedAt string
 }{
 	ID:        "reviews.id",
+	Name:      "reviews.name",
 	Target:    "reviews.target",
 	CreatedAt: "reviews.created_at",
 	UpdatedAt: "reviews.updated_at",
@@ -61,11 +66,13 @@ var ReviewTableColumns = struct {
 
 var ReviewWhere = struct {
 	ID        whereHelperstring
+	Name      whereHelperstring
 	Target    whereHelperint
 	CreatedAt whereHelpertime_Time
 	UpdatedAt whereHelpernull_Time
 }{
 	ID:        whereHelperstring{field: "`reviews`.`id`"},
+	Name:      whereHelperstring{field: "`reviews`.`name`"},
 	Target:    whereHelperint{field: "`reviews`.`target`"},
 	CreatedAt: whereHelpertime_Time{field: "`reviews`.`created_at`"},
 	UpdatedAt: whereHelpernull_Time{field: "`reviews`.`updated_at`"},
@@ -99,8 +106,8 @@ func (r *reviewR) GetRevieweds() ReviewedSlice {
 type reviewL struct{}
 
 var (
-	reviewAllColumns            = []string{"id", "target", "created_at", "updated_at"}
-	reviewColumnsWithoutDefault = []string{"id", "target"}
+	reviewAllColumns            = []string{"id", "name", "target", "created_at", "updated_at"}
+	reviewColumnsWithoutDefault = []string{"id", "name", "target"}
 	reviewColumnsWithDefault    = []string{"created_at", "updated_at"}
 	reviewPrimaryKeyColumns     = []string{"id"}
 	reviewGeneratedColumns      = []string{}

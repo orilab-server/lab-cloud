@@ -41,6 +41,7 @@ create table reset_tokens(
 -- レビュー用ディレクトリのテーブル
 create table reviews(
   id varchar(36) not null,
+  name text not null,
   target int not null, -- 2, 3, 4, 5, 6
   created_at timestamp default current_timestamp not null, 
   updated_at timestamp default current_timestamp on update current_timestamp, 
@@ -82,6 +83,7 @@ create table review_comments(
   id varchar(36) not null,
   reviewed_file_id varchar(36) not null,
   reviewer_id varchar(36) not null,
+  page_number int not null,
   comment text not null,
   created_at timestamp default current_timestamp not null, -- コメントを残した日時
   updated_at timestamp default current_timestamp on update current_timestamp, -- コメントをアップデートした日時
