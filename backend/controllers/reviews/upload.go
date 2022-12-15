@@ -2,6 +2,7 @@ package reviews
 
 import (
 	"backend/models"
+	"backend/tools"
 	"net/http"
 	"strconv"
 	"strings"
@@ -30,5 +31,12 @@ func (r ReviewsController) UploadController(ctx *gin.Context) {
 	id, _ := uuid.NewUUID()
 	reviewed_file := models.ReviewedFile{ID: id.String(), ReviewedID: reviewedId, FileName: countInFileName}
 	reviewed_file.Insert(r.ModelCtx, r.MyDB, boil.Infer())
+	userName := ctx.PostForm("userName")
+	reviewDir := ctx.PostForm("reviewDir")
+	tools.LineNotify(r.LineNotifyToken, []byte(""+ "\r\n" +
+		userName+"が 「" + reviewDir + "」 に新規ファイルをアップロードしました" + "\r\n" +
+		"\r\n" +
+		"ファイル名 : " + countInFileName + "\r\n" +
+	""))
 	ctx.JSON(http.StatusAccepted, gin.H{})
 }

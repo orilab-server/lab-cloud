@@ -21,6 +21,7 @@ type ReviewsController struct {
 	MyDB * sql.DB
 	ModelCtx context.Context
 	ReviewDirPath string
+	LineNotifyToken string
 }
 
 func (r ReviewsController) GetReviewsController(ctx *gin.Context) {

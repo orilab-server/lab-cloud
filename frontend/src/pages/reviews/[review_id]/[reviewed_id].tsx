@@ -56,6 +56,8 @@ const ReviewedFiles: NextPage = () => {
     if (file !== null) {
       const formData = new FormData();
       formData.append('targetDir', `${reviewName}/${reviewedName}`);
+      formData.append('reviewDir', reviewName);
+      formData.append('userName', user?.name || 'unknown');
       formData.append('file', file);
       await uploadFileMutation
         .mutateAsync({ reviewedId, reviewId, formData })

@@ -37,6 +37,7 @@ func main() {
 	smtpServ := os.Getenv("SMTP_SERVER")
 	smtpPort := os.Getenv("SMTP_PORT")
 	importantDirStr := os.Getenv("IMPORTANT_DIRS")
+	lineNotifyToken := os.Getenv("LINE_NOTIFY_TOKEN")
 	modelContext := context.Background()
 	router := gin.New()
 	server := &http.Server{
@@ -104,7 +105,7 @@ func main() {
 			requestGroup.GET("/rm-file", request.RmFileController)
 			requestGroup.GET("/rm-dir", request.RmDirController)
 		}
-		reviews := reviews.ReviewsController{MyDB: myDB, ModelCtx: modelContext, ReviewDirPath: reviewDirPath}
+		reviews := reviews.ReviewsController{MyDB: myDB, ModelCtx: modelContext, ReviewDirPath: reviewDirPath, LineNotifyToken: lineNotifyToken}
 		// reviewエンドポイント
 		reviewsGroup := authGroup.Group("/reviews")
 		{
