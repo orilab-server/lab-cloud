@@ -19,6 +19,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/koron/go-dproxy"
 	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -31,6 +32,18 @@ type UserController struct {
 }
 
 var loginUser db.Users
+
+func (u UserController) GetUsersController(ctx *gin.Context) {
+	users, err := models.Users(qm.Select("id", "name", "email", "grade", "is_temporary")).All(context.Background(), u.MyDB)
+	if err != nil {
+		fmt.Println(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"users": users,
+	})
+}
 
 func (u UserController) GetUserController(ctx *gin.Context) {
 	session := sessions.Default(ctx)

@@ -2,9 +2,11 @@ package main
 
 import (
 	"backend/controllers"
+	"backend/controllers/reviews"
 	"backend/db"
 	"backend/middlewares"
 	mailservice "backend/service/mail_service"
+	"context"
 	"log"
 	"net/http"
 	"os"
@@ -26,6 +28,7 @@ func main() {
 	serverPort := os.Getenv("SERVER_PORT")
 	shareDirPath := os.Getenv("SHARE_DIR")
 	trashDirPath := os.Getenv("TRASH_DIR_PATH")
+	reviewDirPath := os.Getenv("REVIEW_DIR_PATH")
 	siteUrl := os.Getenv("SITE_URL")
 	secret := os.Getenv("SECRET")
 	from := os.Getenv("MAIL_FROM")
@@ -34,6 +37,7 @@ func main() {
 	smtpServ := os.Getenv("SMTP_SERVER")
 	smtpPort := os.Getenv("SMTP_PORT")
 	importantDirStr := os.Getenv("IMPORTANT_DIRS")
+	modelContext := context.Background()
 	router := gin.New()
 	server := &http.Server{
 		Addr:    ":" + serverPort,
@@ -79,6 +83,7 @@ func main() {
 		request := controllers.RequestController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
 		
 		// userエンドポイント
+		authGroup.GET("/users", user.GetUsersController)
 		authGroup.PATCH("/user/password", user.PatchPasswordController)
 		authGroup.PATCH("/user/rename", user.UserRenameController)
 		// logoutエンドポイント
@@ -98,6 +103,24 @@ func main() {
 			requestGroup.GET("/mv-trash", request.MvTrashController)
 			requestGroup.GET("/rm-file", request.RmFileController)
 			requestGroup.GET("/rm-dir", request.RmDirController)
+		}
+		reviews := reviews.ReviewsController{MyDB: myDB, ModelCtx: modelContext, ReviewDirPath: reviewDirPath}
+		// reviewエンドポイント
+		reviewsGroup := authGroup.Group("/reviews")
+		{
+			// reviewsGroup.GET("/user/:user-id", reviews)
+			reviewsGroup.GET("/", reviews.GetReviewsController) // レビュー全件取得
+			reviewsGroup.POST("/", reviews.PostReviewController) // 新規レビュー作成
+			reviewedGroup := reviewsGroup.Group("/:review-id/reviewed")
+			{
+				reviewedGroup.GET("/", reviews.GetReviewedController) // 全レビュー対象者の未確認フィードバック数を返却
+				reviewedGroup.GET("/:reviewed-id/files", reviews.GetFilesController) // レビュー対象ファイル全件取得
+				reviewedGroup.POST("/:reviewed-id/files/upload", reviews.UploadController) // 新しいファイルをアップロード
+				reviewedGroup.GET("/:reviewed-id/files/:file-id/download", reviews.DownloadController) // ファイルをダウンロード
+				reviewedGroup.POST("/:reviewed-id/files/:file-id/comment", reviews.PostCommentController) // ファイルへのコメントのPOST
+				reviewedGroup.GET("/:reviewed-id/files/:file-id/reviewers", reviews.GetReviewersController) // ファイルへのレビューをした人の情報を全取得
+				reviewedGroup.GET("/:reviewed-id/files/:file-id/reviewers/:reviewer-id/comment/:page-number", reviews.GetCommentController) // ファイルへのレビューコメントを1件取得
+			}
 		}
 	}
 	err = server.ListenAndServe()

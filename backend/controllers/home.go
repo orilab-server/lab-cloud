@@ -34,8 +34,8 @@ func (g HomeController) Controller(ctx *gin.Context) {
 		fmt.Println("error : ", err)
 		return
 	}
-	reg := regexp.MustCompile(g.TrashDir)
-	istrash := reg.MatchString(newpath)
+	trashReg := regexp.MustCompile(g.TrashDir)
+	istrash := trashReg.MatchString(newpath)
 	filepaths, err := tools.GetDirAndFilePaths(newpath)
 	if istrash {
 		res, err := files_trash_table.SelectRows(g.MyDB, db.SelectQueryParam{From: "files_trash", Column: []string{"*"}, Where: map[string]any{}})
