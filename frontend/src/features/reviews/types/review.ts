@@ -16,6 +16,8 @@ export type Reviewed = {
 export type ReviewedFile = {
   id: string;
   file_name: string;
+  created_at: string;
+  reviewer_count: number;
 };
 
 export type Reviewer = {

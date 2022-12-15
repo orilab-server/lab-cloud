@@ -12,5 +12,8 @@ export const getReviewers = async (url: string) => {
 };
 
 export const useGetReviewers = (url: string) => {
-  return useQuery({ queryKey: ['reviewers'], queryFn: async () => getReviewers(url) });
+  return useQuery({
+    queryKey: ['reviewers'],
+    queryFn: async () => getReviewers(url),
+  });
 };

@@ -24,6 +24,7 @@ export const useSendComment = (url: string) => {
     {
       onSuccess: async () => {
         await queryClient.invalidateQueries('comment');
+        await queryClient.invalidateQueries('reviewed_files');
         setNotify({ severity: 'info', text: 'コメントを保存しました' });
       },
       onError: () => {

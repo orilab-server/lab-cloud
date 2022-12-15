@@ -6,7 +6,8 @@ import ReviewLayout from '@/features/reviews/components/ReviewLayout';
 import SubHeader from '@/features/reviews/components/SubHeader';
 import UploadFileArea from '@/features/reviews/components/UploadFileArea';
 import { pdfReviewState } from '@/shared/stores';
-import { Box, Divider, Stack, Typography } from '@mui/material';
+import { Box, Chip, Divider, Stack, Typography } from '@mui/material';
+import { format } from 'date-fns';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
@@ -80,16 +81,20 @@ const ReviewedFiles: NextPage = () => {
         labelVariants={['filled', 'outlined']}
         labelColors={['primary', 'default']}
       />
-      <Divider sx={{ width: '100%' }} />
-      <UploadFileArea
-        file={file}
-        isLoading={uploadFileMutation.isLoading}
-        setFile={setFile}
-        onUpload={onUpload}
-      />
+      {isOwn && (
+        <>
+          <Divider sx={{ width: '100%' }} />
+          <UploadFileArea
+            file={file}
+            isLoading={uploadFileMutation.isLoading}
+            setFile={setFile}
+            onUpload={onUpload}
+          />
+        </>
+      )}
       <Divider sx={{ width: '100%' }} />
       <Stack sx={{ width: '100%' }} justifyContent="start" divider={<Divider />}>
-        {reviewedFiles.map((reviewedFile) => (
+        {reviewedFiles.map((reviewedFile, i) => (
           <Box
             key={reviewedFile.id}
             onClick={() =>
@@ -101,7 +106,16 @@ const ReviewedFiles: NextPage = () => {
             }
             sx={boxStyle}
           >
-            <Typography sx={{ fontSize: '14px', mx: 1 }}>{reviewedFile.file_name}</Typography>
+            <Stack direction="row" spacing={1} alignItems="center">
+              {i === 0 && <Chip size="small" label="最新" variant="outlined" color="info" />}
+              <Box>
+                <Typography sx={{ fontSize: '14px', mx: 1 }}>{reviewedFile.file_name}</Typography>
+                <Typography sx={{ fontSize: '10px', mx: 1 }}>
+                  {format(new Date(reviewedFile.created_at), 'yyyy-MM-dd hh:mm')}
+                </Typography>
+              </Box>
+              <Chip size="small" label={`${reviewedFile.reviewer_count}件のレビュー`} />
+            </Stack>
           </Box>
         ))}
       </Stack>
