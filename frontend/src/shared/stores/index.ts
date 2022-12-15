@@ -45,6 +45,7 @@ export const downloadProgressesState = atom<DownloadProgress[]>({
 });
 
 export type PdfReviewState = {
+  fileId: string;
   path: string;
   fileName: string;
 };

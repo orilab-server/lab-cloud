@@ -1,5 +1,6 @@
 import { Box } from '@mui/system';
 import AddButton from './side/buttons/AddButton';
+import GoReviewButton from './side/buttons/GoReviewButton';
 import InquiryButton from './side/buttons/InquiryButton';
 import LogoutButton from './side/buttons/LogoutButton';
 import TrashBox from './side/buttons/TrashDirButton';
@@ -46,6 +47,7 @@ export const SideContents = ({
         <Profile name={name} />
         {/* 各種ボタン */}
         <AddButton currentDir={currentDir} isTrash={isTrash} />
+        <GoReviewButton />
         <LogoutButton />
         {/* ゴミ箱 */}
         <TrashBox moveTrashDir={() => moveDir(trashDir)} />

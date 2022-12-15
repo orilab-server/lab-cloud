@@ -1,11 +1,6 @@
 import { myAxiosGet } from '@/shared/utils/axios';
 import { useQuery } from 'react-query';
-
-type User = {
-  is_login: boolean;
-  name: string;
-  is_temporary: boolean;
-};
+import { User } from '../types/user';
 
 export const getUser = async () => {
   const res = await myAxiosGet<User>(`user`, {
