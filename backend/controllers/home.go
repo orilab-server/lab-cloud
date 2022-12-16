@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"backend/db"
-	files_trash_table "backend/db/files_trash"
+	"backend/models"
 	"backend/tools"
+	"context"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -38,14 +38,15 @@ func (g HomeController) Controller(ctx *gin.Context) {
 	istrash := trashReg.MatchString(newpath)
 	filepaths, err := tools.GetDirAndFilePaths(newpath)
 	if istrash {
-		res, err := files_trash_table.SelectRows(g.MyDB, db.SelectQueryParam{From: "files_trash", Column: []string{"*"}, Where: map[string]any{}})
+		modelCtx := context.Background()
+		filesTrashes, err := models.FilesTrashes().All(modelCtx, g.MyDB)
 		if err != nil {
 			fmt.Println("err : ", err)
 		} else {
-			for _, r := range res {
-				if exist, index := tools.Contains(filepaths, tools.StorageItem{Id: "",Path: r.CurrentLocation, Type: r.Type}); exist {
+			for _, r := range filesTrashes {
+				if exist, index := tools.Contains(filepaths, tools.StorageItem{Id: "", Path: r.CurrentLocation, Type: r.Type}); exist {
 					relativePastLocation := strings.Replace(r.PastLocation, g.ShareDir, "Share", 1)
-					filepaths[index] = tools.StorageItem{Id: r.Id, Path: filepaths[index].Path, Type: filepaths[index].Type, PastLocation: relativePastLocation}
+					filepaths[index] = tools.StorageItem{Id: r.ID, Path: filepaths[index].Path, Type: filepaths[index].Type, PastLocation: relativePastLocation}
 				}
 			}
 		}

@@ -1,9 +1,6 @@
 package controllers
 
 import (
-	"backend/db"
-	"backend/db/reset_tokens"
-	users_table "backend/db/users"
 	"backend/models"
 	mailservice "backend/service/mail_service"
 	"backend/tools"
@@ -11,6 +8,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -31,7 +29,7 @@ type UserController struct {
 	MailInfo mailservice.MailRequest
 }
 
-var loginUser db.Users
+var loginUser models.User
 
 func (u UserController) GetUsersController(ctx *gin.Context) {
 	users, err := models.Users(qm.Select("id", "name", "email", "grade", "is_temporary")).All(context.Background(), u.MyDB)
@@ -89,11 +87,11 @@ func (u UserController) PatchPasswordController(ctx *gin.Context) {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
-	m_ctx := context.Background()
-	user, _ := models.Users(models.UserWhere.Email.EQ(loginUser.Email)).One(m_ctx, u.MyDB)
+	modelCtx := context.Background()
+	user, _ := models.Users(qm.Where("email=?", loginUser.Email)).One(modelCtx, u.MyDB)
 	user.Password = string(hashed)
 	user.IsTemporary = false
-	if _, err := user.Update(m_ctx, u.MyDB, boil.Infer()); err != nil {
+	if _, err := user.Update(modelCtx, u.MyDB, boil.Infer()); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "user not found",
 		})
@@ -117,7 +115,8 @@ func (u UserController) UserRenameController(ctx *gin.Context) {
 		return
 	}
 	json.Unmarshal([]byte(jsonLoginUser), &loginUser)
-	if _, err := users_table.UpdateRow(u.MyDB, db.UpdateQueryParam{From: "users", Set: map[string]any{"name": newName}, Where: map[string]any{"email": loginUser.Email}}); err != nil {
+	modelCtx := context.Background()
+	if _, err := models.Users(qm.Where("email=?", loginUser.Email)).UpdateAll(modelCtx, u.MyDB, models.M{"name": newName}); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "user not found",
 		})
@@ -134,7 +133,9 @@ func (u UserController) ResetPasswordRequestController(ctx *gin.Context) {
 		ctx.Status(http.StatusBadRequest)
 		return
 	}
-	if _, err := users_table.SelectRow(u.MyDB, db.SelectQueryParam{From: "users", Column: []string{"id"}, Where: map[string]any{"email": email}}); err != nil {
+	modelCtx := context.Background()
+	userExist, _ := models.Users(qm.Where("email=?", email)).Exists(modelCtx, u.MyDB)
+	if !userExist {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "user not found",
 		})
@@ -143,8 +144,13 @@ func (u UserController) ResetPasswordRequestController(ctx *gin.Context) {
 	// dbにパスワードリセット用tokenを登録
 	id, _ := uuid.NewUUID()
 	token, _ := tools.GetRandomStr(254)
-	if _, err := reset_tokens.InsertRow(u.MyDB, db.InsertQueryParam{From: "reset_tokens", Column: []string{"id", "email", "token"}, Values: []any{id, email, token}}); err != nil {
-		fmt.Println(err)
+	resetToken := models.ResetToken{
+		ID: id.String(),
+		Email: email,
+		Token: token,
+	}
+	if err := resetToken.Insert(modelCtx, u.MyDB, boil.Infer()); err != nil {
+		log.Fatal(err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{})
 		return
 	}
@@ -184,8 +190,9 @@ func (u UserController) ResetPasswordController(ctx *gin.Context) {
 		ctx.Status(http.StatusBadRequest)
 		return
 	}
-	row, err := reset_tokens.SelectRow(u.MyDB, db.SelectQueryParam{From: "reset_tokens", Column: []string{"id", "email"}, Where: map[string]any{"token": token}})
-	if err != nil || (row.Id == "" && row.Email == "") {
+	modelCtx := context.Background()
+	tokens, err := models.ResetTokens(qm.Where("token=?", token)).One(modelCtx, u.MyDB)
+	if err != nil || (tokens.ID == "" && tokens.Email == "") {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "invalid token",
 		})
@@ -196,7 +203,7 @@ func (u UserController) ResetPasswordController(ctx *gin.Context) {
 		ctx.Status(http.StatusInternalServerError)
 		return
 	}
-	if _, err := users_table.UpdateRow(u.MyDB, db.UpdateQueryParam{From: "users", Set: map[string]any{"password": string(hashed)}, Where: map[string]any{"email": row.Email}}); err != nil {
+	if _, err := models.Users(qm.Where("email=?", tokens.Email)).UpdateAll(modelCtx, u.MyDB, models.M{"password": string(hashed)}); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "user not found",
 		})
@@ -206,5 +213,5 @@ func (u UserController) ResetPasswordController(ctx *gin.Context) {
 		"message": "successfully reset password",
 	})
 	// 使用済みトークンは削除
-	reset_tokens.DeleteRow(u.MyDB, db.DeleteQueryParam{From: "reset_tokens", Where: map[string]any{"id": row.Id}})
+	models.ResetTokens(qm.Where("id=?", tokens.ID)).DeleteAll(modelCtx, u.MyDB)
 }

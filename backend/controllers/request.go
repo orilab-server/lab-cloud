@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"backend/db"
-	files_trash_table "backend/db/files_trash"
+	"backend/models"
 	command_service "backend/service/command"
 	"backend/tools"
+	"context"
 	"database/sql"
 	"fmt"
 	"net/http"
@@ -13,6 +13,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 type RequestController struct {
@@ -58,13 +59,18 @@ func (r RequestController) MvController(ctx *gin.Context) {
 	// ゴミ箱から元の場所に戻す時
 	if byTrash {
 		id := ctx.Query("id")
-		res, _ := files_trash_table.SelectRow(r.MyDB, db.SelectQueryParam{From: "files_trash", Column: []string{"current_location", "past_location"}, Where: map[string]any{"id": id}})
-		if err := files_trash_table.DeleteRow(r.MyDB, db.DeleteQueryParam{From: "files_trash", Where: map[string]any{"id": id}}); err != nil {
-			fmt.Println(err)
+		modelCtx := context.Background()
+		file, err := models.FindFilesTrash(modelCtx, r.MyDB, id)
+		if err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{})
+			return
 		}
-		if err := command_service.Mv(res.CurrentLocation, res.PastLocation); err != nil {
+		if err := command_service.Mv(file.CurrentLocation, file.PastLocation); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{})
 			return
+		}
+		if _, err := models.FilesTrashes(qm.Where("id=?", id)).DeleteAll(modelCtx, r.MyDB); err != nil {
+			fmt.Println(err)
 		}
 	} else {
 		oldPath := ctx.Query("oldPath")         // get Query Parameter
@@ -95,7 +101,8 @@ func (r RequestController) MvTrashController(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
-	command := command_service.MvTrashRequest{MyDB: r.MyDB, TrashDir: r.TrashDir}
+	userId, _ := strconv.Atoi(ctx.PostForm("userId"))
+	command := command_service.MvTrashRequest{MyDB: r.MyDB, TrashDir: r.TrashDir, UserId: userId}
 	if err := command.MvTrash(path, itemType); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{})
 		return
