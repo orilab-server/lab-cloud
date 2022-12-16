@@ -1,7 +1,8 @@
+import { useUser } from '@/features/auth/api/getUser';
 import { Button, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { useRouter } from 'next/router';
-import React from 'react';
+import React, { useEffect } from 'react';
 
 type ReviewLayoutProps = {
   children: React.ReactNode;
@@ -9,6 +10,14 @@ type ReviewLayoutProps = {
 
 const ReviewLayout = ({ children }: ReviewLayoutProps) => {
   const router = useRouter();
+  const userQuery = useUser();
+
+  // リロード時にログイン画面へ戦死してしまう問題に対処
+  useEffect(() => {
+    if (userQuery.data && userQuery.data.is_login) {
+      localStorage.setItem('logged_in', 'true');
+    }
+  }, [userQuery.data]);
 
   return (
     <Stack

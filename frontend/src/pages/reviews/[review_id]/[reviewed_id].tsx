@@ -53,11 +53,12 @@ const ReviewedFiles: NextPage = () => {
   const isOwn = Boolean(userId && user?.id && Object.is(userId, user.id));
 
   const onUpload = async () => {
-    if (file !== null) {
+    if (file !== null && user?.name) {
       const formData = new FormData();
       formData.append('targetDir', `${reviewName}/${reviewedName}`);
       formData.append('reviewDir', reviewName);
-      formData.append('userName', user?.name || 'unknown');
+      formData.append('userName', user.name);
+      formData.append('url', location.href);
       formData.append('file', file);
       await uploadFileMutation
         .mutateAsync({ reviewedId, reviewId, formData })

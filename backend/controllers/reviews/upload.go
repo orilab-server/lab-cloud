@@ -33,10 +33,12 @@ func (r ReviewsController) UploadController(ctx *gin.Context) {
 	reviewed_file.Insert(r.ModelCtx, r.MyDB, boil.Infer())
 	userName := ctx.PostForm("userName")
 	reviewDir := ctx.PostForm("reviewDir")
+	URL := ctx.PostForm("url")
 	tools.LineNotify(r.LineNotifyToken, []byte(""+ "\r\n" +
 		userName+"が 「" + reviewDir + "」 に新規ファイルをアップロードしました" + "\r\n" +
 		"\r\n" +
-		"ファイル名 : " + countInFileName + "\r\n" +
+		"ファイル名 : " + countInFileName + "\r\n" + "\r\n" +
+		"URL : " + URL +
 	""))
 	ctx.JSON(http.StatusAccepted, gin.H{})
 }

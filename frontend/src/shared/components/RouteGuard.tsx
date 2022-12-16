@@ -45,10 +45,12 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
         }
         // /adminページはsessionを保持できないためスルー
         if (url.match('/admin') === null) {
-          if (url.match('/reviews') !== null) {
-            localStorage.setItem('no_session', 'true');
+          if (!Boolean(localStorage.getItem('logged_in'))) {
+            if (url.match('/reviews') !== null) {
+              localStorage.setItem('no_session', 'true');
+            }
+            void router.push('/login');
           }
-          void router.push('/login');
         }
       }
     } else {
