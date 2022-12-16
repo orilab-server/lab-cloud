@@ -23,42 +23,47 @@ import (
 
 // FilesTrash is an object representing the database table.
 type FilesTrash struct {
-	ID           string    `boil:"id" json:"id" toml:"id" yaml:"id"`
-	UserID       int       `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
-	Type         string    `boil:"type" json:"type" toml:"type" yaml:"type"`
-	PastLocation string    `boil:"past_location" json:"past_location" toml:"past_location" yaml:"past_location"`
-	CreatedAt    time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	ID              string    `boil:"id" json:"id" toml:"id" yaml:"id"`
+	UserID          int       `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
+	Type            string    `boil:"type" json:"type" toml:"type" yaml:"type"`
+	PastLocation    string    `boil:"past_location" json:"past_location" toml:"past_location" yaml:"past_location"`
+	CreatedAt       time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
+	CurrentLocation string    `boil:"current_location" json:"current_location" toml:"current_location" yaml:"current_location"`
 
 	R *filesTrashR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L filesTrashL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var FilesTrashColumns = struct {
-	ID           string
-	UserID       string
-	Type         string
-	PastLocation string
-	CreatedAt    string
+	ID              string
+	UserID          string
+	Type            string
+	PastLocation    string
+	CreatedAt       string
+	CurrentLocation string
 }{
-	ID:           "id",
-	UserID:       "user_id",
-	Type:         "type",
-	PastLocation: "past_location",
-	CreatedAt:    "created_at",
+	ID:              "id",
+	UserID:          "user_id",
+	Type:            "type",
+	PastLocation:    "past_location",
+	CreatedAt:       "created_at",
+	CurrentLocation: "current_location",
 }
 
 var FilesTrashTableColumns = struct {
-	ID           string
-	UserID       string
-	Type         string
-	PastLocation string
-	CreatedAt    string
+	ID              string
+	UserID          string
+	Type            string
+	PastLocation    string
+	CreatedAt       string
+	CurrentLocation string
 }{
-	ID:           "files_trash.id",
-	UserID:       "files_trash.user_id",
-	Type:         "files_trash.type",
-	PastLocation: "files_trash.past_location",
-	CreatedAt:    "files_trash.created_at",
+	ID:              "files_trash.id",
+	UserID:          "files_trash.user_id",
+	Type:            "files_trash.type",
+	PastLocation:    "files_trash.past_location",
+	CreatedAt:       "files_trash.created_at",
+	CurrentLocation: "files_trash.current_location",
 }
 
 // Generated where
@@ -131,17 +136,19 @@ func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
 }
 
 var FilesTrashWhere = struct {
-	ID           whereHelperstring
-	UserID       whereHelperint
-	Type         whereHelperstring
-	PastLocation whereHelperstring
-	CreatedAt    whereHelpertime_Time
+	ID              whereHelperstring
+	UserID          whereHelperint
+	Type            whereHelperstring
+	PastLocation    whereHelperstring
+	CreatedAt       whereHelpertime_Time
+	CurrentLocation whereHelperstring
 }{
-	ID:           whereHelperstring{field: "`files_trash`.`id`"},
-	UserID:       whereHelperint{field: "`files_trash`.`user_id`"},
-	Type:         whereHelperstring{field: "`files_trash`.`type`"},
-	PastLocation: whereHelperstring{field: "`files_trash`.`past_location`"},
-	CreatedAt:    whereHelpertime_Time{field: "`files_trash`.`created_at`"},
+	ID:              whereHelperstring{field: "`files_trash`.`id`"},
+	UserID:          whereHelperint{field: "`files_trash`.`user_id`"},
+	Type:            whereHelperstring{field: "`files_trash`.`type`"},
+	PastLocation:    whereHelperstring{field: "`files_trash`.`past_location`"},
+	CreatedAt:       whereHelpertime_Time{field: "`files_trash`.`created_at`"},
+	CurrentLocation: whereHelperstring{field: "`files_trash`.`current_location`"},
 }
 
 // FilesTrashRels is where relationship names are stored.
@@ -172,8 +179,8 @@ func (r *filesTrashR) GetUser() *User {
 type filesTrashL struct{}
 
 var (
-	filesTrashAllColumns            = []string{"id", "user_id", "type", "past_location", "created_at"}
-	filesTrashColumnsWithoutDefault = []string{"id", "user_id", "type", "past_location"}
+	filesTrashAllColumns            = []string{"id", "user_id", "type", "past_location", "created_at", "current_location"}
+	filesTrashColumnsWithoutDefault = []string{"id", "user_id", "type", "past_location", "current_location"}
 	filesTrashColumnsWithDefault    = []string{"created_at"}
 	filesTrashPrimaryKeyColumns     = []string{"id"}
 	filesTrashGeneratedColumns      = []string{}
