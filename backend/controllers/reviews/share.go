@@ -12,6 +12,13 @@ import (
 func (r ReviewsController) PostShareReviewController(ctx *gin.Context) {
 	fileId := ctx.Param("file-id")
 	reviewerId := ctx.Param("reviewer-id")
+	commentsExist, _ := models.ReviewComments(qm.Where("reviewed_file_id=?", fileId), qm.Where("reviewer_id=?", reviewerId)).Exists(r.ModelCtx, r.MyDB)
+	if !commentsExist {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "there are no comments",
+		})
+		return
+	}
 	comments, err := models.ReviewComments(qm.Where("reviewed_file_id=?", fileId), qm.Where("reviewer_id=?", reviewerId), qm.OrderBy("page_number")).All(r.ModelCtx, r.MyDB)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
