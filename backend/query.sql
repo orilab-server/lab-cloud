@@ -24,6 +24,7 @@ create table register_requests(
 create table files_trash(id varchar(36) not null,
   user_id int not null, 
   type varchar(4) not null, 
+  current_location varchar(1024) not null, 
   past_location varchar(1024) not null, 
   created_at timestamp default current_timestamp not null, 
   primary key (id), 

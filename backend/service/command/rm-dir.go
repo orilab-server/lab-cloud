@@ -1,11 +1,13 @@
 package command_service
 
 import (
-	"backend/db"
-	files_trash_table "backend/db/files_trash"
+	"backend/models"
+	"context"
 	"database/sql"
-	"fmt"
+	"log"
 	"os"
+
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 type RmDirRequest struct {
@@ -14,11 +16,13 @@ type RmDirRequest struct {
 }
 
 func (r RmDirRequest) RmDir(path string, id string) error {
-	dbErr := files_trash_table.DeleteRow(r.MyDB, db.DeleteQueryParam{From: "files_trash", Where: map[string]any{"id": id}})
+	if _, err := models.FilesTrashes(qm.Where("id=?", id)).DeleteAll(context.Background(), r.MyDB); err != nil {
+		log.Fatal(err)
+		return err
+	}
 	if err := os.RemoveAll(path); err != nil {
-		fmt.Println(err)
-		fmt.Println(dbErr)
-		return fmt.Errorf("error: %s, db error: %s", err, dbErr)
+		log.Fatal(err)
+		return err
 	}
 	return nil
 }

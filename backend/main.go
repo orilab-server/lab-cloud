@@ -101,7 +101,7 @@ func main() {
 			requestGroup.GET("/mkdir", request.MkDirController)
 			requestGroup.GET("/rename", request.RenameController)
 			requestGroup.GET("/mv", request.MvController)
-			requestGroup.GET("/mv-trash", request.MvTrashController)
+			requestGroup.POST("/mv-trash", request.MvTrashController)
 			requestGroup.GET("/rm-file", request.RmFileController)
 			requestGroup.GET("/rm-dir", request.RmDirController)
 		}
