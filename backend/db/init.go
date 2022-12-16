@@ -61,7 +61,7 @@ func Init() (*sql.DB, error) {
 	if err != nil {
 		panic(err)
 	}
-	source := fmt.Sprintf("%s:%s@(%s:%s)/%s", os.Getenv("USER_NAME"), os.Getenv("DB_PASS"), os.Getenv("DB_IP"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
+	source := fmt.Sprintf("%s:%s@(%s:%s)/%s?parseTime=true", os.Getenv("USER_NAME"), os.Getenv("DB_PASS"), os.Getenv("DB_IP"), os.Getenv("DB_PORT"), os.Getenv("DB_NAME"))
 	db, err := sql.Open("mysql", source)
 	if err != nil {
 		return nil, err

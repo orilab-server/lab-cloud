@@ -5,7 +5,7 @@ import {
   freeLengthStrSlicer,
   withoutLastPathSlicer,
 } from '@/shared/utils/slice';
-import { IconButton, ListItem, ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { IconButton, ListItem, ListItemIcon, ListItemText, Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import SelectionArea, { SelectionEvent } from '@viselect/react';
 import React from 'react';
@@ -235,7 +235,12 @@ const FilePathList = ({
                   <ListItemIcon>
                     <AiFillFolder size={25} style={{ color: 'steelblue' }} />
                   </ListItemIcon>
-                  <ListItemText className="list-item-text" primary={endFilenameSlicer(item.path)} />
+                  <Stack direction="row" spacing={3}>
+                    <ListItemText
+                      className="list-item-text"
+                      primary={endFilenameSlicer(item.path)}
+                    />
+                  </Stack>
                 </ListItem>
               </ContextMenu>
             );

@@ -35,7 +35,6 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
       }
       return topPath;
     })();
-    console.log(path);
     const session = getCookie('mysession');
 
     if (!publicPaths.includes(path)) {
@@ -46,7 +45,12 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
         }
         // /adminページはsessionを保持できないためスルー
         if (url.match('/admin') === null) {
-          void router.push('/login');
+          if (!Boolean(localStorage.getItem('logged_in'))) {
+            if (url.match('/reviews') !== null) {
+              localStorage.setItem('no_session', 'true');
+            }
+            void router.push('/login');
+          }
         }
       }
     } else {
