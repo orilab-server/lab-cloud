@@ -105,7 +105,13 @@ func main() {
 			requestGroup.GET("/rm-file", request.RmFileController)
 			requestGroup.GET("/rm-dir", request.RmDirController)
 		}
-		reviews := reviews.ReviewsController{MyDB: myDB, ModelCtx: modelContext, ReviewDirPath: reviewDirPath, LineNotifyToken: lineNotifyToken}
+		reviews := reviews.ReviewsController{
+			MyDB: myDB,
+			ModelCtx: modelContext,
+			ReviewDirPath: reviewDirPath,
+			LineNotifyToken: lineNotifyToken,
+			MailInfo: mailInfo,
+		}
 		// reviewエンドポイント
 		reviewsGroup := authGroup.Group("/reviews")
 		{
@@ -120,6 +126,7 @@ func main() {
 				reviewedGroup.GET("/:reviewed-id/files/:file-id/download", reviews.DownloadController) // ファイルをダウンロード
 				reviewedGroup.POST("/:reviewed-id/files/:file-id/comment", reviews.PostCommentController) // ファイルへのコメントのPOST
 				reviewedGroup.GET("/:reviewed-id/files/:file-id/reviewers", reviews.GetReviewersController) // ファイルへのレビューをした人の情報を全取得
+				reviewedGroup.POST("/:reviewed-id/files/:file-id/reviewers/:reviewer-id/share", reviews.PostShareReviewController) // レビューをメールで通知
 				reviewedGroup.GET("/:reviewed-id/files/:file-id/reviewers/:reviewer-id/comment/:page-number", reviews.GetCommentController) // ファイルへのレビューコメントを1件取得
 			}
 		}
