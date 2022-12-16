@@ -46,13 +46,18 @@ func (r ReviewsController) PostShareReviewController(ctx *gin.Context) {
 		return
 	}
 	reviewName := ctx.PostForm("reviewName")
+	reviewedFile, err := models.FindReviewedFile(r.ModelCtx, r.MyDB, fileId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
 	msg := "" +
 		"From: " + r.MailInfo.From + "\r\n" +
 		"To: " + reviewedUser.Email + "\r\n" +
 		"Subject: 件名 " + " ["+reviewName+"] " + reviewerUser.Name + "のレビュー\r\n" +
 		"\r\n" +
 		"\r\n" +
-		reviewerUser.Name + "がコメントしました" +
+		reviewerUser.Name + "が " + reviewedFile.FileName + " にコメントしました" +
 		"\r\n" +
 		"\r\n" +
 		"============================" +
