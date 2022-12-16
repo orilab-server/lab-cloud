@@ -1,3 +1,4 @@
+import { useUsers } from '@/features/auth/api/getUsers';
 import UsersSelectPanel from '@/features/home/components/misc/reviews/UsersSelectPanel';
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
 import {
@@ -43,6 +44,9 @@ const modalStyle = {
 const CreateReviewModal = ({ button }: CreateReviewModalProps) => {
   const [Modal, openM, closeM] = useModal('review');
   const [selected, setSelected] = useState<string[]>([]);
+  const usersQuery = useUsers();
+  const users = usersQuery.data || [];
+  const grades = new Set(users.map((u) => new Date().getFullYear() - u.grade));
   const mkReviewDirMutation = useSendMkReviewDirRequest();
 
   const { control, handleSubmit, watch } = useForm<ReviewDirInput>({
@@ -114,16 +118,16 @@ const CreateReviewModal = ({ button }: CreateReviewModalProps) => {
                     <em>学年を選択</em>
                   </MenuItem>
                   <MenuItem value={6}>カスタム</MenuItem>
-                  <MenuItem value={5}>修士2年</MenuItem>
-                  <MenuItem value={4}>修士1年</MenuItem>
-                  <MenuItem value={3}>学士4年</MenuItem>
-                  <MenuItem value={2}>学士3年</MenuItem>
+                  {grades.has(5) && <MenuItem value={5}>修士2年</MenuItem>}
+                  {grades.has(4) && <MenuItem value={4}>修士1年</MenuItem>}
+                  {grades.has(3) && <MenuItem value={3}>学士4年</MenuItem>}
+                  {grades.has(2) && <MenuItem value={2}>学士3年</MenuItem>}
                 </Select>
               </FormControl>
             )}
           />
           {watch('targetGrade') === 6 && (
-            <UsersSelectPanel selectedState={[selected, setSelected]} />
+            <UsersSelectPanel selectedState={[selected, setSelected]} users={users} />
           )}
           <Stack direction="row" spacing={2}>
             <Button size="medium" variant="contained" type="submit">
