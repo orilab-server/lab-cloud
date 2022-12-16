@@ -125,6 +125,7 @@ func main() {
 				reviewedGroup.POST("/:reviewed-id/files/upload", reviews.UploadController) // 新しいファイルをアップロード
 				reviewedGroup.GET("/:reviewed-id/files/:file-id/download", reviews.DownloadController) // ファイルをダウンロード
 				reviewedGroup.POST("/:reviewed-id/files/:file-id/comment", reviews.PostCommentController) // ファイルへのコメントのPOST
+				reviewedGroup.POST("/:reviewed-id/files/:file-id/reviewer", reviews.PostRegisterReviewer) // ファイルへのレビュアーを登録
 				reviewedGroup.GET("/:reviewed-id/files/:file-id/reviewers", reviews.GetReviewersController) // ファイルへのレビューをした人の情報を全取得
 				reviewedGroup.POST("/:reviewed-id/files/:file-id/reviewers/:reviewer-id/share", reviews.PostShareReviewController) // レビューをメールで通知
 				reviewedGroup.GET("/:reviewed-id/files/:file-id/reviewers/:reviewer-id/comment/:page-number", reviews.GetCommentController) // ファイルへのレビューコメントを1件取得

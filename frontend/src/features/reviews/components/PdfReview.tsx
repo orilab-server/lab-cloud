@@ -13,6 +13,7 @@ import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { useSetRecoilState } from 'recoil';
 import { useGetReviewers } from '../api/getReviewers';
 import { usePdfReview } from '../api/getReviewPdf';
+import { useRegisterReviewer } from '../api/registerReviewer';
 import { useShareComment } from '../api/shareComment';
 import { useReviewerTab } from '../hooks/useReviewerTab';
 import CommentBox from './CommentBox';
@@ -44,10 +45,12 @@ const PdfReview = ({ pathName, fileId, userId, isOwn }: PdfReviewProps) => {
   const setPdfReview = useSetRecoilState(pdfReviewState);
   const reviewersQuery = useGetReviewers(`${pathName}/${fileId}/reviewers`);
   const shareCommentMutation = useShareComment();
+  const registerReviewerMutation = useRegisterReviewer();
   const reviewers = reviewersQuery.data || [];
   const [ReviewerTabs, TabPanels, reviewer] = useReviewerTab(reviewers);
   const { url, loading } = usePdfReview(pathName);
-  const isOwnReview = isOwn || reviewers.find((r) => r.id === reviewer)?.userId !== userId;
+  const isReviewer = reviewers.find((r) => r.id === reviewer)?.userId !== userId;
+  const isOwnOrReview = isOwn || isReviewer;
   const [ScrollButton, bottomElmRef] = useScroll();
 
   const onLoadSuccess = ({ numPages }: { numPages: number }) => {
@@ -60,6 +63,17 @@ const PdfReview = ({ pathName, fileId, userId, isOwn }: PdfReviewProps) => {
       formData.append('reviewName', reviewName);
       await shareCommentMutation.mutateAsync({
         url: `${pathName}/${fileId}/reviewers/${reviewer}/share`,
+        formData,
+      });
+    }
+  };
+
+  const registerReviewer = async () => {
+    if (userId) {
+      const formData = new FormData();
+      formData.append('userId', String(userId));
+      await registerReviewerMutation.mutateAsync({
+        url: `${pathName}/${fileId}/reviewer`,
         formData,
       });
     }
@@ -83,12 +97,17 @@ const PdfReview = ({ pathName, fileId, userId, isOwn }: PdfReviewProps) => {
         spacing={2}
         sx={{ width: '100%', my: 1, fontSize: '14px', color: '#333' }}
         justifyContent="center"
-        alignItems="end"
+        alignItems="center"
       >
         <Chip label="レビュアー" variant="outlined" color="primary" />
         <ReviewerTabs />
+        {!isOwn && !reviewers.map((r) => r.userId).includes(userId || 0) && (
+          <Button onClick={registerReviewer} color="info">
+            レビューする
+          </Button>
+        )}
       </Stack>
-      {!isOwnReview && (
+      {!isOwnOrReview && (
         <Stack sx={{ width: '100%', my: 2 }} alignItems="center">
           <Button
             disabled={reviewer === ''}
@@ -120,14 +139,14 @@ const PdfReview = ({ pathName, fileId, userId, isOwn }: PdfReviewProps) => {
                   page={index + 1}
                   reviewer={reviewer}
                   Panel={TabPanels}
-                  isOwn={isOwnReview}
+                  isOwn={isOwnOrReview}
                 />
               </Stack>
             </Stack>
           );
         })}
       </Document>
-      {!isOwnReview && (
+      {!isOwnOrReview && (
         <Stack sx={{ width: '100%', my: 2 }} alignItems="center">
           <Button
             disabled={reviewer === ''}
