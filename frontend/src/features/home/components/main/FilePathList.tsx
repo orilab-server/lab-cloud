@@ -1,3 +1,4 @@
+import { useUser } from '@/features/auth/api/getUser';
 import { FileIcons } from '@/shared/components/FileIcons';
 import { FilePreviewModal } from '@/shared/components/FilePreview';
 import {
@@ -82,6 +83,7 @@ const FilePathList = ({
   const [DropArea] = useDropItem(currentDir);
   const { files, folders, deleteFile, deleteFolder } = useUpload();
   const filesAndFolders = [...files, ...folders];
+  const userQuery = useUser();
 
   return (
     <>
@@ -191,11 +193,15 @@ const FilePathList = ({
             '/',
           )}&types=${onContextSelectTypes.join('/')}`;
           const mvTrashRequest = (targets: FileOrDirItem[]) => {
-            const mvTrashItems = targets.map((target) => {
-              return { path: path + '/' + target.name, itemType: target.type };
-            });
-            mvTrashMutation.mutate(mvTrashItems);
-            unSelect();
+            if (userQuery.data) {
+              const mvTrashItems = targets.map((target) => {
+                return { path: path + '/' + target.name, itemType: target.type };
+              });
+              const formData = new FormData();
+              formData.append('userId', String(userQuery.data.id));
+              mvTrashMutation.mutate({ targets: mvTrashItems, formData });
+              unSelect();
+            }
           };
           const rmRequest = (targets: StorageFileOrDirItem[]) => {
             const rmRequestItems = targets.map((target) => {
