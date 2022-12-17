@@ -41,7 +41,7 @@ export const BeforeLoginForms = () => {
               Orilab Cloud Storage
             </Typography>
             <Chip
-              label="v1.1"
+              label="v1.2"
               sx={{ fontWeight: 600, fontSize: 24, mx: 1, py: 1, color: 'rgba(0,0,0,0.6)' }}
             />
           </Stack>
