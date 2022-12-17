@@ -44,8 +44,9 @@ func main() {
 		Addr:    ":" + serverPort,
 		Handler: router,
 	}
-	router.Static("/_next", "_next")
-	router.LoadHTMLGlob("./*.html")
+	router.Static("/_next", "out/_next")
+	router.StaticFile("/out/favicon.ico", "./out/favicon.ico")
+	router.LoadHTMLGlob("out/*.html")
 	router.Use(middlewares.CorsMiddleWare(siteUrl))
 	store := cookie.NewStore([]byte(secret))
 	mailInfo := mailservice.MailRequest{From: from, To: to, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}
@@ -53,13 +54,51 @@ func main() {
 	auth := controllers.Authcontroller{MyDB: myDB, SessionKey: sessionKey, MailInfo: mailInfo, SiteUrl: siteUrl+"/login"}
 	user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey, Url: siteUrl, MailInfo: mailInfo}
 	router.Use(sessions.Sessions("mysession", store))
-	// ログイン・ホームページの静的ファイルを返す
+
+	// 404
+	router.NoRoute(func(ctx *gin.Context) {
+		ctx.HTML(200, "404.html", nil)
+	})
+	// home
 	router.GET("/", func(ctx *gin.Context) {
 		ctx.HTML(200, "index.html", nil)
 	})
+	// login
 	router.GET("/login", func(ctx *gin.Context) {
 		ctx.HTML(200, "login.html", nil)
 	})
+	// admin
+	router.GET("/admin", func(ctx *gin.Context) {
+		ctx.HTML(200, "admin.html", nil)
+	})
+	router.GET("/admin/login", func(ctx *gin.Context) {
+		ctx.HTML(200, "login.html", nil)
+	})
+	router.GET("/admin/[collection]", func(ctx *gin.Context) {
+		ctx.HTML(200, "[collection].html", nil)
+	})
+	// reviews
+	router.GET("/reviews", func(ctx *gin.Context) {
+		ctx.HTML(200, "reviews.html", nil)
+	})
+	router.GET("/reviews/[review_id]", func(ctx *gin.Context) {
+		ctx.HTML(200, "[review_id].html", nil)
+	})
+	router.GET("/reviews/[review_id]/[reviewed_id]", func(ctx *gin.Context) {
+		ctx.HTML(200, "[reviewed_id].html", nil)
+	})
+	// profile
+	router.GET("/profile", func(ctx *gin.Context) {
+		ctx.HTML(200, "profile.html", nil)
+	})
+	// reset-password
+	router.GET("/reset-password", func(ctx *gin.Context) {
+		ctx.HTML(200, "reset-password.html", nil)
+	})
+	router.GET("/reset-password/request", func(ctx *gin.Context) {
+		ctx.HTML(200, "request.html", nil)
+	})
+
 	router.GET("/user", user.GetUserController)
 	router.POST("/user/reset-password/request", user.ResetPasswordRequestController)
 	router.PATCH("/user/reset-password", user.ResetPasswordController)
