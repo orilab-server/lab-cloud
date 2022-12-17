@@ -13,11 +13,9 @@ type AdminLayoutProps = {
   isUnLogin?: boolean;
 };
 
-const adminPath = '/admin';
-
 export const AdminLayout = ({ children, isUnLogin }: AdminLayoutProps) => {
   const router = useRouter();
-  const isLoginPath = router.asPath.match(`${adminPath}/login`) !== null;
+  const isLoginPath = router.asPath.match('/admin/login') !== null;
   const [authorized, setAuthorized] = useState<boolean>(isLoginPath ? true : false);
   const logoutMutation = useAdminLogout();
   const session = getCookie('mysession');
@@ -26,13 +24,14 @@ export const AdminLayout = ({ children, isUnLogin }: AdminLayoutProps) => {
     const authCheck = () => {
       onAuthStateChanged(auth, async (user) => {
         if (!isLoginPath && user === null) {
-          await router.push(`${adminPath}/login`);
+          await router.push('/admin/login');
         } else if (isLoginPath && user !== null) {
-          await router.push(adminPath);
+          await router.push('/admin');
         }
       });
       setAuthorized(true);
     };
+    authCheck();
 
     // adminページではサーバーからのsessionを受け取れないため
     // 再読み込みなどがされた状態でホームに戻るとログイン画面に戻ってしまうため
