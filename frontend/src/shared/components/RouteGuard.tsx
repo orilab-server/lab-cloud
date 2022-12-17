@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { ReactElement, useEffect, useState } from 'react';
 import { ScreenLoading } from './ScreenLoading';
 
-const publicPaths = ['login', 'reset-password'];
+const publicPaths = ['login', 'reset-password', '404'];
 
 type RouteGuardProps = {
   children: ReactElement;

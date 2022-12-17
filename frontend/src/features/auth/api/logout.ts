@@ -18,6 +18,7 @@ export const useLogout = () => {
       if (ok) {
         await myAxiosGet(`home/logout`);
         setNotify({ severity: 'info', text: 'ログアウトしました' });
+        localStorage.removeItem('logged_in');
         document.cookie = 'mysession=;';
         await sleep(1);
         await router.push('/login');
