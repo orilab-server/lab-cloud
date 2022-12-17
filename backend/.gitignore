@@ -2,3 +2,5 @@
 _next
 *.html
 favicon.ico
+database.toml
+out/*

@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import { ReactElement, useEffect, useState } from 'react';
 import { ScreenLoading } from './ScreenLoading';
 
-const publicPaths = ['login'];
+const publicPaths = ['login', 'reset-password', '404'];
 
 type RouteGuardProps = {
   children: ReactElement;
@@ -28,7 +28,13 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
   }, []);
 
   const authCheck = (url: string) => {
-    const path = url.split('/')[1];
+    const path = (() => {
+      const topPath = url.split('/')[1];
+      if (topPath.match('\\?')) {
+        return topPath.split('?')[0];
+      }
+      return topPath;
+    })();
     const session = getCookie('mysession');
 
     if (!publicPaths.includes(path)) {
@@ -37,11 +43,26 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
         if (url.match('path=') !== null) {
           localStorage.setItem('path', url);
         }
-        void router.push('/login');
+        // /adminページはsessionを保持できないためスルー
+        if (url.match('/admin') === null) {
+          if (!Boolean(localStorage.getItem('logged_in'))) {
+            if (url.match('/reviews') !== null) {
+              localStorage.setItem('no_session', 'true');
+            }
+            void router.push('/login');
+          }
+        }
       }
     } else {
+      if (Boolean(localStorage.getItem('no_session'))) {
+        localStorage.removeItem('no_session');
+        router.reload();
+        return;
+      }
       if (session) {
-        void router.push('/');
+        // home → loginページへの遷移は不可, それ以外は許可
+        const to = publicPaths.includes(path) ? '/' : path;
+        void router.push(to);
       }
     }
 

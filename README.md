@@ -1,5 +1,7 @@
 # 研究室クラウド
 
+現在のバージョン : `v 1.2`
+
 研究室のファイルサーバがソフト入れていちいち ssh とか sftp とか使わないといけなくて
 めんどくさいということで, もっと手軽に扱いたいという要望からブラウザで触れる様にしました。
 
@@ -15,6 +17,9 @@ Google Drive をちょっと参考にしています。
 - リンクコピー&共有
 - ファイル名変更
 - ゴミ箱機能
+- 名前・パスワード変更
+- ファイルレビュー機能
+- 研究室 HP の CMS
 
 今後機能追加予定
 
@@ -34,6 +39,7 @@ Google Drive をちょっと参考にしています。
 - React Query
 - axios
 - React Icons
+- React-Pdf
 - その他
 
 ## バックエンド
@@ -44,6 +50,7 @@ Google Drive をちょっと参考にしています。
 - bcrypt
 - godotenv
 - google/uuid
+- sqlboiler
 - その他
 
 # 環境変数
@@ -53,36 +60,5 @@ Google Drive をちょっと参考にしています。
 ```env
 NEXT_PUBLIC_CLIENT_URL=
 NEXT_PUBLIC_SERVER_URL=
-```
-
-## バックエンド
-
-```env
-SERVER_IP=
-SERVER_PORT=
-SHARE_DIR=
-
-SITE_URL=
-
-IMPORTANT_DIRS=
-
-TRASH_DIR_PATH=
-
-MAIL_FROM=
-MAIL_TO=
-MAIL_PASSWORD=
-SMTP_SERVER=
-SMTP_PORT=
-
-DB_IP=
-DB_PORT=
-USER_NAME=
-DB_PASS=
-DB_NAME=
-
-SESSION_KEY=
-
-SECRET=
-
-SIGNUP_ROUTE=
+``
 ```

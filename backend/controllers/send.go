@@ -15,11 +15,13 @@ type SendController struct {
 func (s SendController) MailController(ctx *gin.Context) {
 	who := strings.TrimSpace(ctx.PostForm("who"))
 	subject := strings.TrimSpace(ctx.PostForm("subject"))
+	mime := strings.TrimSpace(ctx.PostForm("mime"))
 	body := strings.TrimSpace(ctx.PostForm("body"))
 	msg := []byte(""+
 			"From: " + s.MailInfo.From + "\r\n" +
 			"To: " + s.MailInfo.To + "\r\n" +
-			"Subject: 件名 " + " ["+who+"] " + subject + 
+			"Subject: 件名 " + " ["+who+"] " + subject + "\r\n" +
+			mime +
 			"\r\n" +
 			"\r\n" +
 			"============================" +

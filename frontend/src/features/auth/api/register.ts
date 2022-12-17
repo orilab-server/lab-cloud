@@ -3,8 +3,9 @@ import { myAxiosPatch } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
+// 本登録 → 本パスワードの設定
 export const register = async (params: URLSearchParams) => {
-  await myAxiosPatch(`home/user`, params, {
+  await myAxiosPatch(`home/user/password`, params, {
     xsrfHeaderName: 'X-CSRF-Token',
   });
 };
