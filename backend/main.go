@@ -55,6 +55,9 @@ func main() {
 	user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey, Url: siteUrl, MailInfo: mailInfo}
 	router.Use(sessions.Sessions("mysession", store))
 
+	/*
+	* Static HTML files
+	*/ 
 	// 404
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.HTML(200, "404.html", nil)
@@ -99,12 +102,14 @@ func main() {
 		ctx.HTML(200, "request.html", nil)
 	})
 
+	/*
+	* APIs
+	*/
 	router.GET("/user", user.GetUserController)
 	router.POST("/user/reset-password/request", user.ResetPasswordRequestController)
 	router.PATCH("/user/reset-password", user.ResetPasswordController)
 	router.POST("/send", sender.MailController)
 	router.POST("/login", auth.LoginController)
-
 	router.POST("/register-requests", auth.RequestRegister)
 	// basic認証を要する
 	adminGroup := router.Group("/admin", gin.BasicAuth(gin.Accounts{
