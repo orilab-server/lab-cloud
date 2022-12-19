@@ -156,7 +156,7 @@ func (a Authcontroller) SignUpController(ctx *gin.Context) {
 			"リンク : " + a.SiteUrl +
 			"\r\n" +
 	"")
-	a.MailInfo.Send(msg)
+	a.MailInfo.SendOptional(msg, email)
 	_, err = requestUser.Delete(m_ctx, a.MyDB)
 	if err != nil {
 		log.Fatal(err)

@@ -68,6 +68,6 @@ func (r ReviewsController) PostShareReviewController(ctx *gin.Context) {
 		page := strconv.Itoa(comment.PageNumber)+"ページ目のコメント\r\n\r\n"
 		msg += page + comment.Comment + "\r\n\r\n" + "-----------------------------" + "\r\n\r\n"
 	}
-	r.MailInfo.Send([]byte(msg))
+	r.MailInfo.SendOptional([]byte(msg), reviewedUser.Email)
 	ctx.JSON(http.StatusAccepted, gin.H{})
 }
