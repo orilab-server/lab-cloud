@@ -55,7 +55,7 @@ const ReviewedFiles: NextPage = () => {
   const onUpload = async () => {
     if (file !== null && user?.name) {
       const formData = new FormData();
-      formData.append('targetDir', `${reviewName}/${reviewedName}`);
+      formData.append('targetDir', `${reviewName}/${userId}`);
       formData.append('reviewDir', reviewName);
       formData.append('userName', user.name);
       formData.append('url', location.href);
@@ -103,7 +103,7 @@ const ReviewedFiles: NextPage = () => {
             onClick={() =>
               setPdfReview({
                 fileId: reviewedFile.id,
-                path: `${reviewName}/${reviewedName}`,
+                path: `${reviewName}/${userId}`,
                 fileName: reviewedFile.file_name,
               })
             }

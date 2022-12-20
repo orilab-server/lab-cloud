@@ -96,7 +96,7 @@ func (r ReviewsController) PostReviewController(ctx *gin.Context) {
 			ReviewID: reviewId.String(),
 			UserID: user.ID,
 		}
-		if err := os.Mkdir(newReview+"/"+user.Name, 0777); err != nil {
+		if err := os.Mkdir(newReview+"/"+strconv.Itoa(user.ID), 0777); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
 				"message": "failed to create reviewed user dir: " + user.Name,
 			})
