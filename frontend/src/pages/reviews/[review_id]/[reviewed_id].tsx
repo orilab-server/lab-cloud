@@ -9,7 +9,7 @@ import { pdfReviewState } from '@/shared/stores';
 import { Box, Chip, Divider, Stack, Typography } from '@mui/material';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 
 const boxStyle = {
@@ -50,6 +50,12 @@ const ReviewedFiles: NextPage = () => {
   const userQuery = useUser();
   const user = userQuery.data;
   const isOwn = Boolean(userId && user?.id && Object.is(userId, user.id));
+
+  useEffect(() => {
+    window.addEventListener('popstate', (e) => {
+      setPdfReview(null);
+    });
+  }, []);
 
   const onUpload = async () => {
     if (file !== null && user?.name) {
