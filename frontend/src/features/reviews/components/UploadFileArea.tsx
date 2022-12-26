@@ -25,6 +25,10 @@ const boxStyle = {
 
 const UploadFileArea = ({ file, isLoading, setFile, onUpload }: UploadFileAreaProps) => {
   const onDrop = useCallback((acceptedFiles: File[]) => {
+    if (acceptedFiles[0].type !== 'application/pdf') {
+      alert('PDFのみアップロード可能です');
+      return;
+    }
     setFile(acceptedFiles[0]);
   }, []);
   const { getRootProps, getInputProps } = useDropzone({ onDrop });
@@ -49,12 +53,15 @@ const UploadFileArea = ({ file, isLoading, setFile, onUpload }: UploadFileAreaPr
 
   return (
     <Box sx={{ width: '100%' }} {...getRootProps()}>
-      <input {...getInputProps()} />
+      <input accept=".pdf" multiple={false} {...getInputProps()} />
       <Stack direction="row" alignItems="center" sx={boxStyle}>
         <MdAdd style={{ margin: '0 5px' }} />
         <Stack>
           <Typography sx={{ fontSize: '14px', mx: 1 }}>アップロード</Typography>
           <Typography sx={{ fontSize: '10px', mx: 1 }}>ドラッグ&ドロップ可能</Typography>
+          <Typography sx={{ fontSize: '10px', mx: 1, textDecoration: 'underline' }}>
+            ※ PDFのみアップロード可能
+          </Typography>
         </Stack>
       </Stack>
     </Box>
