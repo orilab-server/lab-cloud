@@ -7,10 +7,9 @@ import SubHeader from '@/features/reviews/components/SubHeader';
 import UploadFileArea from '@/features/reviews/components/UploadFileArea';
 import { pdfReviewState } from '@/shared/stores';
 import { Box, Chip, Divider, Stack, Typography } from '@mui/material';
-import { format } from 'date-fns';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 
 const boxStyle = {
@@ -51,6 +50,12 @@ const ReviewedFiles: NextPage = () => {
   const userQuery = useUser();
   const user = userQuery.data;
   const isOwn = Boolean(userId && user?.id && Object.is(userId, user.id));
+
+  useEffect(() => {
+    window.addEventListener('popstate', (e) => {
+      setPdfReview(null);
+    });
+  }, []);
 
   const onUpload = async () => {
     if (file !== null && user?.name) {
@@ -114,7 +119,9 @@ const ReviewedFiles: NextPage = () => {
               <Box>
                 <Typography sx={{ fontSize: '14px', mx: 1 }}>{reviewedFile.file_name}</Typography>
                 <Typography sx={{ fontSize: '10px', mx: 1 }}>
-                  {format(new Date(reviewedFile.created_at), 'yyyy-MM-dd hh:mm')}
+                  {reviewedFile.created_at
+                    .replaceAll('-', '/')
+                    .slice(0, reviewedFile.created_at.indexOf('+') - 1)}
                 </Typography>
               </Box>
               <Chip size="small" label={`${reviewedFile.reviewer_count}件のレビュー`} />

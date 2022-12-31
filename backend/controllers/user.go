@@ -172,7 +172,7 @@ func (u UserController) ResetPasswordRequestController(ctx *gin.Context) {
 			"※このリンクにアクセスするには大学のネットワークに接続している必要があります" +
 			"\r\n" +
 	"")
-  if err := u.MailInfo.SendOptional(msg, u.MailInfo.To); err != nil {
+  if err := u.MailInfo.SendOptional(msg, email); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "mail send error",
 		})

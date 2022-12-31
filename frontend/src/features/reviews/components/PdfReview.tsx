@@ -5,7 +5,7 @@ import { pdfReviewState } from '@/shared/stores';
 import { Button, Chip, IconButton, Stack, Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import { useRouter } from 'next/router';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { AiFillCloseCircle } from 'react-icons/ai';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
@@ -53,6 +53,21 @@ const PdfReview = ({ pathName, fileId, userId, isOwn }: PdfReviewProps) => {
   const isOwnOrReview = isOwn || isReviewer;
   const [ScrollButton, bottomElmRef] = useScroll();
 
+  // キーダウンによるレビュー画面クローズ
+  useEffect(() => {
+    document.addEventListener(
+      'keydown',
+      (e) => {
+        e.preventDefault();
+        // esc or command + ←
+        if (e.key === 'Escape' || (e.key === 'ArrowLeft' && e.metaKey)) {
+          setPdfReview(null);
+        }
+      },
+      false,
+    );
+  }, []);
+
   const onLoadSuccess = ({ numPages }: { numPages: number }) => {
     setTotalPages(numPages);
   };
@@ -84,7 +99,7 @@ const PdfReview = ({ pathName, fileId, userId, isOwn }: PdfReviewProps) => {
   }
 
   return (
-    <Box sx={reviewStyle}>
+    <Box sx={reviewStyle} onKeyDown={(e) => console.log(e.code)}>
       <IconButton
         onClick={() => setPdfReview(null)}
         sx={{ position: 'fixed', top: 0, right: 0, zIndex: 1001 }}
