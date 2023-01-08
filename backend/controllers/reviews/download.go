@@ -1,6 +1,8 @@
 package reviews
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 func (r ReviewsController) DownloadController(ctx *gin.Context) {
 	targetPath := r.ReviewDirPath + "/" + ctx.Query("path") + "/" + ctx.Query("file")

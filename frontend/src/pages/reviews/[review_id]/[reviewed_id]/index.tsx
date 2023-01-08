@@ -85,9 +85,19 @@ const ReviewedFiles: NextPage = () => {
   return (
     <ReviewLayout>
       <SubHeader
-        labels={[reviewName, reviewedName]}
-        labelVariants={['filled', 'outlined']}
-        labelColors={['primary', 'default']}
+        labels={[reviewName, reviewedName, 'For Teacher']}
+        labelVariants={['filled', 'outlined', 'filled']}
+        labelColors={['primary', 'default', 'success']}
+        buttonChipNumber={3}
+        toTeacherOrStudentReview={{
+          pathname: '/reviews/[review_id]/[reviewed_id]/teacher',
+          query: {
+            review_id: reviewId,
+            reviewed_id: reviewedId,
+            review_name: reviewName,
+            reviewed_name: reviewedName,
+          },
+        }}
       />
       {isOwn && (
         <>

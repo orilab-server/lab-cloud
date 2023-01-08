@@ -4,23 +4,25 @@
 package models
 
 var TableNames = struct {
-	FilesTrash       string
-	RegisterRequests string
-	ResetTokens      string
-	ReviewComments   string
-	Reviewed         string
-	ReviewedFiles    string
-	Reviewers        string
-	Reviews          string
-	Users            string
+	FilesTrash           string
+	RegisterRequests     string
+	ResetTokens          string
+	ReviewComments       string
+	Reviewed             string
+	ReviewedFiles        string
+	Reviewers            string
+	Reviews              string
+	TeacherReviewedFiles string
+	Users                string
 }{
-	FilesTrash:       "files_trash",
-	RegisterRequests: "register_requests",
-	ResetTokens:      "reset_tokens",
-	ReviewComments:   "review_comments",
-	Reviewed:         "reviewed",
-	ReviewedFiles:    "reviewed_files",
-	Reviewers:        "reviewers",
-	Reviews:          "reviews",
-	Users:            "users",
+	FilesTrash:           "files_trash",
+	RegisterRequests:     "register_requests",
+	ResetTokens:          "reset_tokens",
+	ReviewComments:       "review_comments",
+	Reviewed:             "reviewed",
+	ReviewedFiles:        "reviewed_files",
+	Reviewers:            "reviewers",
+	Reviews:              "reviews",
+	TeacherReviewedFiles: "teacher_reviewed_files",
+	Users:                "users",
 }

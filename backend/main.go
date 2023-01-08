@@ -31,8 +31,10 @@ func main() {
 	reviewDirPath := os.Getenv("REVIEW_DIR_PATH")
 	siteUrl := os.Getenv("SITE_URL")
 	secret := os.Getenv("SECRET")
+	mailName := os.Getenv("MAIL_NAME")
 	from := os.Getenv("MAIL_FROM")
 	to := os.Getenv("MAIL_TO")
+	teacher := os.Getenv("MAIL_TEACHER_ADDRESS")
 	mailPassword := os.Getenv("MAIL_PASSWORD")
 	smtpServ := os.Getenv("SMTP_SERVER")
 	smtpPort := os.Getenv("SMTP_PORT")
@@ -49,7 +51,7 @@ func main() {
 	router.LoadHTMLGlob("out/*.html")
 	router.Use(middlewares.CorsMiddleWare(siteUrl))
 	store := cookie.NewStore([]byte(secret))
-	mailInfo := mailservice.MailRequest{From: from, To: to, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}
+	mailInfo := mailservice.MailRequest{Name: mailName, From: from, To: to, Teacher: teacher, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}
 	sender :=controllers.SendController{MailInfo: mailInfo}
 	auth := controllers.Authcontroller{MyDB: myDB, SessionKey: sessionKey, MailInfo: mailInfo, SiteUrl: siteUrl+"/login"}
 	user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey, Url: siteUrl, MailInfo: mailInfo}
@@ -166,7 +168,9 @@ func main() {
 			{
 				reviewedGroup.GET("/", reviews.GetReviewedController) // 全レビュー対象者の未確認フィードバック数を返却
 				reviewedGroup.GET("/:reviewed-id/files", reviews.GetFilesController) // レビュー対象ファイル全件取得
+				reviewedGroup.GET("/:reviewed-id/teacher/files", reviews.GetTeacherFilesController) // レビュー対象ファイル全件取得
 				reviewedGroup.POST("/:reviewed-id/files/upload", reviews.UploadController) // 新しいファイルをアップロード
+				reviewedGroup.POST("/:reviewed-id/teacher/files/upload", reviews.UploadTeacherReviewedFile) // 新しいファイルをアップロード
 				reviewedGroup.GET("/:reviewed-id/files/:file-id/download", reviews.DownloadController) // ファイルをダウンロード
 				reviewedGroup.POST("/:reviewed-id/files/:file-id/comment", reviews.PostCommentController) // ファイルへのコメントのPOST
 				reviewedGroup.POST("/:reviewed-id/files/:file-id/reviewer", reviews.PostRegisterReviewer) // ファイルへのレビュアーを登録

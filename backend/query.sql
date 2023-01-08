@@ -69,6 +69,16 @@ create table reviewed_files(
   primary key (id)
 );
 
+-- 教授のレビュー用のファイルを格納するテーブル
+create table teacher_reviewed_files(
+  id varchar(36) not null,
+  reviewed_id varchar(36) not null,
+  file_name varchar(254) not null, 
+  created_at timestamp default current_timestamp not null, -- アップロード日時として使用
+  foreign key (reviewed_id) references reviewed(id),
+  primary key (id)
+);
+
 -- レビュアーの人々の情報を保存するテーブル
 create table reviewers(
   id varchar(36) not null,

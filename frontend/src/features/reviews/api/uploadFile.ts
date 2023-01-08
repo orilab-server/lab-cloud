@@ -11,22 +11,45 @@ export const uploadFile = async (reviewId: string, reviewedId: string, formData:
   });
 };
 
+export const uploadFileToTeacher = async (
+  reviewId: string,
+  reviewedId: string,
+  formData: FormData,
+) => {
+  await myAxiosPost(
+    `home/reviews/${reviewId}/reviewed/${reviewedId}/teacher/files/upload`,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    },
+  );
+};
+
 type UploadFileMutationConfig = {
   reviewId: string;
   reviewedId: string;
   formData: FormData;
 };
 
-export const useUploadFile = () => {
+export const useUploadFile = (type?: 'pdf' | 'docx') => {
   const queryClient = useQueryClient();
   const setNotify = useSetRecoilState(notifyState);
 
   return useMutation(
-    async ({ reviewId, reviewedId, formData }: UploadFileMutationConfig) =>
-      await uploadFile(reviewId, reviewedId, formData),
+    async ({ reviewId, reviewedId, formData }: UploadFileMutationConfig) => {
+      if (!type || type === 'pdf') {
+        await uploadFile(reviewId, reviewedId, formData);
+      } else if (type === 'docx') {
+        await uploadFileToTeacher(reviewId, reviewedId, formData);
+      }
+    },
     {
       onSuccess: async () => {
-        await queryClient.invalidateQueries('reviewed_files');
+        type === 'docx'
+          ? await queryClient.invalidateQueries('teacher_reviewed_files')
+          : await queryClient.invalidateQueries('reviewed_files');
         setNotify({ severity: 'info', text: 'ファイルをアップロードしました' });
       },
       onError: (error) => {

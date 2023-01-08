@@ -27,10 +27,10 @@ type ReviewComment struct {
 	ID             string    `boil:"id" json:"id" toml:"id" yaml:"id"`
 	ReviewedFileID string    `boil:"reviewed_file_id" json:"reviewed_file_id" toml:"reviewed_file_id" yaml:"reviewed_file_id"`
 	ReviewerID     string    `boil:"reviewer_id" json:"reviewer_id" toml:"reviewer_id" yaml:"reviewer_id"`
+	PageNumber     int       `boil:"page_number" json:"page_number" toml:"page_number" yaml:"page_number"`
 	Comment        string    `boil:"comment" json:"comment" toml:"comment" yaml:"comment"`
 	CreatedAt      time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 	UpdatedAt      null.Time `boil:"updated_at" json:"updated_at,omitempty" toml:"updated_at" yaml:"updated_at,omitempty"`
-	PageNumber     int       `boil:"page_number" json:"page_number" toml:"page_number" yaml:"page_number"`
 
 	R *reviewCommentR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L reviewCommentL  `boil:"-" json:"-" toml:"-" yaml:"-"`
@@ -40,36 +40,36 @@ var ReviewCommentColumns = struct {
 	ID             string
 	ReviewedFileID string
 	ReviewerID     string
+	PageNumber     string
 	Comment        string
 	CreatedAt      string
 	UpdatedAt      string
-	PageNumber     string
 }{
 	ID:             "id",
 	ReviewedFileID: "reviewed_file_id",
 	ReviewerID:     "reviewer_id",
+	PageNumber:     "page_number",
 	Comment:        "comment",
 	CreatedAt:      "created_at",
 	UpdatedAt:      "updated_at",
-	PageNumber:     "page_number",
 }
 
 var ReviewCommentTableColumns = struct {
 	ID             string
 	ReviewedFileID string
 	ReviewerID     string
+	PageNumber     string
 	Comment        string
 	CreatedAt      string
 	UpdatedAt      string
-	PageNumber     string
 }{
 	ID:             "review_comments.id",
 	ReviewedFileID: "review_comments.reviewed_file_id",
 	ReviewerID:     "review_comments.reviewer_id",
+	PageNumber:     "review_comments.page_number",
 	Comment:        "review_comments.comment",
 	CreatedAt:      "review_comments.created_at",
 	UpdatedAt:      "review_comments.updated_at",
-	PageNumber:     "review_comments.page_number",
 }
 
 // Generated where
@@ -102,18 +102,18 @@ var ReviewCommentWhere = struct {
 	ID             whereHelperstring
 	ReviewedFileID whereHelperstring
 	ReviewerID     whereHelperstring
+	PageNumber     whereHelperint
 	Comment        whereHelperstring
 	CreatedAt      whereHelpertime_Time
 	UpdatedAt      whereHelpernull_Time
-	PageNumber     whereHelperint
 }{
 	ID:             whereHelperstring{field: "`review_comments`.`id`"},
 	ReviewedFileID: whereHelperstring{field: "`review_comments`.`reviewed_file_id`"},
 	ReviewerID:     whereHelperstring{field: "`review_comments`.`reviewer_id`"},
+	PageNumber:     whereHelperint{field: "`review_comments`.`page_number`"},
 	Comment:        whereHelperstring{field: "`review_comments`.`comment`"},
 	CreatedAt:      whereHelpertime_Time{field: "`review_comments`.`created_at`"},
 	UpdatedAt:      whereHelpernull_Time{field: "`review_comments`.`updated_at`"},
-	PageNumber:     whereHelperint{field: "`review_comments`.`page_number`"},
 }
 
 // ReviewCommentRels is where relationship names are stored.
@@ -154,8 +154,8 @@ func (r *reviewCommentR) GetReviewer() *Reviewer {
 type reviewCommentL struct{}
 
 var (
-	reviewCommentAllColumns            = []string{"id", "reviewed_file_id", "reviewer_id", "comment", "created_at", "updated_at", "page_number"}
-	reviewCommentColumnsWithoutDefault = []string{"id", "reviewed_file_id", "reviewer_id", "comment", "page_number"}
+	reviewCommentAllColumns            = []string{"id", "reviewed_file_id", "reviewer_id", "page_number", "comment", "created_at", "updated_at"}
+	reviewCommentColumnsWithoutDefault = []string{"id", "reviewed_file_id", "reviewer_id", "page_number", "comment"}
 	reviewCommentColumnsWithDefault    = []string{"created_at", "updated_at"}
 	reviewCommentPrimaryKeyColumns     = []string{"id"}
 	reviewCommentGeneratedColumns      = []string{}

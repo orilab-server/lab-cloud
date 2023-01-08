@@ -64,6 +64,7 @@ func (u UserController) GetUserController(ctx *gin.Context) {
 		"is_login":     true,
 		"id":           user.ID,
 		"name":         user.Name,
+		"email":        user.Email,
 		"grade":        user.Grade,
 		"is_temporary": user.IsTemporary,
 	})

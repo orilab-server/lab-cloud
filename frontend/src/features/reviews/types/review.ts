@@ -20,6 +20,12 @@ export type ReviewedFile = {
   reviewer_count: number;
 };
 
+export type TeacherReviewedFiles = {
+  id: string;
+  file_name: string;
+  created_at: string;
+};
+
 export type Reviewer = {
   id: string;
   userId: number;

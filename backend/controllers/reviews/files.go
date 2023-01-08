@@ -43,3 +43,21 @@ func (r ReviewsController) GetFilesController(ctx *gin.Context) {
 		"user_id": reviewed.UserID,
 	})
 }
+
+func (r ReviewsController) GetTeacherFilesController(ctx *gin.Context) {
+	reviewedId := ctx.Param("reviewed-id")
+	files, err := models.TeacherReviewedFiles(qm.Where("reviewed_id=?", reviewedId), qm.OrderBy("created_at desc")).All(r.ModelCtx, r.MyDB)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+	reviewed, err:= models.Revieweds(qm.Select("user_id"), qm.Where("id=?", reviewedId)).One(r.ModelCtx, r.MyDB)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+	ctx.JSON(http.StatusOK, gin.H{
+		"files": files,
+		"user_id": reviewed.UserID,
+	})
+}

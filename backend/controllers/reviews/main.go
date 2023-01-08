@@ -102,6 +102,13 @@ func (r ReviewsController) PostReviewController(ctx *gin.Context) {
 			})
 			return
 		}
+		// make for teacher directory
+		if err := os.Mkdir(newReview+"/"+strconv.Itoa(user.ID)+"/teacher", 0777); err != nil {
+			ctx.JSON(http.StatusInternalServerError, gin.H{
+				"message": "failed to create reviewed teacher dir: " + user.Name,
+			})
+			return
+		}
 		reviewed.Insert(r.ModelCtx, r.MyDB, boil.Infer())
 		if err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
