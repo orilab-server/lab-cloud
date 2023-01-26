@@ -34,7 +34,7 @@ const Home: NextPage = () => {
   const currentDir = filePathsQuery.data.currentdir;
   const baseDir = filePathsQuery.data.basedir;
   const trashDir = filePathsQuery.data.trashdir;
-  const topDirs = filePathsQuery.data.topdirs;
+  const topDirs = filePathsQuery.data.topdirs || [];
   const isHome = filePathsQuery.data.ishome;
   const isTrash = filePathsQuery.data.istrash;
   const important = filePathsQuery.data.important;
