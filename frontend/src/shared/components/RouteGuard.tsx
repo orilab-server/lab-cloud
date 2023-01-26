@@ -49,8 +49,8 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
             if (url.match('/reviews') !== null) {
               localStorage.setItem('no_session', 'true');
             }
-            void router.push('/login');
           }
+          void router.push('/login');
         }
       }
     } else {
