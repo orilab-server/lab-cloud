@@ -1,10 +1,10 @@
+import { myAuthAxiosPost } from '@/shared/lib/axios';
 import { notifyState } from '@/shared/stores';
-import { myAxiosPost } from '@/shared/utils/axios';
 import { useMutation } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
 export const shareComment = async (url: string, formData: FormData) => {
-  await myAxiosPost(url, formData, {
+  await myAuthAxiosPost(url, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

@@ -1,5 +1,5 @@
+import { myAuthAxiosGet } from '@/shared/lib/axios';
 import { downloadProgressesState, notifyState } from '@/shared/stores';
-import { myAxiosGet } from '@/shared/utils/axios';
 import { sleep } from '@/shared/utils/sleep';
 import { freeLengthStrSlicer } from '@/shared/utils/slice';
 import { format } from 'date-fns';
@@ -34,8 +34,8 @@ export const useDownload = () => {
       await sleep(6);
       return await Promise.all(
         progresses.map(async (target) => {
-          const res = await myAxiosGet<Blob>(
-            `home/download?path=${path}&target=${target.name}&type=${target.type}`,
+          const res = await myAuthAxiosGet<Blob>(
+            `/download?path=${path}&target=${target.name}&type=${target.type}`,
             {
               responseType: 'blob',
               onDownloadProgress: (progressEvent) => {

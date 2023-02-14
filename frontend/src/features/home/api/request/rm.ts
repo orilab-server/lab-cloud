@@ -1,5 +1,5 @@
+import { myAuthAxiosGet } from '@/shared/lib/axios';
 import { notifyState } from '@/shared/stores';
-import { myAxiosGet } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 import { RmRequest } from '../../types/request';
@@ -7,7 +7,7 @@ import { RmRequest } from '../../types/request';
 export const sendRmRequest = async (targets: RmRequest[]) => {
   await Promise.all(
     targets.map(async (target) => {
-      await myAxiosGet(`home/request/rm-${target.type}?path=${target.path}&id=${target.id}`, {
+      await myAuthAxiosGet(`/request/rm-${target.type}?path=${target.path}&id=${target.id}`, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

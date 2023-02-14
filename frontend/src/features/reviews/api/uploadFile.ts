@@ -1,10 +1,10 @@
+import { myAuthAxiosPost } from '@/shared/lib/axios';
 import { notifyState } from '@/shared/stores';
-import { myAxiosPost } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
 export const uploadFile = async (reviewId: string, reviewedId: string, formData: FormData) => {
-  await myAxiosPost(`home/reviews/${reviewId}/reviewed/${reviewedId}/files/upload`, formData, {
+  await myAuthAxiosPost(`/reviews/${reviewId}/reviewed/${reviewedId}/files/upload`, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
@@ -16,8 +16,8 @@ export const uploadFileToTeacher = async (
   reviewedId: string,
   formData: FormData,
 ) => {
-  await myAxiosPost(
-    `home/reviews/${reviewId}/reviewed/${reviewedId}/teacher/files/upload`,
+  await myAuthAxiosPost(
+    `/reviews/${reviewId}/reviewed/${reviewedId}/teacher/files/upload`,
     formData,
     {
       headers: {

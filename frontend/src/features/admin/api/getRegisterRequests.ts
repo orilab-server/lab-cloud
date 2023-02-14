@@ -1,4 +1,4 @@
-import { myAxiosGet } from '@/shared/utils/axios';
+import { myAxiosGet } from '@/shared/lib/axios';
 import { useQuery } from 'react-query';
 
 type RegisterRequest = {
@@ -12,7 +12,7 @@ type RegisterRequest = {
 };
 
 export const getRegisterRequests = async () => {
-  const res = await myAxiosGet<RegisterRequest>(`admin/register-requests`, {
+  const res = await myAxiosGet<RegisterRequest>(`/admin/register-requests`, {
     headers: {
       'Content-Type': 'application/json',
     },

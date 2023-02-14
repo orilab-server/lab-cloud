@@ -77,7 +77,7 @@ const ReviewedFiles: NextPage = () => {
         isOwn={isOwn}
         fileId={pdfReview.fileId}
         userId={user?.id}
-        pathName={`home/reviews/${reviewId}/reviewed/${reviewedId}/files`}
+        pathName={`/reviews/${reviewId}/reviewed/${reviewedId}/files`}
       />
     );
   }

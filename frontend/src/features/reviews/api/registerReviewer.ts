@@ -1,10 +1,10 @@
+import { myAuthAxiosPost } from '@/shared/lib/axios';
 import { notifyState } from '@/shared/stores';
-import { myAxiosPost } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
 export const registerReviewer = async (url: string, formData: FormData) => {
-  await myAxiosPost(url, formData, {
+  await myAuthAxiosPost(url, formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

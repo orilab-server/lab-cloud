@@ -1,5 +1,5 @@
+import { myAuthAxiosGet } from '@/shared/lib/axios';
 import { notifyState } from '@/shared/stores';
-import { myAxiosGet } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
@@ -7,7 +7,7 @@ import { useSetRecoilState } from 'recoil';
 export const sendMvPastLocationRequest = async (ids: string[]) => {
   await Promise.all(
     ids.map(async (id) => {
-      await myAxiosGet(`home/request/mv?byTrash=true&id=${id}`, {
+      await myAuthAxiosGet(`/request/mv?byTrash=true&id=${id}`, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

@@ -1,10 +1,10 @@
-import { myAxiosGet } from '@/shared/utils/axios';
+import { myAuthAxiosGet } from '@/shared/lib/axios';
 import { useQuery } from 'react-query';
 import { TeacherReviewedFiles } from '../types/review';
 
 export const getTeacherReviewedFiles = async (reviewId: string, reviewedId: string) => {
-  const res = await myAxiosGet<{ files: TeacherReviewedFiles[]; user_id: string }>(
-    `home/reviews/${reviewId}/reviewed/${reviewedId}/teacher/files`,
+  const res = await myAuthAxiosGet<{ files: TeacherReviewedFiles[]; user_id: string }>(
+    `/reviews/${reviewId}/reviewed/${reviewedId}/teacher/files`,
     {
       headers: {
         'Content-Type': 'application/json',

@@ -152,7 +152,7 @@ const TeacherReview: NextPage = () => {
       <Stack sx={{ width: '100%' }} justifyContent="start" divider={<Divider />}>
         {reviewedFiles.map((reviewedFile, i) => {
           const filePath = `${reviewName}/${userId}/teacher/${reviewedFile.file_name}`;
-          const url = `home/reviews/${reviewId}/reviewed/${reviewedId}/files/${reviewedFile.id}/download`;
+          const url = `/reviews/${reviewId}/reviewed/${reviewedId}/files/${reviewedFile.id}/download`;
 
           return (
             <FileList

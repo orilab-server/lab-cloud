@@ -1,5 +1,5 @@
+import { myAuthAxiosGet } from '@/shared/lib/axios';
 import { notifyState } from '@/shared/stores';
-import { myAxiosGet } from '@/shared/utils/axios';
 import { endFilenameSlicer, withoutLastPathSlicer } from '@/shared/utils/slice';
 import { saveAs } from 'file-saver';
 import { useMutation } from 'react-query';
@@ -7,7 +7,7 @@ import { useSetRecoilState } from 'recoil';
 
 export const downloadReviewFile = async (url: string, filePath: string) => {
   const fileName = endFilenameSlicer(filePath);
-  await myAxiosGet<Blob>(`${url}?path=${withoutLastPathSlicer(filePath)}&file=${fileName}`, {
+  await myAuthAxiosGet<Blob>(`${url}?path=${withoutLastPathSlicer(filePath)}&file=${fileName}`, {
     responseType: 'blob',
   }).then((res) => {
     console.log(res.data);

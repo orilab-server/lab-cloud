@@ -30,13 +30,11 @@ const Home: NextPage = () => {
     return <ScreenLoading />;
   }
 
-  const filePaths = filePathsQuery.data.filepaths || [];
+  const filePaths = filePathsQuery.data.filePaths || [];
   const currentDir = filePathsQuery.data.currentdir;
-  const baseDir = filePathsQuery.data.basedir;
-  const trashDir = filePathsQuery.data.trashdir;
-  const topDirs = filePathsQuery.data.topdirs || [];
-  const isHome = filePathsQuery.data.ishome;
-  const isTrash = filePathsQuery.data.istrash;
+  const baseDir = filePathsQuery.data.baseDir;
+  const topDirs = filePathsQuery.data.topDirs || [];
+  const isHome = filePathsQuery.data.isTop;
   const important = filePathsQuery.data.important;
 
   return (
@@ -49,20 +47,20 @@ const Home: NextPage = () => {
       <SideContents
         topDirs={topDirs}
         currentDir={currentDir || '/'}
-        trashDir={trashDir}
+        trashDir={''}
         moveDir={moveDir}
         name={userQuery.data?.name}
-        isTrash={isTrash}
+        isTrash={false}
         important={important}
       />
       <MainContents
         filepaths={filePaths}
         currentdir={currentDir || '/'}
-        trashDir={trashDir}
+        trashDir={''}
         baseDir={baseDir}
         isHome={isHome}
         moveDir={moveDir}
-        isTrash={isTrash}
+        isTrash={false}
         important={important}
       />
       <ProgressBars />

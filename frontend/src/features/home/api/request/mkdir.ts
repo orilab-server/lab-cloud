@@ -1,10 +1,10 @@
+import { myAuthAxiosGet } from '@/shared/lib/axios';
 import { notifyState } from '@/shared/stores';
-import { myAxiosGet } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
 export const sendMkdirRequest = async (path: string) => {
-  await myAxiosGet(`home/request/mkdir?path=${path}`, {
+  await myAuthAxiosGet(`/request/mkdir?path=${path}`, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

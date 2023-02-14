@@ -1,4 +1,4 @@
-import { myAxiosGet } from '@/shared/utils/axios';
+import { myAuthAxiosGet } from '@/shared/lib/axios';
 import { useQuery } from 'react-query';
 import { Reviewed } from '../types/review';
 
@@ -6,7 +6,7 @@ export const getRevieweds = async (reviewId: string) => {
   if (!reviewId) {
     return [];
   }
-  const res = await myAxiosGet<{ revieweds: Reviewed[] }>(`home/reviews/${reviewId}/reviewed/`);
+  const res = await myAuthAxiosGet<{ revieweds: Reviewed[] }>(`/reviews/${reviewId}/reviewed/`);
   return res.data.revieweds;
 };
 

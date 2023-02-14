@@ -13,11 +13,9 @@ export type FileOrDirItem = {
 };
 
 export type Storage = {
-  filepaths: StorageFileOrDirItem[];
-  basedir: string;
-  trashdir: string;
-  ishome: boolean;
-  istrash: boolean;
-  topdirs: string[];
+  filePaths: StorageFileOrDirItem[];
+  topDirs: string[];
+  baseDir: string;
+  isTop: boolean;
   important: boolean;
 };

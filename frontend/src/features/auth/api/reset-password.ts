@@ -1,16 +1,16 @@
+import { myAxiosPatch, myAxiosPost } from '@/shared/lib/axios';
 import { notifyState } from '@/shared/stores';
-import { myAxiosPatch, myAxiosPost } from '@/shared/utils/axios';
 import { useMutation } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
 export const resetPassword = async (param: URLSearchParams, request?: boolean) => {
   if (request) {
-    await myAxiosPost('user/reset-password/request', param, {
+    await myAxiosPost('/user/reset-password/request', param, {
       xsrfHeaderName: 'X-CSRF-Token',
     });
     return true;
   }
-  await myAxiosPatch('user/reset-password', param, {
+  await myAxiosPatch('/user/reset-password', param, {
     xsrfHeaderName: 'X-CSRF-Token',
   });
   return false;

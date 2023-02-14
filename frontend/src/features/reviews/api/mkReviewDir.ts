@@ -1,10 +1,10 @@
+import { myAuthAxiosPost } from '@/shared/lib/axios';
 import { notifyState } from '@/shared/stores';
-import { myAxiosPost } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
 export const sendMkReviewDirRequest = async (formData: FormData) => {
-  await myAxiosPost('home/reviews/', formData, {
+  await myAuthAxiosPost('/reviews/', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

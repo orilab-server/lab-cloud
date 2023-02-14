@@ -1,10 +1,10 @@
+import { myAuthAxiosPatch } from '@/shared/lib/axios';
 import { notifyState } from '@/shared/stores';
-import { myAxiosPatch } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
 export const rename = async (param: URLSearchParams) =>
-  await myAxiosPatch('home/user/rename', param, {
+  await myAuthAxiosPatch('/user/rename', param, {
     xsrfHeaderName: 'X-CSRF-Token',
   });
 

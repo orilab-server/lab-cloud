@@ -1,11 +1,11 @@
+import { myAuthAxiosGet } from '@/shared/lib/axios';
 import { pdfReviewState } from '@/shared/stores';
-import { myAxiosGet } from '@/shared/utils/axios';
 import { getMimeType } from '@/shared/utils/mime';
 import { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 export const getReviewPdf = async (url: string, fileName: string) => {
-  const blob = await myAxiosGet<Blob>(`${url}&file=${fileName}`, {
+  const blob = await myAuthAxiosGet<Blob>(`${url}&file=${fileName}`, {
     responseType: 'blob',
   });
   const asFile = new File([blob.data], fileName, {

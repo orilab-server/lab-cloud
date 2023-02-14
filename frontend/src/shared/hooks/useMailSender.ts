@@ -1,7 +1,7 @@
 import { notifyState } from '@/shared/stores';
 import { useMutation } from 'react-query';
 import { useSetRecoilState } from 'recoil';
-import { myAxiosPost } from '../utils/axios';
+import { myAxiosPost } from '../lib/axios';
 
 export const sendMail = async (subject: string, name: string, body: string, mime?: string) => {
   const formData = new FormData();
@@ -10,7 +10,7 @@ export const sendMail = async (subject: string, name: string, body: string, mime
   formData.append('subject', subject);
   formData.append('mime', mime || '');
   formData.append('body', body);
-  return await myAxiosPost('send', formData, {
+  return await myAxiosPost('/send', formData, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },

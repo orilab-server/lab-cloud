@@ -1,9 +1,9 @@
-import { myAxiosGet } from '@/shared/utils/axios';
+import { myAuthAxiosGet } from '@/shared/lib/axios';
 import { useQuery } from 'react-query';
 import { Reviewer } from '../types/review';
 
 export const getReviewers = async (url: string) => {
-  const res = await myAxiosGet<{ reviewers: Reviewer[] }>(url, {
+  const res = await myAuthAxiosGet<{ reviewers: Reviewer[] }>(url, {
     headers: {
       'Content-Type': 'application/json',
     },

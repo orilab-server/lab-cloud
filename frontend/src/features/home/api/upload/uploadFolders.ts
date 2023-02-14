@@ -1,5 +1,5 @@
+import { myAuthAxiosPost } from '@/shared/lib/axios';
 import { foldersState, folderUploadProgressesState, notifyState } from '@/shared/stores';
-import { myAxiosPost } from '@/shared/utils/axios';
 import { sleep } from '@/shared/utils/sleep';
 import { freeLengthStrSlicer } from '@/shared/utils/slice';
 import { useMutation, useQueryClient } from 'react-query';
@@ -69,7 +69,7 @@ export const useUploadFolders = () => {
             formData.append('requestType', 'dirs');
             fileChunks.forEach((file) => formData.append('files', file));
             formData.append('filePaths', fileNameChunks.join(' // '));
-            const res = await myAxiosPost(`home/upload?path=${item.path}`, formData, {
+            const res = await myAuthAxiosPost(`/upload?path=${item.path}`, formData, {
               headers: {
                 'Content-Type': 'multipart/form-data',
               },
@@ -113,7 +113,7 @@ export const useUploadFolders = () => {
               const formData = new FormData();
               formData.append('requestType', 'cancel');
               formData.append('dirName', item.name);
-              await myAxiosPost(`home/upload?path=${item.path}`, formData, {
+              await myAuthAxiosPost(`/upload?path=${item.path}`, formData, {
                 headers: {
                   'Content-Type': 'multipart/form-data',
                 },
