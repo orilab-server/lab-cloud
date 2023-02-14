@@ -1,6 +1,6 @@
 import { useGetReviews } from '@/features/reviews/api/getReviews';
 import CreateReviewModal from '@/features/reviews/components/CreateReviewModal';
-import ReviewLayout from '@/features/reviews/components/ReviewLayout';
+import ReviewLayout from '@/features/reviews/components/layout/ReviewLayout';
 import { Box, Divider, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { NextPage } from 'next';

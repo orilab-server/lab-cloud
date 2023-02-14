@@ -1,5 +1,5 @@
 import { useAdminLogin } from '@/features/admin/api/adminLogin';
-import { AdminLayout } from '@/features/admin/components/misc/Layout';
+import { AdminLayout } from '@/features/admin/components/layout/AdminLayout';
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
 import {
   Button,

@@ -1,8 +1,8 @@
 import { useUser } from '@/features/auth/api/getUser';
 import { useGetReviewedFiles } from '@/features/reviews/api/getReviewedFiles';
 import { useUploadFile } from '@/features/reviews/api/uploadFile';
+import ReviewLayout from '@/features/reviews/components/layout/ReviewLayout';
 import PdfReview from '@/features/reviews/components/PdfReview';
-import ReviewLayout from '@/features/reviews/components/ReviewLayout';
 import SubHeader from '@/features/reviews/components/SubHeader';
 import UploadFileArea from '@/features/reviews/components/UploadFileArea';
 import { pdfReviewState } from '@/shared/stores';

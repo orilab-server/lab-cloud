@@ -1,5 +1,5 @@
 import { useGetRevieweds } from '@/features/reviews/api/getRevieweds';
-import ReviewLayout from '@/features/reviews/components/ReviewLayout';
+import ReviewLayout from '@/features/reviews/components/layout/ReviewLayout';
 import SubHeader from '@/features/reviews/components/SubHeader';
 import { Divider, Typography } from '@mui/material';
 import { Box, Stack } from '@mui/system';

@@ -3,7 +3,7 @@ import { Button, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { useRouter } from 'next/router';
 import React, { useEffect, useState } from 'react';
-import ReviewDescription from './ReviewDescription';
+import ReviewDescription from '../ReviewDescription';
 
 type ReviewLayoutProps = {
   children: React.ReactNode;
