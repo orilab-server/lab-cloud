@@ -26,7 +26,7 @@ type ReviewsController struct {
 	MailInfo mailservice.MailRequest
 }
 
-func (r ReviewsController) GetReviewsController(ctx *gin.Context) {
+func (r ReviewsController) GetReviews(ctx *gin.Context) {
 	reviews, err := models.Reviews().All(r.ModelCtx, r.MyDB)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
@@ -38,7 +38,7 @@ func (r ReviewsController) GetReviewsController(ctx *gin.Context) {
 }
 
 // param : reviewName(レビュー名), userIds(対象者のid), targetGrade(対象学年) 
-func (r ReviewsController) PostReviewController(ctx *gin.Context) {
+func (r ReviewsController) PostReview(ctx *gin.Context) {
 	reviewName := ctx.PostForm("reviewName")
 	targetGrade, _ := strconv.Atoi(ctx.PostForm("targetGrade"))
 	reviewId, _ := uuid.NewUUID()
@@ -125,7 +125,7 @@ type Reviewed struct {
 	Name string `json:"name"`
 }
 
-func (r ReviewsController) GetReviewedController(ctx *gin.Context) {
+func (r ReviewsController) GetReviewed(ctx *gin.Context) {
 	reviewId := ctx.Param("review-id")
 	reviewed, err := models.Revieweds(qm.Where("review_id=?", reviewId)).All(r.ModelCtx, r.MyDB)
 	if err != nil {

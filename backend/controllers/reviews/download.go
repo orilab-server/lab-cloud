@@ -4,7 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (r ReviewsController) DownloadController(ctx *gin.Context) {
+func (r ReviewsController) Download(ctx *gin.Context) {
 	targetPath := r.ReviewDirPath + "/" + ctx.Query("path") + "/" + ctx.Query("file")
 	ctx.Header("Content-Description", "File Transfer")
 	ctx.Header("Content-Transfer-Encoding", "binary")

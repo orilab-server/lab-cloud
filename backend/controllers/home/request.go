@@ -1,11 +1,10 @@
-package controllers
+package home
 
 import (
 	"backend/models"
 	command_service "backend/service/command"
 	"backend/tools"
 	"context"
-	"database/sql"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -16,14 +15,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-type RequestController struct {
-	ImportantDirs []string
-	ShareDir      string
-	TrashDir      string
-	MyDB          *sql.DB
-}
-
-func (r RequestController) MkDirController(ctx *gin.Context) {
+func (r HomeController) MkDir(ctx *gin.Context) {
 	path := ctx.Query("path") // get Qury Parameter
 	// cannot access important dir or file
 	important, _ := tools.Contains(r.ImportantDirs, path[strings.LastIndex(path, "/")+1:])
@@ -38,7 +30,7 @@ func (r RequestController) MkDirController(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{})
 }
 
-func (r RequestController) RenameController(ctx *gin.Context) {
+func (r HomeController) Rename(ctx *gin.Context) {
 	oldName := ctx.Query("oldName") // get Query Parameter
 	newName := ctx.Query("newName") // get Query Parameter
 	// cannot access important dir or file
@@ -53,7 +45,7 @@ func (r RequestController) RenameController(ctx *gin.Context) {
 	}
 }
 
-func (r RequestController) MvController(ctx *gin.Context) {
+func (r HomeController) Mv(ctx *gin.Context) {
 	strByTrash := ctx.Query("byTrash") // get Query Parameter
 	byTrash, _ := strconv.ParseBool(strByTrash)
 	// ゴミ箱から元の場所に戻す時
@@ -91,7 +83,7 @@ func (r RequestController) MvController(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{})
 }
 
-func (r RequestController) MvTrashController(ctx *gin.Context) {
+func (r HomeController) MvTrash(ctx *gin.Context) {
 	path := ctx.Query("path")         // get Query Parameter
 	itemType := ctx.Query("itemType") // get Query Parameter
 	path, _ = url.QueryUnescape(path) // decode URL
@@ -110,7 +102,7 @@ func (r RequestController) MvTrashController(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{})
 }
 
-func (r RequestController) RmFileController(ctx *gin.Context) {
+func (r HomeController) RmFile(ctx *gin.Context) {
 	path := ctx.Query("path")         // get Query Parameter
 	id := ctx.Query("id")             // get Query Parameter
 	path, _ = url.QueryUnescape(path) // decode URL
@@ -128,7 +120,7 @@ func (r RequestController) RmFileController(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{})
 }
 
-func (r RequestController) RmDirController(ctx *gin.Context) {
+func (r HomeController) RmDir(ctx *gin.Context) {
 	path := ctx.Query("path")         // get Query Parameter
 	id := ctx.Query("id")             // get Query Parameter
 	path, _ = url.QueryUnescape(path) // decode URL

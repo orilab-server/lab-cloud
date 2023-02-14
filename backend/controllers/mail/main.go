@@ -1,4 +1,4 @@
-package controllers
+package mail
 
 import (
 	mailservice "backend/service/mail_service"
@@ -12,7 +12,7 @@ type SendController struct {
 	MailInfo mailservice.MailRequest
 }
 
-func (s SendController) MailController(ctx *gin.Context) {
+func (s SendController) SendMail(ctx *gin.Context) {
 	who := strings.TrimSpace(ctx.PostForm("who"))
 	subject := strings.TrimSpace(ctx.PostForm("subject"))
 	mime := strings.TrimSpace(ctx.PostForm("mime"))

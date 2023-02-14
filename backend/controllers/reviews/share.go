@@ -9,7 +9,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-func (r ReviewsController) PostShareReviewController(ctx *gin.Context) {
+func (r ReviewsController) PostShareReview(ctx *gin.Context) {
 	fileId := ctx.Param("file-id")
 	reviewerId := ctx.Param("reviewer-id")
 	commentsExist, _ := models.ReviewComments(qm.Where("reviewed_file_id=?", fileId), qm.Where("reviewer_id=?", reviewerId)).Exists(r.ModelCtx, r.MyDB)

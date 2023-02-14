@@ -1,4 +1,4 @@
-package controllers
+package upload
 
 import (
 	"backend/service/upload_service"
@@ -13,7 +13,7 @@ type UploadController struct {
 	ShareDir string
 }
 
-func (p UploadController) Controller(ctx *gin.Context) {
+func (p UploadController) Upload(ctx *gin.Context) {
 	path := ctx.DefaultQuery("path", p.ShareDir) // get Query Parameter
 	newpath, _ := url.QueryUnescape(path)        // decode URL
 	if ctx.Request.FormValue("requestType") == "cancel" {

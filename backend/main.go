@@ -1,8 +1,13 @@
 package main
 
 import (
-	"backend/controllers"
+	"backend/controllers/auth"
+	"backend/controllers/download"
+	"backend/controllers/home"
+	"backend/controllers/mail"
 	"backend/controllers/reviews"
+	"backend/controllers/upload"
+	"backend/controllers/user"
 	"backend/db"
 	"backend/middlewares"
 	mailservice "backend/service/mail_service"
@@ -52,9 +57,9 @@ func main() {
 	router.Use(middlewares.CorsMiddleWare(siteUrl))
 	store := cookie.NewStore([]byte(secret))
 	mailInfo := mailservice.MailRequest{Name: mailName, From: from, To: to, Teacher: teacher, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}
-	sender :=controllers.SendController{MailInfo: mailInfo}
-	auth := controllers.Authcontroller{MyDB: myDB, SessionKey: sessionKey, MailInfo: mailInfo, SiteUrl: siteUrl+"/login"}
-	user := controllers.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey, Url: siteUrl, MailInfo: mailInfo}
+	sender := mail.SendController{MailInfo: mailInfo}
+	auth := auth.Authcontroller{MyDB: myDB, SessionKey: sessionKey, MailInfo: mailInfo, SiteUrl: siteUrl+"/login"}
+	user := user.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey, Url: siteUrl, MailInfo: mailInfo}
 	router.Use(sessions.Sessions("mysession", store))
 
 	/*
@@ -107,50 +112,54 @@ func main() {
 	/*
 	* APIs
 	*/
-	router.GET("/user", user.GetUserController)
-	router.POST("/user/reset-password/request", user.ResetPasswordRequestController)
-	router.PATCH("/user/reset-password", user.ResetPasswordController)
-	router.POST("/send", sender.MailController)
-	router.POST("/login", auth.LoginController)
+	router.GET("/user", user.GetUser)
+	router.POST("/user/reset-password/request", user.ResetPasswordRequest)
+	router.PATCH("/user/reset-password", user.ResetPassword)
+	router.POST("/send", sender.SendMail)
+	router.POST("/login", auth.Login)
 	router.POST("/register-requests", auth.RequestRegister)
 	// basic認証を要する
 	adminGroup := router.Group("/admin", gin.BasicAuth(gin.Accounts{
 		os.Getenv("ADMIN_NAME"): os.Getenv("ADMIN_PASS"),
 	}))
-	adminGroup.POST("/accept-register", auth.SignUpController)
+	adminGroup.POST("/accept-register", auth.SignUp)
 	adminGroup.GET("/register-requests", auth.GetRegisterRequests)
 
-	authGroup := router.Group("/home")
+	authGroup := router.Group("/auth")
 	authGroup.Use(middlewares.LoginCheckMiddleware(sessionKey))
 	{
 		importantDirs := strings.Split(importantDirStr, "/")
-		home := controllers.HomeController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
-		download := controllers.DownloadController{ShareDir: shareDirPath}
-		upload := controllers.UploadController{ShareDir: shareDirPath}
-		request := controllers.RequestController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
+		home := home.HomeController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
+		download := download.DownloadController{ShareDir: shareDirPath}
+		upload := upload.UploadController{ShareDir: shareDirPath}
+
+		// homeエンドポイント
+		homeGroup := authGroup.Group("/home")
+		{
+			homeGroup.GET("/", home.Main)
+		}
 		
 		// userエンドポイント
-		authGroup.GET("/users", user.GetUsersController)
-		authGroup.PATCH("/user/password", user.PatchPasswordController)
-		authGroup.PATCH("/user/rename", user.UserRenameController)
+		authGroup.GET("/users", user.GetUsers)
+		authGroup.PATCH("/user/password", user.ChangePassword)
+		authGroup.PATCH("/user/rename", user.UserRename)
 		// logoutエンドポイント
-		authGroup.GET("/logout", auth.LogoutController)
-		// homeエンドポイント
-		authGroup.GET("/", home.Controller)
+		authGroup.GET("/logout", auth.Logout)
 		// downloadエンドポイント
-		authGroup.GET("/download", download.Controller)
+		authGroup.GET("/download", download.Download)
 		// uploadエンドポイント
-		authGroup.POST("/upload", upload.Controller)
+		authGroup.POST("/upload", upload.Upload)
 		// reuestエンドポイント
 		requestGroup := authGroup.Group("/request")
 		{
-			requestGroup.GET("/mkdir", request.MkDirController)
-			requestGroup.GET("/rename", request.RenameController)
-			requestGroup.GET("/mv", request.MvController)
-			requestGroup.POST("/mv-trash", request.MvTrashController)
-			requestGroup.GET("/rm-file", request.RmFileController)
-			requestGroup.GET("/rm-dir", request.RmDirController)
+			requestGroup.GET("/mkdir", home.MkDir)
+			requestGroup.GET("/rename", home.Rename)
+			requestGroup.GET("/mv", home.Mv)
+			requestGroup.POST("/mv-trash", home.MvTrash)
+			requestGroup.GET("/rm-file", home.RmFile)
+			requestGroup.GET("/rm-dir", home.RmDir)
 		}
+
 		reviews := reviews.ReviewsController{
 			MyDB: myDB,
 			ModelCtx: modelContext,
@@ -162,21 +171,21 @@ func main() {
 		reviewsGroup := authGroup.Group("/reviews")
 		{
 			// reviewsGroup.GET("/user/:user-id", reviews)
-			reviewsGroup.GET("/", reviews.GetReviewsController) // レビュー全件取得
-			reviewsGroup.POST("/", reviews.PostReviewController) // 新規レビュー作成
+			reviewsGroup.GET("/", reviews.GetReviews) // レビュー全件取得
+			reviewsGroup.POST("/", reviews.PostReview) // 新規レビュー作成
 			reviewedGroup := reviewsGroup.Group("/:review-id/reviewed")
 			{
-				reviewedGroup.GET("/", reviews.GetReviewedController) // 全レビュー対象者の未確認フィードバック数を返却
-				reviewedGroup.GET("/:reviewed-id/files", reviews.GetFilesController) // レビュー対象ファイル全件取得
-				reviewedGroup.GET("/:reviewed-id/teacher/files", reviews.GetTeacherFilesController) // レビュー対象ファイル全件取得
-				reviewedGroup.POST("/:reviewed-id/files/upload", reviews.UploadController) // 新しいファイルをアップロード
+				reviewedGroup.GET("/", reviews.GetReviewed) // 全レビュー対象者の未確認フィードバック数を返却
+				reviewedGroup.GET("/:reviewed-id/files", reviews.GetFiles) // レビュー対象ファイル全件取得
+				reviewedGroup.GET("/:reviewed-id/teacher/files", reviews.GetTeacherFiles) // レビュー対象ファイル全件取得
+				reviewedGroup.POST("/:reviewed-id/files/upload", reviews.Upload) // 新しいファイルをアップロード
 				reviewedGroup.POST("/:reviewed-id/teacher/files/upload", reviews.UploadTeacherReviewedFile) // 新しいファイルをアップロード
-				reviewedGroup.GET("/:reviewed-id/files/:file-id/download", reviews.DownloadController) // ファイルをダウンロード
-				reviewedGroup.POST("/:reviewed-id/files/:file-id/comment", reviews.PostCommentController) // ファイルへのコメントのPOST
+				reviewedGroup.GET("/:reviewed-id/files/:file-id/download", reviews.Download) // ファイルをダウンロード
+				reviewedGroup.POST("/:reviewed-id/files/:file-id/comment", reviews.PostComment) // ファイルへのコメントのPOST
 				reviewedGroup.POST("/:reviewed-id/files/:file-id/reviewer", reviews.PostRegisterReviewer) // ファイルへのレビュアーを登録
-				reviewedGroup.GET("/:reviewed-id/files/:file-id/reviewers", reviews.GetReviewersController) // ファイルへのレビューをした人の情報を全取得
-				reviewedGroup.POST("/:reviewed-id/files/:file-id/reviewers/:reviewer-id/share", reviews.PostShareReviewController) // レビューをメールで通知
-				reviewedGroup.GET("/:reviewed-id/files/:file-id/reviewers/:reviewer-id/comment/:page-number", reviews.GetCommentController) // ファイルへのレビューコメントを1件取得
+				reviewedGroup.GET("/:reviewed-id/files/:file-id/reviewers", reviews.GetReviewers) // ファイルへのレビューをした人の情報を全取得
+				reviewedGroup.POST("/:reviewed-id/files/:file-id/reviewers/:reviewer-id/share", reviews.PostShareReview) // レビューをメールで通知
+				reviewedGroup.GET("/:reviewed-id/files/:file-id/reviewers/:reviewer-id/comment/:page-number", reviews.GetComment) // ファイルへのレビューコメントを1件取得
 			}
 		}
 	}

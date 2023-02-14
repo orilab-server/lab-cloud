@@ -15,7 +15,7 @@ type ResponseFileType struct {
 	ReviewerCount int `json:"reviewer_count"`
 }
 
-func (r ReviewsController) GetFilesController(ctx *gin.Context) {
+func (r ReviewsController) GetFiles(ctx *gin.Context) {
 	reviewedId := ctx.Param("reviewed-id")
 	files, err := models.ReviewedFiles(qm.Where("reviewed_id=?", reviewedId), qm.OrderBy("created_at desc")).All(r.ModelCtx, r.MyDB)
 	if err != nil {
@@ -44,7 +44,7 @@ func (r ReviewsController) GetFilesController(ctx *gin.Context) {
 	})
 }
 
-func (r ReviewsController) GetTeacherFilesController(ctx *gin.Context) {
+func (r ReviewsController) GetTeacherFiles(ctx *gin.Context) {
 	reviewedId := ctx.Param("reviewed-id")
 	files, err := models.TeacherReviewedFiles(qm.Where("reviewed_id=?", reviewedId), qm.OrderBy("created_at desc")).All(r.ModelCtx, r.MyDB)
 	if err != nil {

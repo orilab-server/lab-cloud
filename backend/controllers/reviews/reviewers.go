@@ -14,7 +14,7 @@ type ResponseType struct {
 	Name string `json:"name"`
 }
 
-func (r ReviewsController) GetReviewersController(ctx *gin.Context) {
+func (r ReviewsController) GetReviewers(ctx *gin.Context) {
 	fileId := ctx.Param("file-id")
 	reviewers, err := models.Reviewers(qm.Where("reviewed_file_id=?", fileId)).All(r.ModelCtx, r.MyDB)
 	if err != nil {

@@ -16,7 +16,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-func (r ReviewsController) UploadController(ctx *gin.Context) {
+func (r ReviewsController) Upload(ctx *gin.Context) {
 	reviewedId := ctx.Param("reviewed-id")
 	targetDir := ctx.PostForm("targetDir")
 	file, err := ctx.FormFile("file")

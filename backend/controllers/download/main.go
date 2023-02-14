@@ -1,4 +1,4 @@
-package controllers
+package download
 
 import (
 	"backend/service/download_service"
@@ -11,7 +11,8 @@ type DownloadController struct {
 	ShareDir string
 }
 
-func (d DownloadController) Controller(ctx *gin.Context) {
+
+func (d DownloadController) Download(ctx *gin.Context) {
 	path := ctx.DefaultQuery("path", d.ShareDir) // get Query Parameter
 	newpath, _ := url.QueryUnescape(path)        // decode URL
 	target := ctx.Query("target")

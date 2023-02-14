@@ -11,7 +11,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-func (r ReviewsController) PostCommentController(ctx *gin.Context) {
+func (r ReviewsController) PostComment(ctx *gin.Context) {
 	fileId := ctx.Param("file-id")
 	userId, _ := strconv.Atoi(ctx.PostForm("userId"))
 	comment := ctx.PostForm("comment")
@@ -80,7 +80,7 @@ func (r ReviewsController) PostCommentController(ctx *gin.Context) {
 	ctx.JSON(http.StatusAccepted, gin.H{})
 }
 
-func (r ReviewsController) GetCommentController(ctx *gin.Context) {
+func (r ReviewsController) GetComment(ctx *gin.Context) {
 	fileId := ctx.Param("file-id")
 	reviewerId := ctx.Param("reviewer-id")
 	pageNumber := ctx.Param("page-number")
