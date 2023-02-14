@@ -1,26 +1,22 @@
 import { useUser } from '@/features/auth/api/getUser';
 import { SignUpComplete } from '@/features/auth/components/SignUpForm';
 import { useFilePaths } from '@/features/home/api/getFilePaths';
+import StorageLayout from '@/features/home/components/layout/StorageLayout';
 import ProgressBars from '@/features/home/components/main/ProgressBars';
 import { MainContents } from '@/features/home/components/MainContents';
 import { SideContents } from '@/features/home/components/SideContents';
 import { ScreenLoading } from '@/shared/components/ScreenLoading';
-import { Box, Button, Stack } from '@mui/material';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useCallback } from 'react';
 
 const Home: NextPage = () => {
   const filePathsQuery = useFilePaths();
   const userQuery = useUser();
   const router = useRouter();
 
-  const moveDir = useCallback(
-    async (path: string) => {
-      await router.push(`${router.basePath}/?path=${path}`);
-    },
-    [router],
-  );
+  const moveDir = async (path: string) => {
+    await router.push(`/home/?path=${path}`);
+  };
 
   if (userQuery.data?.is_temporary) {
     return <SignUpComplete />;
@@ -38,12 +34,7 @@ const Home: NextPage = () => {
   const important = filePathsQuery.data.important;
 
   return (
-    <Stack id="home-root" sx={{ minWidth: '1400px' }} direction="row" justifyContent="start">
-      <Box sx={{ position: 'absolute', top: 0, right: 0, zIndex: 99 }}>
-        <Button onClick={() => router.push('/admin')} sx={{ m: 1 }}>
-          管理者ページ
-        </Button>
-      </Box>
+    <StorageLayout>
       <SideContents
         topDirs={topDirs}
         currentDir={currentDir || '/'}
@@ -64,7 +55,7 @@ const Home: NextPage = () => {
         important={important}
       />
       <ProgressBars />
-    </Stack>
+    </StorageLayout>
   );
 };
 

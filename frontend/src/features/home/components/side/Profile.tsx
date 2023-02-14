@@ -13,7 +13,7 @@ const Profile = ({ name }: ProfileProps) => {
 
   return (
     <Stack
-      onClick={() => router.push('/profile')}
+      onClick={() => router.push('/home/profile')}
       direction="row"
       alignItems="center"
       spacing={2}

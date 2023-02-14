@@ -61,7 +61,7 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
       }
       if (session) {
         // home → loginページへの遷移は不可, それ以外は許可
-        const to = publicPaths.includes(path) ? '/' : path;
+        const to = publicPaths.includes(path) ? '/home' : path;
         void router.push(to);
       }
     }

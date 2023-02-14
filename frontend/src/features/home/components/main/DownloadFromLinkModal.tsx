@@ -73,7 +73,7 @@ const DownloadFromLinkModal = ({
                   })
                   .finally(async () => {
                     setDownloadFromLink(false);
-                    await router.push(`/?path=${router.query.path}`);
+                    await router.push(`/home?path=${router.query.path}`);
                   });
               }}
             >
@@ -85,7 +85,7 @@ const DownloadFromLinkModal = ({
             <Button
               onClick={async () => {
                 setDownloadFromLink(false);
-                await router.push(`/?path=${router.query.path}`);
+                await router.push(`/home?path=${router.query.path}`);
               }}
             >
               閉じる

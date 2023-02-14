@@ -19,7 +19,7 @@ import FilePathList from './main/FilePathList';
 import { UploadableListSnackbar } from './misc/UploadableListSnackbar';
 
 type MainContentsProps = {
-  filepaths: Storage['filepaths'];
+  filepaths: Storage['filePaths'];
   currentdir: string;
   trashDir: string;
   baseDir: string;

@@ -55,7 +55,7 @@ export const AdminLayout = ({ children, isUnLogin }: AdminLayoutProps) => {
         sx={{ width: '100%', borderBottom: '2px rgba(0,0,0,0.5) solid', my: 3, py: 1 }}
       >
         <Typography sx={{ width: '80%', fontSize: 24 }}>管理者画面</Typography>
-        <Button onClick={() => router.push('/')}>ホームへ</Button>
+        <Button onClick={() => router.push('/home')}>ホームへ</Button>
         {!isUnLogin && (
           <Button color="secondary" onClick={() => logoutMutation.mutate()}>
             {logoutMutation.isLoading && <LoadingSpinner />}

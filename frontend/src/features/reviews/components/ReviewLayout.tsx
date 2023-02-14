@@ -49,7 +49,7 @@ const ReviewLayout = ({ children }: ReviewLayoutProps) => {
           </Button>
           {show && <ReviewDescription hide={() => setShow(false)} />}
         </Stack>
-        <Button onClick={() => router.push('/')}>ホームへ</Button>
+        <Button onClick={() => router.push('/home')}>ホームへ</Button>
       </Stack>
       {children}
     </Stack>

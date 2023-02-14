@@ -57,7 +57,7 @@ const NotFound: NextPage = () => {
       alignItems="center"
     >
       <Typography>404 | Not Found</Typography>
-      <Button onClick={() => router.push('/')}>ホームへ</Button>
+      <Button onClick={() => router.push('/home')}>ホームへ</Button>
     </Stack>
   );
 };

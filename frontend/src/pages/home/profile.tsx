@@ -24,7 +24,7 @@ const Profile: NextPage = () => {
         <Typography sx={{ fontSize: 24, color: 'rgba(0, 0, 0, 0.6)' }}>
           {user?.name}のプロフィール
         </Typography>
-        <Button onClick={() => router.push('/')}>ホームへ</Button>
+        <Button onClick={() => router.push('/home')}>ホームへ</Button>
       </Stack>
       <UserNameRow userName={user?.name || ''} />
     </Stack>

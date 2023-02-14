@@ -28,7 +28,7 @@ export const useLogin = () => {
       setNotify({ severity: 'info', text: 'ログインしました' });
       await sleep(2);
       const localStoragePath = localStorage.getItem('path');
-      const to = localStoragePath ? `/${localStoragePath}` : '/';
+      const to = localStoragePath ? `/${localStoragePath}` : '/home';
       if (localStoragePath) {
         localStorage.removeItem('path');
       }
