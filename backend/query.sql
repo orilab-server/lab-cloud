@@ -21,11 +21,13 @@ create table register_requests(
 );
 
 -- 捨てられたファイルの情報を取っておくテーブル
-create table files_trash(id varchar(36) not null,
+create table files_trash(
+  id varchar(36) not null,
   user_id int not null, 
+  name text not null,
+  size bigint,
   type varchar(4) not null, 
-  current_location varchar(1024) not null, 
-  past_location varchar(1024) not null, 
+  past_location varchar(1024) not null,
   created_at timestamp default current_timestamp not null, 
   primary key (id), 
   foreign key (user_id) references users(id)
