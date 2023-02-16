@@ -137,6 +137,12 @@ func main() {
 		homeGroup := authGroup.Group("/home")
 		{
 			homeGroup.GET("/", home.Main)
+			homeGroup.GET("/trash", home.GetTrash)
+			homeGroup.GET("/trash/:dir", home.GetFilesInDir)
+			homeGroup.POST("/trash/files/dump", home.DumpFiles)
+			homeGroup.POST("/trash/dirs/dump", home.DumpDirs)
+			homeGroup.POST("/trash/files/restore", home.RestoreItems)
+			homeGroup.POST("/trash/files/remove", home.RemoveAll)
 		}
 		
 		// userエンドポイント
@@ -154,10 +160,6 @@ func main() {
 		{
 			requestGroup.GET("/mkdir", home.MkDir)
 			requestGroup.GET("/rename", home.Rename)
-			requestGroup.GET("/mv", home.Mv)
-			requestGroup.POST("/mv-trash", home.MvTrash)
-			requestGroup.GET("/rm-file", home.RmFile)
-			requestGroup.GET("/rm-dir", home.RmDir)
 		}
 
 		reviews := reviews.ReviewsController{

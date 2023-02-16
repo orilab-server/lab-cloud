@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"io/fs"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -48,4 +49,34 @@ func GetDirAndFilePaths(dir string) ([]StorageItem, error) {
 	}
 
 	return items, nil
+}
+
+func GetFileSize(path string) (int64, error) {
+	f, err := os.Open(path)
+	
+	if err != nil {
+		f.Close()
+		return 0, err
+	}
+	
+	fi, err := f.Stat()
+	f.Close()
+
+	var size int64 = 0
+
+	if fi.IsDir() {
+		filepath.Walk(path, func(path string, info fs.FileInfo, err error) error {
+			if !info.IsDir() {
+				size += info.Size()
+			}
+			return err
+		})
+		return size, nil
+	}
+
+	if err != nil {
+		return 0, err
+	}
+	size = fi.Size()
+	return size, nil
 }

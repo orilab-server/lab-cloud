@@ -1,5 +1,11 @@
 export type FileOrDir = 'dir' | 'file';
 
+export type StorageItem = {
+  name: string;
+  size: number;
+  type: FileOrDir;
+};
+
 export type StorageFileOrDirItem = {
   id: string;
   path: string;

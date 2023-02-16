@@ -199,6 +199,8 @@ const FilePathList = ({
               });
               const formData = new FormData();
               formData.append('userId', String(userQuery.data.id));
+              formData.append('dirPaths', mvTrashItems.map((item) => item.path).join('///'));
+              formData.append('fileNames', mvTrashItems.map((item) => item.path).join('///'));
               mvTrashMutation.mutate({ targets: mvTrashItems, formData });
               unSelect();
             }

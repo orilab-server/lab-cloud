@@ -1,10 +1,9 @@
 import { useUser } from '@/features/auth/api/getUser';
 import { SignUpComplete } from '@/features/auth/components/SignUpForm';
 import { useFilePaths } from '@/features/home/api/getFilePaths';
-import StorageLayout from '@/features/home/components/layout/StorageLayout';
-import ProgressBars from '@/features/home/components/main/ProgressBars';
-import { MainContents } from '@/features/home/components/MainContents';
-import { SideContents } from '@/features/home/components/SideContents';
+import FloatingButton from '@/features/home/components/FloatingButton';
+import ContentsLayout from '@/shared/components/Layout/ContentsLayout';
+import MainLayout from '@/shared/components/Layout/MainLayout';
 import { ScreenLoading } from '@/shared/components/ScreenLoading';
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
@@ -34,28 +33,23 @@ const Home: NextPage = () => {
   const important = filePathsQuery.data.important;
 
   return (
-    <StorageLayout>
-      <SideContents
-        topDirs={topDirs}
-        currentDir={currentDir || '/'}
-        trashDir={''}
-        moveDir={moveDir}
-        name={userQuery.data?.name}
-        isTrash={false}
-        important={important}
-      />
-      <MainContents
-        filepaths={filePaths}
-        currentdir={currentDir || '/'}
-        trashDir={''}
-        baseDir={baseDir}
-        isHome={isHome}
-        moveDir={moveDir}
-        isTrash={false}
-        important={important}
-      />
-      <ProgressBars />
-    </StorageLayout>
+    <MainLayout>
+      <ContentsLayout>
+        <div className="grid grid-cols-6 w-[calc(100vw_-_16rem)] min-w-[1000px] px-2 py-1 divide-x border-b fixed top-14 bg-white">
+          <div className="col-span-3 pl-2">名前</div>
+          <div className="pl-2">サイズ</div>
+          <div className="pl-2">種類</div>
+          <div className="pl-2">追加日</div>
+        </div>
+        <div className="pt-9"></div>
+        {/* ここにファイルリスト */}
+        <div className="pb-9"></div>
+        <div className="fixed bottom-0 w-full pl-2 py-1 bg-white border-t flex space-x-2 text-gray-500">
+          <span>Share</span>
+        </div>
+        <FloatingButton />
+      </ContentsLayout>
+    </MainLayout>
   );
 };
 
