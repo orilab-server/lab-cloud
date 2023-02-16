@@ -42,7 +42,7 @@ const NotFound: NextPage = () => {
         },
       };
     }
-    return router.asPath;
+    return '/home';
   })();
 
   useEffect(() => {

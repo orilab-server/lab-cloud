@@ -5,19 +5,11 @@ import { useSetRecoilState } from 'recoil';
 import { MvTrashRequest } from '../../types/request';
 
 export const sendMvTrashRequest = async (targets: MvTrashRequest[], formData: FormData) => {
-  await Promise.all(
-    targets.map(async (target) => {
-      await myAuthAxiosPost(
-        `/request/mv-trash?path=${target.path}&itemType=${target.itemType}`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        },
-      );
-    }),
-  );
+  await myAuthAxiosPost(`/home/trash/dirs/dump`, formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data',
+    },
+  });
 };
 
 type MvTrashRequestMutationConfig = {
