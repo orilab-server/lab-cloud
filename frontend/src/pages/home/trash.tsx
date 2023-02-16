@@ -1,8 +1,14 @@
+import TrashList from '@/features/home/components/trash/TrashList';
+import ContentsLayout from '@/shared/components/Layout/ContentsLayout';
+import MainLayout from '@/shared/components/Layout/MainLayout';
+
 const Trash = () => {
   return (
-    <div>
-      <div>ここはゴミ箱専用ディレクトリページ</div>
-    </div>
+    <MainLayout>
+      <ContentsLayout>
+        <TrashList />
+      </ContentsLayout>
+    </MainLayout>
   );
 };
 
