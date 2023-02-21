@@ -154,7 +154,8 @@ func main() {
 		// downloadエンドポイント
 		authGroup.GET("/download", download.Download)
 		// uploadエンドポイント
-		authGroup.POST("/upload", upload.Upload)
+		authGroup.POST("/upload/file", upload.UploadFile)
+		authGroup.POST("/upload/folder", upload.UploadFolder)
 		// reuestエンドポイント
 		requestGroup := authGroup.Group("/request")
 		{
