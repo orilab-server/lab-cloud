@@ -152,7 +152,8 @@ func main() {
 		// logoutエンドポイント
 		authGroup.GET("/logout", auth.Logout)
 		// downloadエンドポイント
-		authGroup.GET("/download", download.Download)
+		authGroup.GET("/download/file", download.DownloadFile)
+		authGroup.GET("/download/folder", download.DownloadFolder)
 		// uploadエンドポイント
 		authGroup.POST("/upload/file", upload.UploadFile)
 		authGroup.POST("/upload/folder", upload.UploadFolder)
