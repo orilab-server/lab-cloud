@@ -41,7 +41,7 @@ func (h HomeController) GetTrash(ctx *gin.Context) {
 // ゴミ箱内の指定のフォルダ内のコンテンツを返す関数
 func (h HomeController) GetFilesInDir(ctx *gin.Context) {
 	targetDir := ctx.Param("dir")
-	contents, err := tools.GetDirAndFilePaths(targetDir)
+	contents, err := tools.GetDirAndFileNames(targetDir)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
@@ -91,12 +91,14 @@ func (h HomeController) RestoreItems(ctx *gin.Context) {
 */
 // ファイル(複数可)をゴミ箱ディレクトリに移動する操作
 func (h HomeController) DumpFiles(ctx *gin.Context) {
-	filePaths := strings.Split(ctx.PostForm("fileNames"), "///")
+	filePaths := strings.Split(ctx.PostForm("filePaths"), "///")
+	fmt.Println(filePaths)
 	userId, _ := strconv.Atoi(ctx.PostForm("userId"))
 	errFiles := []string{}
 	for _, filePath := range filePaths {
 		fileName := filePath[strings.LastIndex(filePath, "/")+1:]
 		size, _ := tools.GetFileSize(filePath)
+		filePath = h.ShareDir+filePath
 		newPath := h.TrashDir+"/"+fileName
 		if err := os.Rename(filePath, newPath); err != nil {
 			errFiles = append(errFiles, filePath)
@@ -134,6 +136,7 @@ func (h HomeController) DumpDirs(ctx *gin.Context) {
 	for _, dirPath := range dirPaths {
 		folderName := dirPath[strings.LastIndex(dirPath, "/")+1:]
 		size, _ := tools.GetFileSize(dirPath)
+		dirPath = h.ShareDir+dirPath
 		newPath := h.TrashDir+"/"+folderName
 		if err := os.Rename(dirPath, newPath); err != nil {
 			// 移動できなかったものについてはdbへの登録も行わない
