@@ -32,3 +32,14 @@ export const freeLengthStrSlicer = (str: string, length: number, ellipsis?: bool
   }
   return `${str.slice(0, length)}${ellipsis ? '...' : ''}`;
 };
+
+export const extractDateInStr = (str: string) => {
+  const regex = /_(\d{4}-\d{2}-\d{2}\s\d{2}:\d{2})/;
+  const match = str.match(regex);
+
+  if (match) {
+    const extractedDateTime = match[1];
+    return [str.replace(regex, ''), extractedDateTime];
+  }
+  return [str, ''];
+};

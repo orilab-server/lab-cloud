@@ -1,4 +1,5 @@
 import { useUser } from '@/features/auth/api/getUser';
+import { useLogout } from '@/features/auth/api/logout';
 import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 import { FaUserCircle } from 'react-icons/fa';
@@ -9,6 +10,7 @@ const Header = () => {
   const user = userQuery.data;
   const [openMenu, setOpenMenu] = useState<boolean>(false);
   const insideRef = useRef<HTMLDivElement>(null);
+  const logoutMutation = useLogout();
 
   useEffect(() => {
     const el = insideRef.current;
@@ -23,7 +25,7 @@ const Header = () => {
   }, [insideRef]);
 
   return (
-    <nav className="fixed top-0 left-0 z-50 w-screen border-solid border-0 border-b border-b-gray-600 bg-gray-800">
+    <nav className="fixed z-10 top-0 left-0 w-screen bg-gray-800">
       <div className="px-3 py-3 lg:px-5 lg:pl-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center justify-start">
@@ -45,7 +47,7 @@ const Header = () => {
               <span className="ml-3">{user?.name}</span>
             </div>
             <div
-              className={`absolute top-8 -left-24 w-56 mx-2 flex flex-col py-2 items-start bg-gray-700 rounded ${
+              className={`absolute z-1 top-8 -left-24 w-56 mx-2 flex flex-col py-2 items-start bg-gray-700 rounded ${
                 openMenu ? '' : 'hidden'
               }`}
             >
@@ -54,9 +56,12 @@ const Header = () => {
                   <a className="text-white no-underline mx-2 text-sm">プロフィール</a>
                 </Link>
               </div>
-              <div className="w-full text-white py-2 hover:bg-gray-600 cursor-pointer">
+              <button
+                onClick={() => logoutMutation.mutate()}
+                className="w-full text-left text-white py-2 hover:bg-gray-600 cursor-pointer"
+              >
                 <span className="mx-2 text-sm">ログアウト</span>
-              </div>
+              </button>
             </div>
           </div>
         </div>

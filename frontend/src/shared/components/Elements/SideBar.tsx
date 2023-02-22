@@ -10,8 +10,8 @@ const SideBar = () => {
   const isMatch = useCallback((path: string) => router.pathname === path, [router.asPath]);
 
   return (
-    <aside className="fixed top-0 left-0 z-40 w-64 h-screen pt-14">
-      <div className="h-full py-4 overflow-y-auto bg-gray-800">
+    <aside className="fixed z-[2] top-0 left-0 w-64 h-screen pt-14">
+      <div className="h-full py-4 border-t border-t-gray-600 overflow-y-auto bg-gray-800">
         <ul className="relative space-y-2 pb-4 pt-2 mx-2 px-0 ">
           <div className="absolute -top-1 left-2 text-gray-400 text-xs">遷移</div>
           <li>

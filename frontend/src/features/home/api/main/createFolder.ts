@@ -1,27 +1,27 @@
-import { myAuthAxiosPost } from '@/shared/lib/axios';
+import { myAuthAxiosGet } from '@/shared/lib/axios';
 import { notifyState } from '@/shared/stores';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
-export const dumpFiles = async (formData: FormData) => {
-  await myAuthAxiosPost(`/home/trash/files/dump`, formData, {
+export const createFolder = async (path: string) => {
+  await myAuthAxiosGet(`/request/mkdir?path=${path}`, {
     headers: {
       'Content-Type': 'multipart/form-data',
     },
   });
 };
 
-type DumpFilesRequestMutationConfig = {
-  formData: FormData;
+type CreateFolderMutationConfig = {
+  path: string;
 };
 
-export const useDumpFiles = () => {
+export const useCreateFolder = () => {
   const setNotify = useSetRecoilState(notifyState);
   const queryClient = useQueryClient();
 
-  return useMutation(async ({ formData }: DumpFilesRequestMutationConfig) => dumpFiles(formData), {
+  return useMutation(async ({ path }: CreateFolderMutationConfig) => createFolder(path), {
     onSuccess: async () => {
-      setNotify({ severity: 'info', text: 'ゴミ箱に移動しました' });
+      setNotify({ severity: 'info', text: '作成しました' });
       await queryClient.invalidateQueries('storage');
     },
     onError: () => {
