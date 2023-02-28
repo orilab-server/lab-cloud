@@ -1,4 +1,5 @@
 import { parseFileSizeStr } from '@/shared/utils/size';
+import { extractDateInStr } from '@/shared/utils/slice';
 import { format } from 'date-fns';
 import React from 'react';
 import { AiFillFile, AiFillFolder } from 'react-icons/ai';
@@ -40,7 +41,7 @@ const TrashList = () => {
 
   return (
     <>
-      <div className="grid grid-cols-6 w-[calc(100vw_-_16rem)] min-w-[1000px] px-2 py-1 divide-x border-b fixed top-14 bg-white">
+      <div className="grid grid-cols-6 w-[calc(100vw_-_16rem)] min-w-[800px] px-2 py-1 divide-x border-b fixed top-14 bg-white">
         <div className="col-span-3 pl-2">名前</div>
         <div className="pl-2">サイズ</div>
         <div className="pl-2">種類</div>
@@ -48,6 +49,7 @@ const TrashList = () => {
       </div>
       <div className="pt-9"></div>
       {trashList.map((item, i) => {
+        const [fileName] = extractDateInStr(item.name);
         return (
           <div
             id={item.id}
@@ -71,15 +73,17 @@ const TrashList = () => {
               ) : (
                 <AiFillFile className="mr-2 text-gray-600" />
               )}
-              <span className="">{item.name}</span>
+              <span className="">{fileName}</span>
             </div>
-            <div className="pl-3">{parseFileSizeStr(item.size)}</div>
-            <div className="pl-3">
+            <div className="pl-3 text-sm">{parseFileSizeStr(item.size)}</div>
+            <div className="pl-3 text-sm">
               {item.type === 'dir'
                 ? 'フォルダ'
                 : `${item.name.slice(item.name.lastIndexOf('.') + 1).toUpperCase()}ファイル`}
             </div>
-            <div className="pl-3">{format(new Date(item.created_at), 'yyyy/MM/dd hh:mm')}</div>
+            <div className="pl-3 text-sm">
+              {format(new Date(item.created_at), 'yyyy/MM/dd hh:mm')}
+            </div>
             {/* context menu */}
             {showCtxMenu && showCtxMenu === item.id && (
               <div className={`absolute top-3 right-[750px] bg-gray-800 rounded z-10 text-sm`}>

@@ -1,17 +1,9 @@
 import { FileOrDir } from './storage';
 
-export type Response = {
+export type DownloadFileProgress = {
   name: string;
-  type: FileOrDir;
-  data: Blob | null;
-};
-
-export type DownloadStatus = 'pending' | 'suspended' | 'finish';
-
-export type DownloadProgress = {
-  name: string;
-  text: string;
+  path: string;
   type: FileOrDir;
   progress: number;
-  status: DownloadStatus;
+  status: 'pending' | 'rejected' | 'finished';
 };

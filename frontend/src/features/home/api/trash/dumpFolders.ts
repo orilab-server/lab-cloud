@@ -11,7 +11,7 @@ export const dumpFolders = async (formData: FormData) => {
   });
 };
 
-type MvTrashRequestMutationConfig = {
+type DumpFoldersRequestMutationConfig = {
   formData: FormData;
 };
 
@@ -19,13 +19,16 @@ export const useDumpFolders = () => {
   const setNotify = useSetRecoilState(notifyState);
   const queryClient = useQueryClient();
 
-  return useMutation(async ({ formData }: MvTrashRequestMutationConfig) => dumpFolders(formData), {
-    onSuccess: async () => {
-      setNotify({ severity: 'info', text: 'ゴミ箱に移動しました' });
-      await queryClient.invalidateQueries('storage');
+  return useMutation(
+    async ({ formData }: DumpFoldersRequestMutationConfig) => dumpFolders(formData),
+    {
+      onSuccess: async () => {
+        setNotify({ severity: 'info', text: 'ゴミ箱に移動しました' });
+        await queryClient.invalidateQueries('storage');
+      },
+      onError: () => {
+        setNotify({ severity: 'error', text: 'エラーが発生しました' });
+      },
     },
-    onError: () => {
-      setNotify({ severity: 'error', text: 'エラーが発生しました' });
-    },
-  });
+  );
 };

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 
@@ -16,9 +17,10 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
+// reviewファイルの情報
 func (r ReviewsController) Upload(ctx *gin.Context) {
-	reviewedId := ctx.Param("reviewed-id")
-	targetDir := ctx.PostForm("targetDir")
+	reviewId := ctx.Param("review-id")
+	userId := ctx.PostForm("userId")
 	file, err := ctx.FormFile("file")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -26,21 +28,25 @@ func (r ReviewsController) Upload(ctx *gin.Context) {
 		})
 		return
 	}
-	reviewedFiles := models.ReviewedFiles(qm.Where("reviewed_id=?", reviewedId))
-	count, _ := reviewedFiles.Count(r.ModelCtx, r.MyDB)
-	extension := file.Filename[strings.LastIndex(file.Filename, "."):]
-	countInFileName := file.Filename[0:strings.LastIndex(file.Filename, ".")]+"_"+strconv.FormatInt(count+1, 10)+extension
-	ctx.SaveUploadedFile(file, r.ReviewDirPath+"/"+targetDir+"/"+countInFileName)
+	reviewed, _ := models.Revieweds(qm.Where("review_id=?", reviewId), qm.Where("user_id=?", userId)).One(r.ModelCtx, r.MyDB)
+	targetDir := reviewed.ReviewID+"/"+strconv.Itoa(reviewed.UserID)
+	extension := filepath.Ext(file.Filename)
 	id, _ := uuid.NewUUID()
-	reviewed_file := models.ReviewedFile{ID: id.String(), ReviewedID: reviewedId, FileName: countInFileName}
+	if err = ctx.SaveUploadedFile(file, r.ReviewDirPath+"/"+targetDir+"/"+id.String()+extension); err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "failed to upload file",
+		})
+		return
+	}
+	reviewed_file := models.ReviewedFile{ID: id.String(), ReviewedID: reviewed.ID, FileName: file.Filename}
 	reviewed_file.Insert(r.ModelCtx, r.MyDB, boil.Infer())
-	userName := ctx.PostForm("userName")
+	user, _ := models.FindUser(r.ModelCtx, r.MyDB, reviewed.UserID)
 	reviewDir := ctx.PostForm("reviewDir")
 	URL := ctx.PostForm("url")
 	tools.LineNotify(r.LineNotifyToken, []byte(""+ "\r\n" +
-		userName+"が 「" + reviewDir + "」 に新規ファイルをアップロードしました" + "\r\n" +
+		user.Name+"が 「" + reviewDir + "」 に新規ファイルをアップロードしました" + "\r\n" +
 		"\r\n" +
-		"ファイル名 : " + countInFileName + "\r\n" + "\r\n" +
+		"ファイル名 : " + file.Filename + "\r\n" + "\r\n" +
 		"URL : " + URL +
 	""))
 	ctx.JSON(http.StatusAccepted, gin.H{})

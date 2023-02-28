@@ -6,7 +6,7 @@ type ContentsLayoutProps = {
 
 const ContentsLayout = ({ children }: ContentsLayoutProps) => {
   return (
-    <div className="sm:ml-64 min-w-[1000px]">
+    <div className="sm:ml-64 min-w-[800px]">
       <div className="rounded-lg border-gray-700 mt-14 w-full">{children}</div>
     </div>
   );
