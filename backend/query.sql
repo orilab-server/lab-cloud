@@ -45,7 +45,7 @@ create table reset_tokens(
 create table reviews(
   id varchar(36) not null,
   name text not null,
-  target int not null, -- 2, 3, 4, 5, 6
+  target int not null, -- 2: 学士3年, 3: 学士4年, 4: 修士1年, 5: 修士2年, 6: カスタム
   created_at timestamp default current_timestamp not null, 
   updated_at timestamp default current_timestamp on update current_timestamp, 
   primary key (id)

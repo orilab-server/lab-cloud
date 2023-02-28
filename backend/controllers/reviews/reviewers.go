@@ -8,7 +8,7 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-type ResponseType struct {
+type ReviewerResponse struct {
 	Id string `json:"id"`
 	UserId int `json:"userId"`
 	Name string `json:"name"`
@@ -21,10 +21,10 @@ func (r ReviewsController) GetReviewers(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
-	var responses []ResponseType
+	var responses []ReviewerResponse
 	for _, reviewer := range reviewers {
 		user, _ := models.Users(qm.Select("name"), qm.Where("id=?", reviewer.UserID)).One(r.ModelCtx, r.MyDB)
-		responses = append(responses, ResponseType{Id: reviewer.ID, UserId: reviewer.UserID, Name: user.Name})
+		responses = append(responses, ReviewerResponse{Id: reviewer.ID, UserId: reviewer.UserID, Name: user.Name})
 	}
 	ctx.JSON(http.StatusOK, gin.H{
 		"reviewers": responses,

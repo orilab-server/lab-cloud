@@ -174,22 +174,22 @@ func main() {
 		// reviewエンドポイント
 		reviewsGroup := authGroup.Group("/reviews")
 		{
-			// reviewsGroup.GET("/user/:user-id", reviews)
-			reviewsGroup.GET("/", reviews.GetReviews) // レビュー全件取得
-			reviewsGroup.POST("/", reviews.PostReview) // 新規レビュー作成
+			reviewsGroup.GET("", reviews.GetReviews) // レビュー全件取得
+			reviewsGroup.POST("", reviews.CreateReview) // 新規レビュー作成
+			reviewsGroup.GET("/:review-id/is-target/:user-id", reviews.GetIsTarget)
+			reviewsGroup.GET("/:review-id/files", reviews.GetReviewFiles) // 対象のレビューのファイルを全件取得
+			reviewsGroup.POST("/:review-id/files/upload", reviews.Upload)
+			reviewsGroup.GET("/:review-id/files/:file-id/download", reviews.DownloadReviewFile)
+			reviewsGroup.GET("/:review-id/files/:file-id/is-host/:user-id", reviews.GetIsReviewHost)
+			reviewsGroup.GET("/:review-id/files/:file-id/reviewers", reviews.GetReviewers)
+			reviewsGroup.GET("/:review-id/files/:file-id/reviewers/:reviewer-id/comments/:index", reviews.GetComment)
+			reviewsGroup.GET("/:review-id/files/:file-id/own/:user-id/comments/:index", reviews.GetOwnComment)
+			reviewsGroup.POST("/:review-id/files/:file-id/comments/:index", reviews.PostComment)
+			reviewsGroup.GET("/:review-id/files/:file-id/own/:user-id/comments/share", reviews.PostShareReview) // レビューをメールで通知
 			reviewedGroup := reviewsGroup.Group("/:review-id/reviewed")
 			{
-				reviewedGroup.GET("/", reviews.GetReviewed) // 全レビュー対象者の未確認フィードバック数を返却
-				reviewedGroup.GET("/:reviewed-id/files", reviews.GetFiles) // レビュー対象ファイル全件取得
 				reviewedGroup.GET("/:reviewed-id/teacher/files", reviews.GetTeacherFiles) // レビュー対象ファイル全件取得
-				reviewedGroup.POST("/:reviewed-id/files/upload", reviews.Upload) // 新しいファイルをアップロード
 				reviewedGroup.POST("/:reviewed-id/teacher/files/upload", reviews.UploadTeacherReviewedFile) // 新しいファイルをアップロード
-				reviewedGroup.GET("/:reviewed-id/files/:file-id/download", reviews.Download) // ファイルをダウンロード
-				reviewedGroup.POST("/:reviewed-id/files/:file-id/comment", reviews.PostComment) // ファイルへのコメントのPOST
-				reviewedGroup.POST("/:reviewed-id/files/:file-id/reviewer", reviews.PostRegisterReviewer) // ファイルへのレビュアーを登録
-				reviewedGroup.GET("/:reviewed-id/files/:file-id/reviewers", reviews.GetReviewers) // ファイルへのレビューをした人の情報を全取得
-				reviewedGroup.POST("/:reviewed-id/files/:file-id/reviewers/:reviewer-id/share", reviews.PostShareReview) // レビューをメールで通知
-				reviewedGroup.GET("/:reviewed-id/files/:file-id/reviewers/:reviewer-id/comment/:page-number", reviews.GetComment) // ファイルへのレビューコメントを1件取得
 			}
 		}
 	}
