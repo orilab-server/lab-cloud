@@ -71,7 +71,7 @@ const ResetPasswordRequest = () => {
             )}
           />
           <Button type="submit" variant="contained">
-            {resetPasswordMutation.isLoading && <LoadingSpinner size="sm" color="inherit" />}
+            {resetPasswordMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
             <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
           </Button>
         </Stack>

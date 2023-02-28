@@ -52,7 +52,7 @@ export const LoginForm = ({ setIsRegisterForm }: LoginFormProps) => {
         sx={{ mt: 3, mb: 2, whiteSpace: 'nowrap' }}
       >
         <Typography sx={{ width: '100%', textAlign: 'center' }}>ログイン</Typography>
-        {loginMutation.isLoading && <LoadingSpinner size="sm" color="inherit" />}
+        {loginMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
       </Button>
       <Button
         onClick={goRegisterForm}

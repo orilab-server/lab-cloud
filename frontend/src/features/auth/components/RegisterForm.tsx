@@ -145,7 +145,7 @@ export const RegisterForm = ({ setIsRegisterForm }: RegisterFormProps) => {
         sx={{ mt: 3, mb: 2, whiteSpace: 'nowrap' }}
       >
         <Typography sx={{ width: '100%', textAlign: 'center' }}>送信</Typography>
-        {sendMailMutation.isLoading && <LoadingSpinner size="sm" color="inherit" />}
+        {sendMailMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
       </Button>
       <Button
         color="secondary"
