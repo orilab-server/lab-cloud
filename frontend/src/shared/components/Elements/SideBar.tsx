@@ -7,7 +7,11 @@ import { MdCreateNewFolder, MdDriveFolderUpload, MdReviews, MdUploadFile } from 
 
 const SideBar = () => {
   const router = useRouter();
-  const isMatch = useCallback((path: string) => router.pathname === path, [router.asPath]);
+  const isMatch = useCallback(
+    // dynamic route pathを削除する正規表現
+    (path: string) => router.pathname.replace(/\/\[[^\]]+\]$/, '') === path,
+    [router.asPath],
+  );
 
   return (
     <aside className="fixed z-[2] top-0 left-0 w-64 h-screen pt-14">

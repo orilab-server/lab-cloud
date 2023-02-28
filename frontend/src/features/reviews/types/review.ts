@@ -2,6 +2,7 @@ export type Review = {
   id: string;
   name: string;
   target: number;
+  year: number;
 };
 
 export type ReviewUser = {
@@ -13,10 +14,12 @@ export type Reviewed = {
   name: string;
 };
 
-export type ReviewedFile = {
+export type ReviewFile = {
   id: string;
-  file_name: string;
+  user_id: number;
+  user_name: string;
   created_at: string;
+  file_name: string;
   reviewer_count: number;
 };
 
@@ -36,4 +39,5 @@ export type Comment = {
   id: string;
   page_number: number;
   comment: string;
+  created_at: string;
 };

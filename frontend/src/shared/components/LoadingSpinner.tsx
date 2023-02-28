@@ -1,34 +1,31 @@
-import Box from '@mui/material/Box';
-import CircularProgress, { CircularProgressProps } from '@mui/material/CircularProgress';
-
-type LoadingSpinnerProps = CircularProgressProps & {
+type LoadingSpinnerProps = {
+  clasName?: string;
   size?: keyof typeof sizes;
+  variant?: keyof typeof variants;
 };
 
 const sizes = {
-  sm: 20,
-  md: 40,
-  lg: 60,
-  xl: 100,
+  sm: 'h-5 w-5',
+  md: 'h-10 w-10',
+  lg: 'h-16 w-16',
+  xl: 'h-24 w-24',
 };
 
 const variants = {
-  primary: 'determinate',
-  secondary: 'indeterminate',
+  primary: 'border-blue-500',
+  inherit: 'border-gray-200',
 };
 
-export const LoadingSpinner = ({ size = 'md', ...rest }: LoadingSpinnerProps) => {
+export const LoadingSpinner = ({
+  clasName,
+  size = 'md',
+  variant = 'primary',
+}: LoadingSpinnerProps) => {
   return (
-    <Box
-      sx={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-      }}
-    >
-      <CircularProgress size={sizes[size]} {...rest} />
-    </Box>
+    <div className="flex justify-center">
+      <div
+        className={`animate-spin border-4 rounded-full border-t-transparent ${variants[variant]} ${sizes[size]} ${clasName}`}
+      ></div>
+    </div>
   );
 };

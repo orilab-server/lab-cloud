@@ -14,7 +14,7 @@ import {
 import React, { useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { useModal } from 'react-hooks-use-modal';
-import { useSendMkReviewDirRequest } from '../api/mkReviewDir';
+import { useCreateReview } from '../api/reviews/createReview';
 
 type CreateReviewModalProps = {
   button: React.ReactNode;
@@ -47,7 +47,7 @@ const CreateReviewModal = ({ button }: CreateReviewModalProps) => {
   const usersQuery = useUsers();
   const users = usersQuery.data || [];
   const grades = new Set(users.map((u) => new Date().getFullYear() - u.grade));
-  const mkReviewDirMutation = useSendMkReviewDirRequest();
+  const mkReviewDirMutation = useCreateReview();
 
   const { control, handleSubmit, watch } = useForm<ReviewDirInput>({
     defaultValues: {
