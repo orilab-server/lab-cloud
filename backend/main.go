@@ -131,12 +131,13 @@ func main() {
 		importantDirs := strings.Split(importantDirStr, "/")
 		home := home.HomeController{ShareDir: shareDirPath, TrashDir: trashDirPath, ImportantDirs: importantDirs, MyDB: myDB}
 		download := download.DownloadController{ShareDir: shareDirPath}
-		upload := upload.UploadController{ShareDir: shareDirPath}
+		upload := upload.UploadController{ShareDir: shareDirPath, ModelCtx: modelContext, MyDB: myDB}
 
 		// homeエンドポイント
 		homeGroup := authGroup.Group("/home")
 		{
 			homeGroup.GET("/", home.Main)
+			homeGroup.GET("/recent-files", home.GetRecentFiles)
 			homeGroup.GET("/trash", home.GetTrash)
 			homeGroup.GET("/trash/:dir", home.GetFilesInDir)
 			homeGroup.POST("/trash/files/dump", home.DumpFiles)

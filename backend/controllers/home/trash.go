@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"regexp"
 	"strconv"
 	"strings"
 
@@ -14,6 +15,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
+	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
 type TrashFile struct {
@@ -92,9 +94,9 @@ func (h HomeController) RestoreItems(ctx *gin.Context) {
 // ファイル(複数可)をゴミ箱ディレクトリに移動する操作
 func (h HomeController) DumpFiles(ctx *gin.Context) {
 	filePaths := strings.Split(ctx.PostForm("filePaths"), "///")
-	fmt.Println(filePaths)
 	userId, _ := strconv.Atoi(ctx.PostForm("userId"))
 	errFiles := []string{}
+	modelCtx := context.Background()
 	for _, filePath := range filePaths {
 		fileName := filePath[strings.LastIndex(filePath, "/")+1:]
 		size, _ := tools.GetFileSize(filePath)
@@ -114,12 +116,16 @@ func (h HomeController) DumpFiles(ctx *gin.Context) {
 			UserID: userId,
 			Type: "file",
 		}
-		if err := item.Insert(context.Background(), h.MyDB, boil.Infer()); err != nil {
+		if err := item.Insert(modelCtx, h.MyDB, boil.Infer()); err != nil {
 			// ファイル移動には成功したが, dbへの登録が失敗した場合は移動ずみのものを削除
 			os.Remove(newPath)
 			
 			errFiles = append(errFiles, fileName)
 		}
+		reg := regexp.MustCompile(`_\d{4}-\d{2}-\d{2} \d{2}:\d{2}`)
+		fileNameWithoutDateStr := reg.ReplaceAllString(fileName, "")
+		recent, _ := models.RecentFiles(qm.Where("file_name=?", fileNameWithoutDateStr)).All(modelCtx, h.MyDB)
+		recent.DeleteAll(modelCtx, h.MyDB)
 	}
 	message := ""
 	if len(errFiles) > 0 {
