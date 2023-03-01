@@ -1,9 +1,11 @@
+import { useGetRecentFiles } from '@/features/home/api/recents/getRecentFiles';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useCallback } from 'react';
+import { AiFillFile } from 'react-icons/ai';
 import { BsFillTrash2Fill, BsShare } from 'react-icons/bs';
 import { IoIosTime } from 'react-icons/io';
-import { MdCreateNewFolder, MdDriveFolderUpload, MdReviews, MdUploadFile } from 'react-icons/md';
+import { MdReviews } from 'react-icons/md';
 
 const SideBar = () => {
   const router = useRouter();
@@ -12,6 +14,8 @@ const SideBar = () => {
     (path: string) => router.pathname.replace(/\/\[[^\]]+\]$/, '') === path,
     [router.asPath],
   );
+  const recentsQuery = useGetRecentFiles(5);
+  const recents = recentsQuery.data || [];
 
   return (
     <aside className="fixed z-[2] top-0 left-0 w-64 h-screen pt-14">
@@ -68,26 +72,27 @@ const SideBar = () => {
           </li>
         </ul>
         <div className="mx-2 py-3 border-solid border-0 border-t border-gray-600"></div>
-        <ul className="relative space-y-2 mx-2 pb-4 px-0">
-          <div className="absolute -top-5 left-2 text-gray-400 text-xs">よく使う項目</div>
-          <li>
-            <div className="flex items-center p-2 text-base font-normal rounded-md text-white hover:bg-gray-700">
-              <MdCreateNewFolder size={25} className="text-gray-400" />
-              <span className="ml-3">フォルダを作成</span>
-            </div>
-          </li>
-          <li>
-            <div className="flex items-center p-2 text-base font-normal no-underline rounded-md text-white hover:bg-gray-700">
-              <MdUploadFile size={25} className="text-gray-400" />
-              <span className="ml-3">ファイルを追加</span>
-            </div>
-          </li>
-          <li>
-            <div className="flex items-center p-2 text-base font-normal no-underline rounded-md text-white hover:bg-gray-700">
-              <MdDriveFolderUpload size={25} className="text-gray-400" />
-              <span className="ml-3">フォルダを追加</span>
-            </div>
-          </li>
+        <ul className="relative space-y-2 mx-2 pb-4 px-0 pt-2">
+          <div className="absolute -top-3 left-2 text-gray-400 text-xs">最近のアップロード</div>
+          {recents.map((r) => (
+            <li key={r.id} className="my-1 group">
+              <Link
+                href={r.type === 'review' ? `/reviews/${r.location}` : `/home?path=${r.location}`}
+              >
+                <a
+                  className="tooltip flex items-center p-2 py-1 font-normal rounded-md text-white hover:bg-gray-700"
+                  data-tip={`upload: ${r.created_at}`}
+                >
+                  {r.type === 'review' ? (
+                    <MdReviews className="min-w-[16px] text-gray-200" />
+                  ) : (
+                    <AiFillFile className="min-w-[16px] text-gray-200" />
+                  )}
+                  <span className="ml-2 text-sm truncate">{r.file_name}</span>
+                </a>
+              </Link>
+            </li>
+          ))}
         </ul>
       </div>
     </aside>
