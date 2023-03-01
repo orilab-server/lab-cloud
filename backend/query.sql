@@ -1,5 +1,6 @@
 -- ユーザテーブル
-create table users(id int not null auto_increment, 
+create table users(
+  id int not null auto_increment, 
   name varchar(50) not null,
   email varchar(254) not null, 
   password varchar(60) not null, 
@@ -39,6 +40,18 @@ create table reset_tokens(
   email varchar(254) not null, 
   token varchar(254) not null,
   primary key (id)
+);
+
+-- 最新アップロードファイル情報を保存するテーブル 最大50件
+create table recent_files(
+  id varchar(36) not null,
+  file_name text not null,
+  location text not null,
+  type varchar(6) not null, -- file | dir | review
+  user_id int not null,
+  primary key (id),
+  created_at timestamp default current_timestamp not null,
+  foreign key (user_id) references users(id)
 );
 
 -- レビュー用ディレクトリのテーブル
