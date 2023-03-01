@@ -26,30 +26,14 @@ const AddFolderButton = ({ open }: CreateFolderButtonProps) => {
   const [folders, setFolders] = useRecoilState(foldersState);
   const setProgresses = useSetRecoilState(folderUploadProgressesState);
   const uploadFoldersMutation = useUploadFolders();
-  const topFolderNames = Array.from(
-    new Set(
-      folders.map((f) => {
-        // folderのパスは /${top}/${next} のような構造の場合もあるため一番上の階層を抽出
-        if (f.path.split('/').filter((p) => p).length > 1) {
-          return f.path.slice(1, f.path.slice(1).indexOf('/') + 1);
-        }
-        return f.path.slice(1);
-      }),
-    ),
-  );
-  const delFolder = (name: string) =>
-    setFolders((old) =>
-      old.filter((f) => {
-        const top = f.path.split('/').filter((p) => p)[0];
-        return top !== name;
-      }),
-    );
+  const topFolderNames = Array.from(new Set(folders.map((f) => f.top)));
+  const delFolder = (name: string) => setFolders((old) => old.filter((f) => f.top !== name));
   const delAll = () => setFolders([]);
   const onUpload = async () => {
     if (folders.length > 0) {
       setProgresses(
         folders.map((f) => ({
-          name: f.path.slice(1, f.path.slice(1).indexOf('/')),
+          name: f.top,
           progress: 0,
           status: 'pending' as 'pending',
           target: f,

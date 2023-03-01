@@ -1,5 +1,5 @@
 import { folderUploadProgressesState } from '@/features/home/modules/stores';
-import { AiFillFile } from 'react-icons/ai';
+import { AiFillFolder } from 'react-icons/ai';
 import { useRecoilState } from 'recoil';
 
 const UploadFolderList = () => {
@@ -15,7 +15,7 @@ const UploadFolderList = () => {
             className={`relative z-0 grid grid-cols-6 px-2 mx-2 py-1 rounded-md bg-gray-200 cursor-pointer`}
           >
             <div className="col-span-3 flex items-center">
-              <AiFillFile className="mr-2 text-gray-600" />
+              <AiFillFolder className="mr-2 text-gray-600" />
               <div className="flex items-center text-gray-400">
                 <div>{item.name}</div>
                 <div
