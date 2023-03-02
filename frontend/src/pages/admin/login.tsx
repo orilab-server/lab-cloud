@@ -1,15 +1,7 @@
 import { useAdminLogin } from '@/features/admin/api/adminLogin';
 import { AdminLayout } from '@/features/admin/components/layout/AdminLayout';
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import {
-  Button,
-  Container,
-  createTheme,
-  CssBaseline,
-  TextField,
-  ThemeProvider,
-  Typography,
-} from '@mui/material';
+import { Container, createTheme, CssBaseline, TextField, ThemeProvider } from '@mui/material';
 import { Box } from '@mui/system';
 import { NextPage } from 'next';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
@@ -74,15 +66,10 @@ const AdminLogin: NextPage = () => {
                 />
               )}
             />
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2, whiteSpace: 'nowrap' }}
-            >
-              <Typography sx={{ width: '100%', textAlign: 'center' }}>ログイン</Typography>
+            <button type="submit" className="btn btn-primary w-full my-2">
+              <span className="text-center px-3">ログイン</span>
               {loginMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
-            </Button>
+            </button>
           </Box>
         </Container>
       </ThemeProvider>

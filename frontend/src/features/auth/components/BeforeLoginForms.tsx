@@ -1,6 +1,5 @@
 import {
   Box,
-  Button,
   Chip,
   Container,
   createTheme,
@@ -53,9 +52,9 @@ export const BeforeLoginForms = () => {
           ) : (
             <LoginForm setIsRegisterForm={setIsRegisterForm} />
           )}
-          <Button onClick={() => router.push('/reset-password/request')}>
+          <button className="btn btn-link" onClick={() => router.push('/reset-password/request')}>
             パスワードを忘れた方
-          </Button>
+          </button>
         </Box>
       </Container>
     </ThemeProvider>
