@@ -3,6 +3,7 @@ package reviews
 import (
 	"backend/models"
 	"backend/tools"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -20,7 +21,7 @@ import (
 // reviewファイルの情報
 func (r ReviewsController) Upload(ctx *gin.Context) {
 	reviewId := ctx.Param("review-id")
-	userId := ctx.PostForm("userId")
+	userId, _ := strconv.Atoi(ctx.PostForm("userId"))
 	file, err := ctx.FormFile("file")
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -49,6 +50,22 @@ func (r ReviewsController) Upload(ctx *gin.Context) {
 		"ファイル名 : " + file.Filename + "\r\n" + "\r\n" +
 		"URL : " + URL +
 	""))
+
+	// アップロードファイルをrecent_filesに登録 & 50件超過の場合は古いものから削除する
+	recentFileCount, _ := models.RecentFiles(qm.OrderBy("created_at desc")).Count(r.ModelCtx, r.MyDB)
+	if recentFileCount >= 50 {
+		delCount := recentFileCount - 49
+		delFiles, _ := models.RecentFiles(qm.Limit(int(delCount)), qm.OrderBy("created_at desc")).All(r.ModelCtx, r.MyDB)
+		for _, f := range delFiles {
+			delFile, _ := models.FindRecentFile(r.ModelCtx,r.MyDB,f.ID)
+			delFile.Delete(r.ModelCtx,r.MyDB)
+		}
+	}
+	recentFileIid, _ := uuid.NewUUID()
+	recents := models.RecentFile{ID: recentFileIid.String(),UserID: userId,Location: reviewId+"?review_name="+reviewDir,FileName: file.Filename,Type: "review"}
+	err = recents.Insert(r.ModelCtx, r.MyDB, boil.Infer())
+	fmt.Println(err)
+
 	ctx.JSON(http.StatusAccepted, gin.H{})
 }
 

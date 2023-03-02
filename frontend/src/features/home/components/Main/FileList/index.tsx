@@ -59,7 +59,7 @@ const FileList = () => {
   const renameCancel = () => setContextMenuState({ rename: '' });
 
   const moveDir = async (path: string) => {
-    await router.push(`/home/?path=${currentPath}/${path}`);
+    await router.push(`/home/?path=${path}`);
   };
 
   useEffect(() => {
@@ -100,7 +100,9 @@ const FileList = () => {
               onCtxMenu(e, item.name);
               add(item.name);
             }}
-            onDoubleClick={() => (item.type === 'dir' ? moveDir(item.name) : () => {})}
+            onDoubleClick={() =>
+              item.type === 'dir' ? moveDir(`${currentPath}/${item.name}`) : () => {}
+            }
             className={`relative grid grid-cols-6 px-2 mx-2 py-1 rounded-md ${
               showCtxMenu === item.name
                 ? 'bg-blue-300'

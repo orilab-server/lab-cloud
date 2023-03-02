@@ -5,6 +5,7 @@ package models
 
 var TableNames = struct {
 	FilesTrash           string
+	RecentFiles          string
 	RegisterRequests     string
 	ResetTokens          string
 	ReviewComments       string
@@ -16,6 +17,7 @@ var TableNames = struct {
 	Users                string
 }{
 	FilesTrash:           "files_trash",
+	RecentFiles:          "recent_files",
 	RegisterRequests:     "register_requests",
 	ResetTokens:          "reset_tokens",
 	ReviewComments:       "review_comments",

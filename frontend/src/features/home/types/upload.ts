@@ -1,6 +1,7 @@
 export type ExFile = { path: string; file: File };
 
 export type ExFolder = {
+  top: string;
   path: string;
   files: File[];
 };

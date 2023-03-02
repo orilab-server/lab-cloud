@@ -23,7 +23,8 @@ export const useUploadFolder = () => {
           return { ...n, [relativePath]: [p] };
         }, {}),
       ).map(([k, v]) => ({
-        path: `/${router.query.path || ''}/${k as string}`.replaceAll('//', '/'),
+        top: k.split('/').filter((p) => p)[0],
+        path: `/${router.query.path || ''}/${k}`.replaceAll('//', '/'),
         files: v as File[],
       }));
       setFolders((old) => {
