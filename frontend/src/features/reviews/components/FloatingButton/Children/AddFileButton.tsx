@@ -73,7 +73,10 @@ const AddFileButton = ({ open }: CreateFolderButtonProps) => {
             </button>
           </div>
         ) : (
-          <div>ファイルを選択してください</div>
+          <div className="flex flex-col">
+            <div>ファイルを選択してください</div>
+            <div className="text-sm">※ PDF, Word, PowerPointのみ可</div>
+          </div>
         )}
       </Modal>
     </div>

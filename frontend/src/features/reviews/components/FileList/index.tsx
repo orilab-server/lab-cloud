@@ -53,7 +53,7 @@ const FileList = () => {
                     old.includes(k) ? old.filter((o) => o !== k) : Array.from(new Set([...old, k])),
                   )
                 }
-                className={`absolute z-10 left-3 hover:text-gray-400 transform transition-all ${
+                className={`absolute z-10 top-[2px] left-3 hover:text-gray-400 transform origin-center transition-all ${
                   openAcc.includes(k) ? 'rotate-90' : ''
                 }`}
               >
@@ -64,7 +64,7 @@ const FileList = () => {
               <a
                 className={`relative w-full grid grid-cols-6 px-2 mx-2 py-1 text-left rounded-md items-center ${
                   (i + 1) % 2 ? '' : 'bg-gray-200'
-                } text-gray-800`}
+                } text-gray-800 hover:bg-blue-200`}
               >
                 <div className="col-span-3 truncate text-sm pl-3">
                   {top.file_name}
@@ -83,7 +83,7 @@ const FileList = () => {
                     <a
                       className={`relative w-full grid grid-cols-6 px-2 mx-2 py-1 rounded-md items-center text-left ${
                         (n_i + 1) % 2 ? 'bg-gray-100' : ''
-                      } text-gray-800`}
+                      } text-gray-800 hover:bg-blue-100`}
                     >
                       <div className="col-span-3 truncate text-sm pl-3">{n.file_name}</div>
                       <div className="pl-2 truncate text-sm">{n.created_at}</div>

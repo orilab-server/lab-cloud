@@ -12,7 +12,7 @@ import { useTrashSelect } from '../../hooks/trash/useTrashSelect';
 const TrashList = () => {
   const trashItemsQuery = useGetTrashItems();
   const trashList = trashItemsQuery.data || [];
-  const { selected, onClickWithKey } = useTrashSelect(trashList);
+  const { selected, add, onClickWithKey } = useTrashSelect(trashList);
   const { ctxMenuRef, showCtxMenu, setShowCtxMenu, onCtxMenu } = useCtxMenu();
   const removeItemsMutation = useRemoveItems();
   const restoreItemsMutation = useRestoreItems();
@@ -55,15 +55,12 @@ const TrashList = () => {
             id={item.id}
             key={item.id}
             onClick={(e) => onClickWithKey(e, item.id)}
-            onContextMenu={(e) => onCtxMenu(e, item.id)}
+            onContextMenu={(e) => {
+              onCtxMenu(e, item.id);
+              add(item.id);
+            }}
             className={`relative grid grid-cols-6 px-2 mx-2 py-1 rounded-md ${
-              showCtxMenu === item.id
-                ? 'bg-blue-300'
-                : selected.has(item.id)
-                ? 'bg-blue-300'
-                : (i + 1) % 2
-                ? ''
-                : 'bg-gray-200'
+              selected.has(item.id) ? 'bg-blue-300' : (i + 1) % 2 ? '' : 'bg-gray-200'
             } cursor-pointer`}
             ref={ctxMenuRef}
           >
@@ -85,18 +82,20 @@ const TrashList = () => {
               {format(new Date(item.created_at), 'yyyy/MM/dd hh:mm')}
             </div>
             {/* context menu */}
-            {showCtxMenu && showCtxMenu === item.id && (
-              <div className={`absolute top-3 right-[750px] bg-gray-800 rounded z-10 text-sm`}>
-                <div className="mx-auto rounded border border-gray-600 py-3 grid grid-cols-1 gap-2 whitespace-nowrap">
-                  <button onClick={removeItems} className="text-white hover:bg-gray-700 px-3 py-1">
-                    ゴミ箱から削除
-                  </button>
-                  <button onClick={restoreItems} className="text-white hover:bg-gray-700 px-3 py-1">
-                    元の場所に戻す
-                  </button>
-                </div>
+            <div
+              className={`${
+                showCtxMenu && showCtxMenu === item.id ? '' : 'hidden'
+              } absolute top-3 right-[750px] bg-gray-800 rounded z-10 text-sm`}
+            >
+              <div className="mx-auto rounded border border-gray-600 py-3 grid grid-cols-1 gap-2 whitespace-nowrap">
+                <button onClick={removeItems} className="text-white hover:bg-gray-700 px-3 py-1">
+                  ゴミ箱から削除
+                </button>
+                <button onClick={restoreItems} className="text-white hover:bg-gray-700 px-3 py-1">
+                  元の場所に戻す
+                </button>
               </div>
-            )}
+            </div>
           </div>
         );
       })}

@@ -46,7 +46,7 @@ export const LoginForm = ({ setIsRegisterForm }: LoginFormProps) => {
         autoComplete="current-password"
       />
       <button type="submit" className="btn btn-primary w-full my-1">
-        <span className="w-full">ログイン</span>
+        <span className="w-full px-3">ログイン</span>
         {loginMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
       </button>
       <button className="btn btn-secondary w-full my-1" onClick={goRegisterForm}>

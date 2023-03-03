@@ -133,7 +133,7 @@ export const RegisterForm = ({ setIsRegisterForm }: RegisterFormProps) => {
       />
       <div className="text-sm mt-[-4px]">※教職員の方は数字の1を入力してください</div>
       <button type="submit" className="btn btn-primary w-full mt-3 my-1">
-        <span className="w-full">送信</span>
+        <span className="w-full px-3">送信</span>
         {sendMailMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
       </button>
       <button onClick={backLoginForm} className="btn btn-secondary w-full my-1">

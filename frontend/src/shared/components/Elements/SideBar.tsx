@@ -80,7 +80,7 @@ const SideBar = () => {
                 href={r.type === 'review' ? `/reviews/${r.location}` : `/home?path=${r.location}`}
               >
                 <a
-                  className="tooltip flex items-center p-2 py-1 font-normal rounded-md text-white hover:bg-gray-700"
+                  className="tooltip tooltip-primary flex items-center p-2 py-1 font-normal rounded-md text-white hover:bg-gray-700"
                   data-tip={`upload: ${r.created_at}`}
                 >
                   {r.type === 'review' ? (

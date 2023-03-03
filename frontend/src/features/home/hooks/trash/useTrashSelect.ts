@@ -37,5 +37,5 @@ export const useTrashSelect = (fileList: TrashItem[]) => {
     }
   };
 
-  return { selected, onClickWithKey };
+  return { selected, add, onClickWithKey };
 };
