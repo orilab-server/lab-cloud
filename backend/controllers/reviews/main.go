@@ -2,7 +2,6 @@ package reviews
 
 import (
 	"backend/models"
-	mailservice "backend/service/mail_service"
 	"backend/tools"
 	"context"
 	"database/sql"
@@ -23,7 +22,7 @@ type ReviewsController struct {
 	ModelCtx context.Context
 	ReviewDirPath string
 	LineNotifyToken string
-	MailInfo mailservice.MailRequest
+	MailInfo tools.MailRequest
 }
 
 type ResponseReview struct {

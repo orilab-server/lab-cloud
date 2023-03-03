@@ -17,13 +17,13 @@ import (
 
 
 func (u UserController) ResetPasswordRequest(ctx *gin.Context) {
-	email := strings.TrimSpace(ctx.PostForm("email"))
-	if email == "" {
+	emailAdd := strings.TrimSpace(ctx.PostForm("email"))
+	if emailAdd == "" {
 		ctx.Status(http.StatusBadRequest)
 		return
 	}
 	modelCtx := context.Background()
-	userExist, _ := models.Users(qm.Where("email=?", email)).Exists(modelCtx, u.MyDB)
+	userExist, _ := models.Users(qm.Where("email=?", emailAdd)).Exists(modelCtx, u.MyDB)
 	if !userExist {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "user not found",
@@ -35,7 +35,7 @@ func (u UserController) ResetPasswordRequest(ctx *gin.Context) {
 	token, _ := tools.GetRandomStr(254)
 	resetToken := models.ResetToken{
 		ID: id.String(),
-		Email: email,
+		Email: emailAdd,
 		Token: token,
 	}
 	if err := resetToken.Insert(modelCtx, u.MyDB, boil.Infer()); err != nil {
@@ -44,10 +44,7 @@ func (u UserController) ResetPasswordRequest(ctx *gin.Context) {
 		return
 	}
 	// リセット用リンクメールを送信
-	msg := []byte(""+
-			"From: " + u.MailInfo.From + "\r\n" +
-			"To: " + u.MailInfo.To + "\r\n" +
-			"Subject: [件名] パスワード変更メール" + 
+	msg := "" +
 			"\r\n" +
 			"\r\n" +
 			"============================" +
@@ -60,8 +57,8 @@ func (u UserController) ResetPasswordRequest(ctx *gin.Context) {
 			"\r\n" +
 			"※このリンクにアクセスするには大学のネットワークに接続している必要があります" +
 			"\r\n" +
-	"")
-  if err := u.MailInfo.SendOptional(msg, email); err != nil {
+	""
+  if err := u.MailInfo.SendMail("[件名] パスワード変更メール", msg, emailAdd, []string{}); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "mail send error",
 		})

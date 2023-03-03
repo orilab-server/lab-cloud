@@ -2,7 +2,7 @@ package user
 
 import (
 	"backend/models"
-	mailservice "backend/service/mail_service"
+	"backend/tools"
 	"database/sql"
 )
 
@@ -11,7 +11,7 @@ type UserController struct {
 	ShareDir   string
 	SessionKey string
 	Url string
-	MailInfo mailservice.MailRequest
+	MailInfo tools.MailRequest
 }
 
 var loginUser models.User

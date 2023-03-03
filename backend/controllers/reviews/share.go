@@ -50,10 +50,7 @@ func (r ReviewsController) PostShareReview(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
-	msg := "" +
-		"From: " + r.MailInfo.From + "\r\n" +
-		"To: " + reviewedUser.Email + "\r\n" +
-		"Subject: 件名 " + " ["+reviewName+"] " + reviewerUser.Name + "のレビュー\r\n" +
+	msgBody := "" +
 		"\r\n" +
 		"\r\n" +
 		reviewerUser.Name + "が " + reviewedFile.FileName + " にコメントしました" +
@@ -65,8 +62,8 @@ func (r ReviewsController) PostShareReview(ctx *gin.Context) {
 		""
 	for _, comment := range comments {
 		page := strconv.Itoa(comment.PageNumber)+"ページ目のコメント\r\n\r\n"
-		msg += page + comment.Comment + "\r\n\r\n" + "-----------------------------" + "\r\n\r\n"
+		msgBody += page + comment.Comment + "\r\n\r\n" + "-----------------------------" + "\r\n\r\n"
 	}
-	r.MailInfo.SendOptional([]byte(msg), reviewedUser.Email)
+	r.MailInfo.SendMail("["+reviewName+"]", msgBody, reviewedUser.Email, []string{})
 	ctx.JSON(http.StatusAccepted, gin.H{})
 }

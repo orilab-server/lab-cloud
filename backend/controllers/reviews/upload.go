@@ -4,7 +4,6 @@ import (
 	"backend/models"
 	"backend/tools"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -13,7 +12,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
-	"github.com/scorredoira/email"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
@@ -105,20 +103,25 @@ func (r ReviewsController) UploadTeacherReviewedFile(ctx *gin.Context) {
 	userName := ctx.PostForm("userName")
 	userEmail := ctx.PostForm("email")
 	message := ctx.PostForm("message")
-	m := email.NewMessage("[" + userName + "]" + "卒論添削のご依頼", "" +
-	"" + userName + "が <" + file.Filename + "> をアップロードしました" + "\r\n" + "\r\n" +
-	"計" + strconv.FormatInt(reviewCount + 1, 10) + "回目のアップロードです" + "\r\n" + "\r\n" +
-	"----- " + userName + "からのメッセージ -----" + "\r\n" +
-	message + "\r\n" + "\r\n" +
-	"==============================" + "\r\n" +
-	"\r\n" +
-	"")
-	err = m.Attach(filePath)
+	msg := "" +
+		"" + userName + "が <" + file.Filename + "> をアップロードしました" + "\r\n" + "\r\n" +
+		"計" + strconv.FormatInt(reviewCount + 1, 10) + "回目のアップロードです" + "\r\n" + "\r\n" +
+		"----- " + userName + "からのメッセージ -----" + "\r\n" +
+		message + "\r\n" + "\r\n" +
+		"==============================" + "\r\n" +
+		"\r\n" +
+	""
 	if err != nil {
-		log.Fatal(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "failed to upload file",
+		})
+		return
 	}
-	err = r.MailInfo.SendWithCc(m, r.MailInfo.Teacher, userEmail)
+	err = r.MailInfo.SendMailWithFiles("[" + userName + "]", msg, r.MailInfo.Teacher, []string{userEmail}, []string{filePath})
 	if err != nil {
-		log.Fatal(err)
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": "failed to upload file",
+		})
+		return
 	}
 }

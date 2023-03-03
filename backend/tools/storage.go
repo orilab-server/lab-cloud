@@ -2,7 +2,6 @@ package tools
 
 import (
 	"io/fs"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 )
@@ -46,7 +45,7 @@ func GetFileSize(path string) (int64, error) {
 func GetDirs(dir string) ([]string, error) {
 	findList := []string{}
 
-	items, err := ioutil.ReadDir(dir)
+	items, err := os.ReadDir(dir)
 
 	if err != nil {
 		return nil, err

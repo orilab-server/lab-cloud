@@ -1,9 +1,9 @@
 package home
 
 import (
-	command_service "backend/service/command"
 	"backend/tools"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -13,7 +13,7 @@ func (r HomeController) MkDir(ctx *gin.Context) {
 	path := ctx.Query("path") // get Qury Parameter
 	path = r.ShareDir+"/"+path
 	// cannot access important dir or file
-	if err := command_service.Mkdir(path); err != nil {
+	if err := os.Mkdir(path, 0777); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{})
 		return
 	}
@@ -32,7 +32,7 @@ func (r HomeController) Rename(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
-	if err := command_service.Mv(oldName, newName); err != nil {
+	if err := os.Rename(oldName, newName); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{})
 		return
 	}

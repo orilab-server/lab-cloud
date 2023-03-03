@@ -4,13 +4,12 @@ import (
 	"backend/controllers/auth"
 	"backend/controllers/download"
 	"backend/controllers/home"
-	"backend/controllers/mail"
 	"backend/controllers/reviews"
 	"backend/controllers/upload"
 	"backend/controllers/user"
 	"backend/db"
 	"backend/middlewares"
-	mailservice "backend/service/mail_service"
+	"backend/tools"
 	"context"
 	"log"
 	"net/http"
@@ -56,8 +55,7 @@ func main() {
 	router.LoadHTMLGlob("out/*.html")
 	router.Use(middlewares.CorsMiddleWare(siteUrl))
 	store := cookie.NewStore([]byte(secret))
-	mailInfo := mailservice.MailRequest{Name: mailName, From: from, To: to, Teacher: teacher, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}
-	sender := mail.SendController{MailInfo: mailInfo}
+	mailInfo := tools.MailRequest{Name: mailName, From: from, To: to, Teacher: teacher, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}
 	auth := auth.Authcontroller{MyDB: myDB, SessionKey: sessionKey, MailInfo: mailInfo, SiteUrl: siteUrl+"/login"}
 	user := user.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey, Url: siteUrl, MailInfo: mailInfo}
 	router.Use(sessions.Sessions("mysession", store))
@@ -115,7 +113,6 @@ func main() {
 	router.GET("/user", user.GetUser)
 	router.POST("/user/reset-password/request", user.ResetPasswordRequest)
 	router.PATCH("/user/reset-password", user.ResetPassword)
-	router.POST("/send", sender.SendMail)
 	router.POST("/login", auth.Login)
 	router.POST("/register-requests", auth.RequestRegister)
 	// basic認証を要する

@@ -1,13 +1,13 @@
 package auth
 
 import (
-	mailservice "backend/service/mail_service"
+	"backend/tools"
 	"database/sql"
 )
 
 type Authcontroller struct {
 	MyDB       *sql.DB
 	SessionKey string
-	MailInfo   mailservice.MailRequest
+	MailInfo   tools.MailRequest
 	SiteUrl    string
 }
