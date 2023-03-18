@@ -9,28 +9,27 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-func (r ReviewsController) PostShareReviewController(ctx *gin.Context) {
+func (r ReviewsController) PostShareReview(ctx *gin.Context) {
 	fileId := ctx.Param("file-id")
-	reviewerId := ctx.Param("reviewer-id")
-	commentsExist, _ := models.ReviewComments(qm.Where("reviewed_file_id=?", fileId), qm.Where("reviewer_id=?", reviewerId)).Exists(r.ModelCtx, r.MyDB)
+	userId, _ := strconv.Atoi(ctx.Param("user-id"))
+	reviewer, err := models.Reviewers(qm.Where("reviewed_file_id=?", fileId), qm.Where("user_id=?", userId)).One(r.ModelCtx, r.MyDB)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+	commentsExist, _ := models.ReviewComments(qm.Where("reviewed_file_id=?", fileId), qm.Where("reviewer_id=?", reviewer.ID)).Exists(r.ModelCtx, r.MyDB)
 	if !commentsExist {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"message": "there are no comments",
 		})
 		return
 	}
-	comments, err := models.ReviewComments(qm.Where("reviewed_file_id=?", fileId), qm.Where("reviewer_id=?", reviewerId), qm.OrderBy("page_number")).All(r.ModelCtx, r.MyDB)
+	comments, err := models.ReviewComments(qm.Where("reviewed_file_id=?", fileId), qm.Where("reviewer_id=?", reviewer.ID), qm.OrderBy("page_number")).All(r.ModelCtx, r.MyDB)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
-	reviewer, err := models.FindReviewer(r.ModelCtx, r.MyDB, reviewerId)
-	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{})
-		return
-	}
-	reviewedId := ctx.Param("reviewed-id")
-	reviewed, err := models.FindReviewed(r.ModelCtx, r.MyDB, reviewedId)
+	reviewed, _ := models.Revieweds(qm.Where("review_id=?", ctx.Param("review-id")),qm.Where("user_id=?", userId)).One(r.ModelCtx, r.MyDB)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
@@ -51,10 +50,7 @@ func (r ReviewsController) PostShareReviewController(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
-	msg := "" +
-		"From: " + r.MailInfo.From + "\r\n" +
-		"To: " + reviewedUser.Email + "\r\n" +
-		"Subject: 件名 " + " ["+reviewName+"] " + reviewerUser.Name + "のレビュー\r\n" +
+	msgBody := "" +
 		"\r\n" +
 		"\r\n" +
 		reviewerUser.Name + "が " + reviewedFile.FileName + " にコメントしました" +
@@ -66,8 +62,8 @@ func (r ReviewsController) PostShareReviewController(ctx *gin.Context) {
 		""
 	for _, comment := range comments {
 		page := strconv.Itoa(comment.PageNumber)+"ページ目のコメント\r\n\r\n"
-		msg += page + comment.Comment + "\r\n\r\n" + "-----------------------------" + "\r\n\r\n"
+		msgBody += page + comment.Comment + "\r\n\r\n" + "-----------------------------" + "\r\n\r\n"
 	}
-	r.MailInfo.SendOptional([]byte(msg), reviewedUser.Email)
+	r.MailInfo.SendMail("["+reviewName+"]", msgBody, reviewedUser.Email, []string{})
 	ctx.JSON(http.StatusAccepted, gin.H{})
 }

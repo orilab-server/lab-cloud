@@ -2,6 +2,7 @@ package reviews
 
 import (
 	"backend/models"
+	"backend/tools"
 	"net/http"
 	"strconv"
 
@@ -11,11 +12,11 @@ import (
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
 )
 
-func (r ReviewsController) PostCommentController(ctx *gin.Context) {
+func (r ReviewsController) PostComment(ctx *gin.Context) {
 	fileId := ctx.Param("file-id")
 	userId, _ := strconv.Atoi(ctx.PostForm("userId"))
 	comment := ctx.PostForm("comment")
-	pageNumber, _ := strconv.Atoi(ctx.PostForm("pageNumber"))
+	pageNumber, _ := strconv.Atoi(ctx.Param("index"))
 	reviewerExist, err := models.Reviewers(qm.Where("reviewed_file_id=?", fileId), qm.Where("user_id=?", userId)).Exists(r.ModelCtx, r.MyDB)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
@@ -80,16 +81,53 @@ func (r ReviewsController) PostCommentController(ctx *gin.Context) {
 	ctx.JSON(http.StatusAccepted, gin.H{})
 }
 
-func (r ReviewsController) GetCommentController(ctx *gin.Context) {
+type ResponseComment struct {
+	ID string `json:"id"`
+	PageNumber int `json:"index"`
+	Comment string `json:"comment"`
+	CreatedAt string `json:"created_at"`
+}
+
+func (r ReviewsController) GetComment(ctx *gin.Context) {
 	fileId := ctx.Param("file-id")
 	reviewerId := ctx.Param("reviewer-id")
-	pageNumber := ctx.Param("page-number")
+	pageNumber := ctx.Param("index")
 	comment, err := models.ReviewComments(qm.Where("reviewed_file_id=?", fileId), qm.Where("reviewer_id=?", reviewerId), qm.Where("page_number=?", pageNumber)).One(r.ModelCtx, r.MyDB)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{})
+		ctx.JSON(http.StatusAccepted, gin.H{
+			"comment": nil,
+		})
 		return
 	}
+	jst, _ := tools.FixToJstLocale(comment.CreatedAt)
+	resopnse := ResponseComment{ID: comment.ID, PageNumber: comment.PageNumber, Comment: comment.Comment, CreatedAt: jst.Format("2006/01/02 15/04")}
 	ctx.JSON(http.StatusOK, gin.H{
-		"comment": comment,
+		"comment": resopnse,
+	})
+}
+
+func (r ReviewsController) GetOwnComment(ctx *gin.Context) {
+	fileId := ctx.Param("file-id")
+	userId, _ := strconv.Atoi(ctx.Param("user-id"))
+	reviewer, _ := models.Reviewers(qm.Where("reviewed_file_id=?", fileId), qm.Where("user_id=?", userId)).One(r.ModelCtx, r.MyDB)
+	pageNumber := ctx.Param("index")
+	exists, err := models.ReviewComments(qm.Where("reviewed_file_id=?", fileId), qm.Where("reviewer_id=?", reviewer.ID), qm.Where("page_number=?", pageNumber)).Exists(r.ModelCtx, r.MyDB)
+	if !exists || err != nil {
+		ctx.JSON(http.StatusAccepted, gin.H{
+			"comment": nil,
+		})
+		return
+	}
+	c, err := models.ReviewComments(qm.Where("reviewed_file_id=?", fileId), qm.Where("reviewer_id=?", reviewer.ID), qm.Where("page_number=?", pageNumber)).One(r.ModelCtx, r.MyDB)
+	if err != nil {
+		ctx.JSON(http.StatusAccepted, gin.H{
+			"comment": nil,
+		})
+		return
+	}
+	jst, _ := tools.FixToJstLocale(c.CreatedAt)
+	resopnse := ResponseComment{ID: c.ID, PageNumber: c.PageNumber, Comment: c.Comment, CreatedAt: jst.Format("2006/01/02 15/04")}
+	ctx.JSON(http.StatusOK, gin.H{
+		"comment": resopnse,
 	})
 }

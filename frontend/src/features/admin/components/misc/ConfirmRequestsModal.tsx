@@ -141,7 +141,7 @@ const ConfirmRequestsModal = ({}: ConfirmRequestsModalProps) => {
           </FormGroup>
           <Stack direction="row">
             <Button type="submit" variant="contained">
-              {acceptRequestMutation.isLoading && <LoadingSpinner size="sm" color="inherit" />}
+              {acceptRequestMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
               <Typography sx={{ mx: 1, whiteSpace: 'nowrap' }}>承認</Typography>
             </Button>
             <Button onClick={closeM}>閉じる</Button>

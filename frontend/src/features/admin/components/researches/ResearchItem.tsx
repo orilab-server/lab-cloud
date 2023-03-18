@@ -99,7 +99,7 @@ export const ResearchItem = ({ item, button }: ResearchItemProps) => {
               <Stack direction="row" spacing={1}>
                 {edit && (
                   <Button type="submit" variant="contained" color="secondary">
-                    {updateItemMutation.isLoading && <LoadingSpinner size="sm" color="inherit" />}
+                    {updateItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                     <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
                   </Button>
                 )}
@@ -108,7 +108,7 @@ export const ResearchItem = ({ item, button }: ResearchItemProps) => {
                 </Button>
               </Stack>
               <Button onClick={onDeleteDoc} variant="contained" color="error">
-                {deleteItemMutation.isLoading && <LoadingSpinner size="sm" color="inherit" />}
+                {deleteItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                 <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>削除</Typography>
               </Button>
             </Stack>

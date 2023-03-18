@@ -1,9 +1,9 @@
-import { myAxiosGet } from '@/shared/utils/axios';
+import { myAuthAxiosGet } from '@/shared/lib/axios';
 import { getMimeType } from '@/shared/utils/mime';
 import { useEffect, useState } from 'react';
 
 export const getPreviewFile = async (path: string, name: string) => {
-  const blobData = await myAxiosGet<Blob>(`home/download?path=${path}&target=${name}&type=file`, {
+  const blobData = await myAuthAxiosGet<Blob>(`/download?path=${path}&target=${name}&type=file`, {
     responseType: 'blob',
   }).then((res) => res.data);
   const asFile = new File([blobData], name, {

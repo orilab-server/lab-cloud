@@ -1,6 +1,6 @@
 import { useResetPassword } from '@/features/auth/api/reset-password';
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Box, Button, FormControl, TextField, Typography } from '@mui/material';
+import { Box, FormControl, TextField, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
@@ -45,11 +45,15 @@ const ResetPassword = () => {
           <Typography sx={{ fontSize: 24, color: 'rgba(0, 0, 0, 0.6)' }}>
             パスワードリセット
           </Typography>
-          <Button onClick={() => router.push('/login')}>戻る</Button>
+          <button className="btn btn-link" onClick={() => router.push('/login')}>
+            戻る
+          </button>
         </Stack>
         <Box sx={{ width: '100%', py: 3 }}>
           <Typography sx={{ fontSize: 24, my: 1 }}>このページは利用できません</Typography>
-          <Button onClick={() => router.push('/login')}>ログイン画面に戻る</Button>
+          <button className="btn btn-link" onClick={() => router.push('/login')}>
+            ログイン画面に戻る
+          </button>
         </Box>
       </Stack>
     );
@@ -69,14 +73,16 @@ const ResetPassword = () => {
         <Typography sx={{ fontSize: 24, color: 'rgba(0, 0, 0, 0.6)' }}>
           パスワードリセット
         </Typography>
-        <Button onClick={() => router.push('/login')}>戻る</Button>
+        <button className="btn btn-link" onClick={() => router.push('/login')}>
+          戻る
+        </button>
       </Stack>
       {send ? (
         <Box sx={{ width: '100%', py: 3 }}>
-          <Typography sx={{ fontSize: 24, my: 1 }}>
-            登録したメールアドレス宛にリセット用のリンクを送信しました
-          </Typography>
-          <Button onClick={() => router.push('/login')}>ログイン画面に戻る</Button>
+          <Typography sx={{ fontSize: 24, my: 1 }}>変更しました！</Typography>
+          <button className="btn btn-link" onClick={() => router.push('/login')}>
+            ログイン画面に戻る
+          </button>
         </Box>
       ) : (
         <Stack
@@ -99,10 +105,10 @@ const ResetPassword = () => {
               </FormControl>
             )}
           />
-          <Button type="submit" variant="contained">
-            {resetPasswordMutation.isLoading && <LoadingSpinner size="sm" color="inherit" />}
-            <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
-          </Button>
+          <button type="submit" className="btn btn-primary">
+            {resetPasswordMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
+            <span className="px-3">送信</span>
+          </button>
         </Stack>
       )}
     </Stack>

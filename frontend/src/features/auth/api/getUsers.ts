@@ -1,9 +1,9 @@
-import { myAxiosGet } from '@/shared/utils/axios';
+import { myAuthAxiosGet } from '@/shared/lib/axios';
 import { useQuery } from 'react-query';
 import { User } from '../types/user';
 
 export const getUsers = async () => {
-  const res = await myAxiosGet<{ users: User[] }>('home/users', {
+  const res = await myAuthAxiosGet<{ users: User[] }>('/users', {
     headers: {
       'Content-Type': 'application/json',
     },
@@ -12,5 +12,9 @@ export const getUsers = async () => {
 };
 
 export const useUsers = () => {
-  return useQuery({ queryKey: ['storage', 'users'], queryFn: async () => await getUsers(), staleTime: Infinity });
+  return useQuery({
+    queryKey: ['storage', 'users'],
+    queryFn: async () => await getUsers(),
+    staleTime: Infinity,
+  });
 };

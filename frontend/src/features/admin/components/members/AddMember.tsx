@@ -108,7 +108,7 @@ export const AddUser = ({ children, modals }: AddUsersProps) => {
             {/* 各種ボタン */}
             <Stack direction="row" spacing={2}>
               <Button type="submit" variant="contained" color="secondary">
-                {addNewItemMutation.isLoading && <LoadingSpinner size="sm" color="inherit" />}
+                {addNewItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                 <Typography sx={{ pl: 1, whiteSpace: 'nowrap' }}>送信</Typography>
               </Button>
             </Stack>

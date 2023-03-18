@@ -1,12 +1,12 @@
+import { myAxiosPost } from '@/shared/lib/axios';
 import { notifyState } from '@/shared/stores';
-import { myAxiosPost } from '@/shared/utils/axios';
 import { useMutation, useQueryClient } from 'react-query';
 import { useSetRecoilState } from 'recoil';
 
 export const acceptRegisterRequests = async (formData: FormData[]) => {
   await Promise.all(
     formData.map(async (f) => {
-      return await myAxiosPost('admin/accept-register', f, {
+      return await myAxiosPost('/admin/accept-register', f, {
         xsrfHeaderName: 'X-CSRF-Token',
       });
     }),

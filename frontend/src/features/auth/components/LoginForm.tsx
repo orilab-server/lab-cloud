@@ -1,5 +1,5 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Box, Button, TextField, Typography } from '@mui/material';
+import { Box, TextField } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
 import { useLogin } from '../api/login';
 
@@ -45,24 +45,13 @@ export const LoginForm = ({ setIsRegisterForm }: LoginFormProps) => {
         id="password"
         autoComplete="current-password"
       />
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        sx={{ mt: 3, mb: 2, whiteSpace: 'nowrap' }}
-      >
-        <Typography sx={{ width: '100%', textAlign: 'center' }}>ログイン</Typography>
-        {loginMutation.isLoading && <LoadingSpinner size="sm" color="inherit" />}
-      </Button>
-      <Button
-        onClick={goRegisterForm}
-        color="secondary"
-        fullWidth
-        variant="contained"
-        sx={{ mt: 3, mb: 2 }}
-      >
+      <button type="submit" className="btn btn-primary w-full my-1">
+        <span className="w-full px-3">ログイン</span>
+        {loginMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
+      </button>
+      <button className="btn btn-secondary w-full my-1" onClick={goRegisterForm}>
         登録申請フォームへ
-      </Button>
+      </button>
     </Box>
   );
 };

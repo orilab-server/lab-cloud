@@ -111,7 +111,7 @@ export const AddItem = ({ button, modals }: AddItemProps) => {
             <LinksInput links={links} setLinks={setLinks} />
             <Stack direction="row" spacing={3}>
               <Button type="submit" variant="contained">
-                {addNewItemMutation.isLoading && <LoadingSpinner size="sm" color="inherit" />}
+                {addNewItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                 <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
               </Button>
             </Stack>

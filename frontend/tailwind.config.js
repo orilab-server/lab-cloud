@@ -2,11 +2,14 @@
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   corePlugins: {
-    preflight: false,
+    // preflight: false,
   },
   theme: {
     extend: {},
   },
-  plugins: [],
-  important: true,
+  plugins: [require('daisyui')],
+  daisyui: {
+    themes: false,
+  },
+  // important: true,
 };

@@ -1,6 +1,6 @@
 import { useCollection } from '@/features/admin/api/getCollection';
+import { AdminLayout } from '@/features/admin/components/layout/AdminLayout';
 import { UserContents } from '@/features/admin/components/members/MemberContents';
-import { AdminLayout } from '@/features/admin/components/misc/Layout';
 import { NewsContents } from '@/features/admin/components/news/NewsContents';
 import { ResearchContents } from '@/features/admin/components/researches/ResearchContents';
 import { Collections, Member, News, Research } from '@/features/admin/types';

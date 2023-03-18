@@ -65,20 +65,23 @@ var ReviewedWhere = struct {
 
 // ReviewedRels is where relationship names are stored.
 var ReviewedRels = struct {
-	Review        string
-	User          string
-	ReviewedFiles string
+	Review               string
+	User                 string
+	ReviewedFiles        string
+	TeacherReviewedFiles string
 }{
-	Review:        "Review",
-	User:          "User",
-	ReviewedFiles: "ReviewedFiles",
+	Review:               "Review",
+	User:                 "User",
+	ReviewedFiles:        "ReviewedFiles",
+	TeacherReviewedFiles: "TeacherReviewedFiles",
 }
 
 // reviewedR is where relationships are stored.
 type reviewedR struct {
-	Review        *Review           `boil:"Review" json:"Review" toml:"Review" yaml:"Review"`
-	User          *User             `boil:"User" json:"User" toml:"User" yaml:"User"`
-	ReviewedFiles ReviewedFileSlice `boil:"ReviewedFiles" json:"ReviewedFiles" toml:"ReviewedFiles" yaml:"ReviewedFiles"`
+	Review               *Review                  `boil:"Review" json:"Review" toml:"Review" yaml:"Review"`
+	User                 *User                    `boil:"User" json:"User" toml:"User" yaml:"User"`
+	ReviewedFiles        ReviewedFileSlice        `boil:"ReviewedFiles" json:"ReviewedFiles" toml:"ReviewedFiles" yaml:"ReviewedFiles"`
+	TeacherReviewedFiles TeacherReviewedFileSlice `boil:"TeacherReviewedFiles" json:"TeacherReviewedFiles" toml:"TeacherReviewedFiles" yaml:"TeacherReviewedFiles"`
 }
 
 // NewStruct creates a new relationship struct
@@ -105,6 +108,13 @@ func (r *reviewedR) GetReviewedFiles() ReviewedFileSlice {
 		return nil
 	}
 	return r.ReviewedFiles
+}
+
+func (r *reviewedR) GetTeacherReviewedFiles() TeacherReviewedFileSlice {
+	if r == nil {
+		return nil
+	}
+	return r.TeacherReviewedFiles
 }
 
 // reviewedL is where Load methods for each relationship are stored.
@@ -430,6 +440,20 @@ func (o *Reviewed) ReviewedFiles(mods ...qm.QueryMod) reviewedFileQuery {
 	)
 
 	return ReviewedFiles(queryMods...)
+}
+
+// TeacherReviewedFiles retrieves all the teacher_reviewed_file's TeacherReviewedFiles with an executor.
+func (o *Reviewed) TeacherReviewedFiles(mods ...qm.QueryMod) teacherReviewedFileQuery {
+	var queryMods []qm.QueryMod
+	if len(mods) != 0 {
+		queryMods = append(queryMods, mods...)
+	}
+
+	queryMods = append(queryMods,
+		qm.Where("`teacher_reviewed_files`.`reviewed_id`=?", o.ID),
+	)
+
+	return TeacherReviewedFiles(queryMods...)
 }
 
 // LoadReview allows an eager lookup of values, cached into the
@@ -786,6 +810,120 @@ func (reviewedL) LoadReviewedFiles(ctx context.Context, e boil.ContextExecutor, 
 	return nil
 }
 
+// LoadTeacherReviewedFiles allows an eager lookup of values, cached into the
+// loaded structs of the objects. This is for a 1-M or N-M relationship.
+func (reviewedL) LoadTeacherReviewedFiles(ctx context.Context, e boil.ContextExecutor, singular bool, maybeReviewed interface{}, mods queries.Applicator) error {
+	var slice []*Reviewed
+	var object *Reviewed
+
+	if singular {
+		var ok bool
+		object, ok = maybeReviewed.(*Reviewed)
+		if !ok {
+			object = new(Reviewed)
+			ok = queries.SetFromEmbeddedStruct(&object, &maybeReviewed)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", object, maybeReviewed))
+			}
+		}
+	} else {
+		s, ok := maybeReviewed.(*[]*Reviewed)
+		if ok {
+			slice = *s
+		} else {
+			ok = queries.SetFromEmbeddedStruct(&slice, maybeReviewed)
+			if !ok {
+				return errors.New(fmt.Sprintf("failed to set %T from embedded struct %T", slice, maybeReviewed))
+			}
+		}
+	}
+
+	args := make([]interface{}, 0, 1)
+	if singular {
+		if object.R == nil {
+			object.R = &reviewedR{}
+		}
+		args = append(args, object.ID)
+	} else {
+	Outer:
+		for _, obj := range slice {
+			if obj.R == nil {
+				obj.R = &reviewedR{}
+			}
+
+			for _, a := range args {
+				if a == obj.ID {
+					continue Outer
+				}
+			}
+
+			args = append(args, obj.ID)
+		}
+	}
+
+	if len(args) == 0 {
+		return nil
+	}
+
+	query := NewQuery(
+		qm.From(`teacher_reviewed_files`),
+		qm.WhereIn(`teacher_reviewed_files.reviewed_id in ?`, args...),
+	)
+	if mods != nil {
+		mods.Apply(query)
+	}
+
+	results, err := query.QueryContext(ctx, e)
+	if err != nil {
+		return errors.Wrap(err, "failed to eager load teacher_reviewed_files")
+	}
+
+	var resultSlice []*TeacherReviewedFile
+	if err = queries.Bind(results, &resultSlice); err != nil {
+		return errors.Wrap(err, "failed to bind eager loaded slice teacher_reviewed_files")
+	}
+
+	if err = results.Close(); err != nil {
+		return errors.Wrap(err, "failed to close results in eager load on teacher_reviewed_files")
+	}
+	if err = results.Err(); err != nil {
+		return errors.Wrap(err, "error occurred during iteration of eager loaded relations for teacher_reviewed_files")
+	}
+
+	if len(teacherReviewedFileAfterSelectHooks) != 0 {
+		for _, obj := range resultSlice {
+			if err := obj.doAfterSelectHooks(ctx, e); err != nil {
+				return err
+			}
+		}
+	}
+	if singular {
+		object.R.TeacherReviewedFiles = resultSlice
+		for _, foreign := range resultSlice {
+			if foreign.R == nil {
+				foreign.R = &teacherReviewedFileR{}
+			}
+			foreign.R.Reviewed = object
+		}
+		return nil
+	}
+
+	for _, foreign := range resultSlice {
+		for _, local := range slice {
+			if local.ID == foreign.ReviewedID {
+				local.R.TeacherReviewedFiles = append(local.R.TeacherReviewedFiles, foreign)
+				if foreign.R == nil {
+					foreign.R = &teacherReviewedFileR{}
+				}
+				foreign.R.Reviewed = local
+				break
+			}
+		}
+	}
+
+	return nil
+}
+
 // SetReview of the reviewed to the related item.
 // Sets o.R.Review to related.
 // Adds o to related.R.Revieweds.
@@ -924,6 +1062,59 @@ func (o *Reviewed) AddReviewedFiles(ctx context.Context, exec boil.ContextExecut
 	for _, rel := range related {
 		if rel.R == nil {
 			rel.R = &reviewedFileR{
+				Reviewed: o,
+			}
+		} else {
+			rel.R.Reviewed = o
+		}
+	}
+	return nil
+}
+
+// AddTeacherReviewedFiles adds the given related objects to the existing relationships
+// of the reviewed, optionally inserting them as new records.
+// Appends related to o.R.TeacherReviewedFiles.
+// Sets related.R.Reviewed appropriately.
+func (o *Reviewed) AddTeacherReviewedFiles(ctx context.Context, exec boil.ContextExecutor, insert bool, related ...*TeacherReviewedFile) error {
+	var err error
+	for _, rel := range related {
+		if insert {
+			rel.ReviewedID = o.ID
+			if err = rel.Insert(ctx, exec, boil.Infer()); err != nil {
+				return errors.Wrap(err, "failed to insert into foreign table")
+			}
+		} else {
+			updateQuery := fmt.Sprintf(
+				"UPDATE `teacher_reviewed_files` SET %s WHERE %s",
+				strmangle.SetParamNames("`", "`", 0, []string{"reviewed_id"}),
+				strmangle.WhereClause("`", "`", 0, teacherReviewedFilePrimaryKeyColumns),
+			)
+			values := []interface{}{o.ID, rel.ID}
+
+			if boil.IsDebug(ctx) {
+				writer := boil.DebugWriterFrom(ctx)
+				fmt.Fprintln(writer, updateQuery)
+				fmt.Fprintln(writer, values)
+			}
+			if _, err = exec.ExecContext(ctx, updateQuery, values...); err != nil {
+				return errors.Wrap(err, "failed to update foreign table")
+			}
+
+			rel.ReviewedID = o.ID
+		}
+	}
+
+	if o.R == nil {
+		o.R = &reviewedR{
+			TeacherReviewedFiles: related,
+		}
+	} else {
+		o.R.TeacherReviewedFiles = append(o.R.TeacherReviewedFiles, related...)
+	}
+
+	for _, rel := range related {
+		if rel.R == nil {
+			rel.R = &teacherReviewedFileR{
 				Reviewed: o,
 			}
 		} else {

@@ -1,5 +1,6 @@
 -- ユーザテーブル
-create table users(id int not null auto_increment, 
+create table users(
+  id int not null auto_increment, 
   name varchar(50) not null,
   email varchar(254) not null, 
   password varchar(60) not null, 
@@ -21,11 +22,13 @@ create table register_requests(
 );
 
 -- 捨てられたファイルの情報を取っておくテーブル
-create table files_trash(id varchar(36) not null,
+create table files_trash(
+  id varchar(36) not null,
   user_id int not null, 
+  name text not null,
+  size bigint,
   type varchar(4) not null, 
-  current_location varchar(1024) not null, 
-  past_location varchar(1024) not null, 
+  past_location varchar(1024) not null,
   created_at timestamp default current_timestamp not null, 
   primary key (id), 
   foreign key (user_id) references users(id)
@@ -39,11 +42,23 @@ create table reset_tokens(
   primary key (id)
 );
 
+-- 最新アップロードファイル情報を保存するテーブル 最大50件
+create table recent_files(
+  id varchar(36) not null,
+  file_name text not null,
+  location text not null,
+  type varchar(6) not null, -- file | dir | review
+  user_id int not null,
+  primary key (id),
+  created_at timestamp default current_timestamp not null,
+  foreign key (user_id) references users(id)
+);
+
 -- レビュー用ディレクトリのテーブル
 create table reviews(
   id varchar(36) not null,
   name text not null,
-  target int not null, -- 2, 3, 4, 5, 6
+  target int not null, -- 2: 学士3年, 3: 学士4年, 4: 修士1年, 5: 修士2年, 6: カスタム
   created_at timestamp default current_timestamp not null, 
   updated_at timestamp default current_timestamp on update current_timestamp, 
   primary key (id)
@@ -61,6 +76,16 @@ create table reviewed(
 
 -- レビュー対象者がアップロードしたファイルの情報を保存するテーブル
 create table reviewed_files(
+  id varchar(36) not null,
+  reviewed_id varchar(36) not null,
+  file_name varchar(254) not null, 
+  created_at timestamp default current_timestamp not null, -- アップロード日時として使用
+  foreign key (reviewed_id) references reviewed(id),
+  primary key (id)
+);
+
+-- 教授のレビュー用のファイルを格納するテーブル
+create table teacher_reviewed_files(
   id varchar(36) not null,
   reviewed_id varchar(36) not null,
   file_name varchar(254) not null, 

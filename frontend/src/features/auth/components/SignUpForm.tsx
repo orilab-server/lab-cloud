@@ -2,7 +2,6 @@ import { ThemeProvider } from '@emotion/react';
 import {
   Avatar,
   Box,
-  Button,
   Container,
   createTheme,
   CssBaseline,
@@ -69,9 +68,9 @@ export const SignUpComplete = () => {
               id="password"
               autoComplete="current-password"
             />
-            <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
+            <button type="submit" className="btn btn-primary w-full my-1">
               Send
-            </Button>
+            </button>
           </Box>
         </Box>
       </Container>

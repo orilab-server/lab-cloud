@@ -14,7 +14,8 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
   const [authorized, setAuthorized] = useState<boolean>(false);
 
   useEffect(() => {
-    authCheck(router.asPath);
+    // router.pathname : /aaa/bbb?q=ccc → /aaa/bbb
+    authCheck(router.pathname);
 
     const hideContent = () => setAuthorized(false);
     router.events.on('routeChangeStart', hideContent);
@@ -28,44 +29,35 @@ export const RouteGuard = ({ children }: RouteGuardProps) => {
   }, []);
 
   const authCheck = (url: string) => {
-    const path = (() => {
-      const topPath = url.split('/')[1];
-      if (topPath.match('\\?')) {
-        return topPath.split('?')[0];
-      }
-      return topPath;
-    })();
+    const path = url.split('/').filter((p) => p)[0];
     const session = getCookie('mysession');
 
-    if (!publicPaths.includes(path)) {
-      if (!session) {
-        // 未ログイン状態でリンクにアクセスした場合
-        if (url.match('path=') !== null) {
-          localStorage.setItem('path', url);
-        }
-        // /adminページはsessionを保持できないためスルー
-        if (url.match('/admin') === null) {
-          if (!Boolean(localStorage.getItem('logged_in'))) {
-            if (url.match('/reviews') !== null) {
-              localStorage.setItem('no_session', 'true');
-            }
-            void router.push('/login');
-          }
-        }
-      }
-    } else {
-      if (Boolean(localStorage.getItem('no_session'))) {
-        localStorage.removeItem('no_session');
-        router.reload();
-        return;
-      }
-      if (session) {
-        // home → loginページへの遷移は不可, それ以外は許可
-        const to = publicPaths.includes(path) ? '/' : path;
-        void router.push(to);
-      }
+    // adminへのアクセスはsession関係なし
+    if (path === 'admin') {
+      setAuthorized(true);
+      return;
     }
 
+    // session必要なしページ
+    const isPublic = publicPaths.includes(path);
+    if (isPublic) {
+      if (session) {
+        // home → loginページへの遷移は不可, それ以外は許可
+        const to = isPublic ? '/home' : path;
+        void router.push(to);
+      }
+      setAuthorized(true);
+      return;
+    }
+
+    // 以下session必要
+    if (!session) {
+      // 未ログイン状態でリンクにアクセスした場合
+      if (url.match('path=') !== null) {
+        localStorage.setItem('path', url);
+      }
+      void router.push('/login');
+    }
     setAuthorized(true);
   };
 

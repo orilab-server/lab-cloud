@@ -1,5 +1,5 @@
+import { AdminLayout } from '@/features/admin/components/layout/AdminLayout';
 import ConfirmRequestsModal from '@/features/admin/components/misc/ConfirmRequestsModal';
-import { AdminLayout } from '@/features/admin/components/misc/Layout';
 import { Grid, Typography } from '@mui/material';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';

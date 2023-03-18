@@ -1,6 +1,6 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
 import { useMailSender } from '@/shared/hooks/useMailSender';
-import { Avatar, Box, Button, TextField, Typography } from '@mui/material';
+import { Avatar, Box, TextField, Typography } from '@mui/material';
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { MdLockOutline } from 'react-icons/md';
@@ -82,15 +82,9 @@ export const RegisterForm = ({ setIsRegisterForm }: RegisterFormProps) => {
           <Typography component="h1" variant="h5">
             登録申請メールを送信しました
           </Typography>
-          <Button
-            color="secondary"
-            onClick={confirmSendAndBack}
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
+          <button onClick={confirmSendAndBack} className="btn btn-secondary w-full my-1">
             ログイン画面に戻る
-          </Button>
+          </button>
         </Box>
       </Box>
     );
@@ -137,25 +131,14 @@ export const RegisterForm = ({ setIsRegisterForm }: RegisterFormProps) => {
           />
         )}
       />
-      <Typography sx={{ fontSize: 12 }}>※教職員の方は数字の1を入力してください</Typography>
-      <Button
-        type="submit"
-        fullWidth
-        variant="contained"
-        sx={{ mt: 3, mb: 2, whiteSpace: 'nowrap' }}
-      >
-        <Typography sx={{ width: '100%', textAlign: 'center' }}>送信</Typography>
-        {sendMailMutation.isLoading && <LoadingSpinner size="sm" color="inherit" />}
-      </Button>
-      <Button
-        color="secondary"
-        onClick={backLoginForm}
-        fullWidth
-        variant="contained"
-        sx={{ mt: 3, mb: 2 }}
-      >
+      <div className="text-sm mt-[-4px]">※教職員の方は数字の1を入力してください</div>
+      <button type="submit" className="btn btn-primary w-full mt-3 my-1">
+        <span className="w-full px-3">送信</span>
+        {sendMailMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
+      </button>
+      <button onClick={backLoginForm} className="btn btn-secondary w-full my-1">
         戻る
-      </Button>
+      </button>
     </Box>
   );
 };

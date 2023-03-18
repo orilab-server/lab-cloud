@@ -139,7 +139,7 @@ export const AddItem = ({ children, modals }: AddItemProps) => {
             {/* 各種ボタン */}
             <Stack direction="row" spacing={2}>
               <Button type="submit" variant="contained" color="secondary">
-                {addNewItemMutation.isLoading && <LoadingSpinner size="sm" color="inherit" />}
+                {addNewItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                 <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
               </Button>
             </Stack>

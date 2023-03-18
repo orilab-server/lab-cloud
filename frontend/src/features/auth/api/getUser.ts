@@ -1,9 +1,9 @@
-import { myAxiosGet } from '@/shared/utils/axios';
+import { myAxiosGet } from '@/shared/lib/axios';
 import { useQuery } from 'react-query';
 import { User } from '../types/user';
 
 export const getUser = async () => {
-  const res = await myAxiosGet<User>(`user`, {
+  const res = await myAxiosGet<User>(`/user`, {
     headers: {
       'Content-Type': 'application/json',
     },

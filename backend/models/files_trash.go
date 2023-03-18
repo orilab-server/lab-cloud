@@ -14,6 +14,7 @@ import (
 	"time"
 
 	"github.com/friendsofgo/errors"
+	"github.com/volatiletech/null/v8"
 	"github.com/volatiletech/sqlboiler/v4/boil"
 	"github.com/volatiletech/sqlboiler/v4/queries"
 	"github.com/volatiletech/sqlboiler/v4/queries/qm"
@@ -23,47 +24,52 @@ import (
 
 // FilesTrash is an object representing the database table.
 type FilesTrash struct {
-	ID              string    `boil:"id" json:"id" toml:"id" yaml:"id"`
-	UserID          int       `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
-	Type            string    `boil:"type" json:"type" toml:"type" yaml:"type"`
-	PastLocation    string    `boil:"past_location" json:"past_location" toml:"past_location" yaml:"past_location"`
-	CreatedAt       time.Time `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
-	CurrentLocation string    `boil:"current_location" json:"current_location" toml:"current_location" yaml:"current_location"`
+	ID           string     `boil:"id" json:"id" toml:"id" yaml:"id"`
+	UserID       int        `boil:"user_id" json:"user_id" toml:"user_id" yaml:"user_id"`
+	Name         string     `boil:"name" json:"name" toml:"name" yaml:"name"`
+	Size         null.Int64 `boil:"size" json:"size,omitempty" toml:"size" yaml:"size,omitempty"`
+	Type         string     `boil:"type" json:"type" toml:"type" yaml:"type"`
+	PastLocation string     `boil:"past_location" json:"past_location" toml:"past_location" yaml:"past_location"`
+	CreatedAt    time.Time  `boil:"created_at" json:"created_at" toml:"created_at" yaml:"created_at"`
 
 	R *filesTrashR `boil:"-" json:"-" toml:"-" yaml:"-"`
 	L filesTrashL  `boil:"-" json:"-" toml:"-" yaml:"-"`
 }
 
 var FilesTrashColumns = struct {
-	ID              string
-	UserID          string
-	Type            string
-	PastLocation    string
-	CreatedAt       string
-	CurrentLocation string
+	ID           string
+	UserID       string
+	Name         string
+	Size         string
+	Type         string
+	PastLocation string
+	CreatedAt    string
 }{
-	ID:              "id",
-	UserID:          "user_id",
-	Type:            "type",
-	PastLocation:    "past_location",
-	CreatedAt:       "created_at",
-	CurrentLocation: "current_location",
+	ID:           "id",
+	UserID:       "user_id",
+	Name:         "name",
+	Size:         "size",
+	Type:         "type",
+	PastLocation: "past_location",
+	CreatedAt:    "created_at",
 }
 
 var FilesTrashTableColumns = struct {
-	ID              string
-	UserID          string
-	Type            string
-	PastLocation    string
-	CreatedAt       string
-	CurrentLocation string
+	ID           string
+	UserID       string
+	Name         string
+	Size         string
+	Type         string
+	PastLocation string
+	CreatedAt    string
 }{
-	ID:              "files_trash.id",
-	UserID:          "files_trash.user_id",
-	Type:            "files_trash.type",
-	PastLocation:    "files_trash.past_location",
-	CreatedAt:       "files_trash.created_at",
-	CurrentLocation: "files_trash.current_location",
+	ID:           "files_trash.id",
+	UserID:       "files_trash.user_id",
+	Name:         "files_trash.name",
+	Size:         "files_trash.size",
+	Type:         "files_trash.type",
+	PastLocation: "files_trash.past_location",
+	CreatedAt:    "files_trash.created_at",
 }
 
 // Generated where
@@ -114,6 +120,44 @@ func (w whereHelperint) NIN(slice []int) qm.QueryMod {
 	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
 }
 
+type whereHelpernull_Int64 struct{ field string }
+
+func (w whereHelpernull_Int64) EQ(x null.Int64) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, false, x)
+}
+func (w whereHelpernull_Int64) NEQ(x null.Int64) qm.QueryMod {
+	return qmhelper.WhereNullEQ(w.field, true, x)
+}
+func (w whereHelpernull_Int64) LT(x null.Int64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LT, x)
+}
+func (w whereHelpernull_Int64) LTE(x null.Int64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.LTE, x)
+}
+func (w whereHelpernull_Int64) GT(x null.Int64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GT, x)
+}
+func (w whereHelpernull_Int64) GTE(x null.Int64) qm.QueryMod {
+	return qmhelper.Where(w.field, qmhelper.GTE, x)
+}
+func (w whereHelpernull_Int64) IN(slice []int64) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereIn(fmt.Sprintf("%s IN ?", w.field), values...)
+}
+func (w whereHelpernull_Int64) NIN(slice []int64) qm.QueryMod {
+	values := make([]interface{}, 0, len(slice))
+	for _, value := range slice {
+		values = append(values, value)
+	}
+	return qm.WhereNotIn(fmt.Sprintf("%s NOT IN ?", w.field), values...)
+}
+
+func (w whereHelpernull_Int64) IsNull() qm.QueryMod    { return qmhelper.WhereIsNull(w.field) }
+func (w whereHelpernull_Int64) IsNotNull() qm.QueryMod { return qmhelper.WhereIsNotNull(w.field) }
+
 type whereHelpertime_Time struct{ field string }
 
 func (w whereHelpertime_Time) EQ(x time.Time) qm.QueryMod {
@@ -136,19 +180,21 @@ func (w whereHelpertime_Time) GTE(x time.Time) qm.QueryMod {
 }
 
 var FilesTrashWhere = struct {
-	ID              whereHelperstring
-	UserID          whereHelperint
-	Type            whereHelperstring
-	PastLocation    whereHelperstring
-	CreatedAt       whereHelpertime_Time
-	CurrentLocation whereHelperstring
+	ID           whereHelperstring
+	UserID       whereHelperint
+	Name         whereHelperstring
+	Size         whereHelpernull_Int64
+	Type         whereHelperstring
+	PastLocation whereHelperstring
+	CreatedAt    whereHelpertime_Time
 }{
-	ID:              whereHelperstring{field: "`files_trash`.`id`"},
-	UserID:          whereHelperint{field: "`files_trash`.`user_id`"},
-	Type:            whereHelperstring{field: "`files_trash`.`type`"},
-	PastLocation:    whereHelperstring{field: "`files_trash`.`past_location`"},
-	CreatedAt:       whereHelpertime_Time{field: "`files_trash`.`created_at`"},
-	CurrentLocation: whereHelperstring{field: "`files_trash`.`current_location`"},
+	ID:           whereHelperstring{field: "`files_trash`.`id`"},
+	UserID:       whereHelperint{field: "`files_trash`.`user_id`"},
+	Name:         whereHelperstring{field: "`files_trash`.`name`"},
+	Size:         whereHelpernull_Int64{field: "`files_trash`.`size`"},
+	Type:         whereHelperstring{field: "`files_trash`.`type`"},
+	PastLocation: whereHelperstring{field: "`files_trash`.`past_location`"},
+	CreatedAt:    whereHelpertime_Time{field: "`files_trash`.`created_at`"},
 }
 
 // FilesTrashRels is where relationship names are stored.
@@ -179,8 +225,8 @@ func (r *filesTrashR) GetUser() *User {
 type filesTrashL struct{}
 
 var (
-	filesTrashAllColumns            = []string{"id", "user_id", "type", "past_location", "created_at", "current_location"}
-	filesTrashColumnsWithoutDefault = []string{"id", "user_id", "type", "past_location", "current_location"}
+	filesTrashAllColumns            = []string{"id", "user_id", "name", "size", "type", "past_location", "created_at"}
+	filesTrashColumnsWithoutDefault = []string{"id", "user_id", "name", "size", "type", "past_location"}
 	filesTrashColumnsWithDefault    = []string{"created_at"}
 	filesTrashPrimaryKeyColumns     = []string{"id"}
 	filesTrashGeneratedColumns      = []string{}
