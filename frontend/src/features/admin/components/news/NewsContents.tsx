@@ -4,16 +4,6 @@ import { News } from '../../types';
 import { AddItem } from './AddItem';
 import { NewsItem } from './NewsItem';
 
-const gridSx = {
-  border: '1px solid #ccc',
-  borderRadius: 2,
-  m: 1,
-  p: 3,
-  '&:hover': {
-    background: '#ccc',
-  },
-};
-
 type NewsContentsProps = {
   data: News[];
 };

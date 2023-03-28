@@ -7,7 +7,7 @@ import { FaUsers } from 'react-icons/fa';
 import { GiArchiveResearch } from 'react-icons/gi';
 import { IoIosTime } from 'react-icons/io';
 import { useAdminLogout } from '../../api/adminLogout';
-import ConfirmRequestsModal from '../misc/ConfirmRequestsModal';
+import ConfirmRequestsModal from '../Misc/ConfirmRequestsModal';
 
 const SideBar = () => {
   const router = useRouter();

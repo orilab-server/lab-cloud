@@ -5,9 +5,9 @@ import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { useAddNewItem } from '../../api/addNewItem';
-import { ModalLayout } from '../misc/ModalLayout';
-import { TypographyOrTextField } from '../misc/TypographyOrTextField';
-import { UpdateImageArea } from '../misc/UpdateImageArea';
+import { ModalLayout } from '../Misc/ModalLayout';
+import { TypographyOrTextField } from '../Misc/TypographyOrTextField';
+import { UpdateImageArea } from '../Misc/UpdateImageArea';
 
 type AddUsersProps = {
   modals: [

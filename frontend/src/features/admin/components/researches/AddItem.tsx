@@ -8,10 +8,10 @@ import { useAddNewItem } from '../../api/addNewItem';
 import { useAddUpdate } from '../../api/addUpdates';
 import { useCollection } from '../../api/getCollection';
 import { useUpdateItem } from '../../api/updateItem';
-import { LinksInput } from '../misc/LinksInput';
-import { ModalLayout } from '../misc/ModalLayout';
-import { TypographyOrTextField } from '../misc/TypographyOrTextField';
-import { UpdateImageArea } from '../misc/UpdateImageArea';
+import { LinksInput } from '../Misc/LinksInput';
+import { ModalLayout } from '../Misc/ModalLayout';
+import { TypographyOrTextField } from '../Misc/TypographyOrTextField';
+import { UpdateImageArea } from '../Misc/UpdateImageArea';
 
 type AddItemProps = {
   modals: [

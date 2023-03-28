@@ -1,9 +1,9 @@
 import { useCollection } from '@/features/admin/api/getCollection';
-import ContentsLayout from '@/features/admin/components/layout/ContentsLayout';
-import MainLayout from '@/features/admin/components/layout/MainLayout';
-import { UserContents } from '@/features/admin/components/members/MemberContents';
-import { NewsContents } from '@/features/admin/components/news/NewsContents';
-import { ResearchContents } from '@/features/admin/components/researches/ResearchContents';
+import ContentsLayout from '@/features/admin/components/Layout/ContentsLayout';
+import MainLayout from '@/features/admin/components/Layout/MainLayout';
+import { UserContents } from '@/features/admin/components/Members/MemberContents';
+import { NewsContents } from '@/features/admin/components/News/NewsContents';
+import { ResearchContents } from '@/features/admin/components/Researches/ResearchContents';
 import { Collections, Member, News, Research } from '@/features/admin/types';
 import { useRouter } from 'next/router';
 

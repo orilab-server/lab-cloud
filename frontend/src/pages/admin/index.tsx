@@ -1,4 +1,4 @@
-import MainLayout from '@/features/admin/components/layout/MainLayout';
+import MainLayout from '@/features/admin/components/Layout/MainLayout';
 import ContentsLayout from '@/shared/components/Layout/ContentsLayout';
 import { NextPage } from 'next';
 import { useRouter } from 'next/router';

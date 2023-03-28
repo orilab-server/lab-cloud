@@ -7,9 +7,9 @@ import { useDeleteItem } from '../../api/deleteItem';
 import { useStorageImage } from '../../api/getStorageImage';
 import { useUpdateItem } from '../../api/updateItem';
 import { Member } from '../../types';
-import { ModalLayout } from '../misc/ModalLayout';
-import { TypographyOrTextField } from '../misc/TypographyOrTextField';
-import { UpdateImageArea } from '../misc/UpdateImageArea';
+import { ModalLayout } from '../Misc/ModalLayout';
+import { TypographyOrTextField } from '../Misc/TypographyOrTextField';
+import { UpdateImageArea } from '../Misc/UpdateImageArea';
 
 type UserItemProps = {
   member: Member;

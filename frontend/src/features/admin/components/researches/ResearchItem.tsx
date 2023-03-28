@@ -8,10 +8,10 @@ import { useDeleteItem } from '../../api/deleteItem';
 import { useStorageImage } from '../../api/getStorageImage';
 import { useUpdateItem } from '../../api/updateItem';
 import { Research } from '../../types';
-import { LinksInput } from '../misc/LinksInput';
-import { ModalLayout } from '../misc/ModalLayout';
-import { TypographyOrTextField } from '../misc/TypographyOrTextField';
-import { UpdateImageArea } from '../misc/UpdateImageArea';
+import { LinksInput } from '../Misc/LinksInput';
+import { ModalLayout } from '../Misc/ModalLayout';
+import { TypographyOrTextField } from '../Misc/TypographyOrTextField';
+import { UpdateImageArea } from '../Misc/UpdateImageArea';
 
 type ResearchItemProps = {
   item: Research;
