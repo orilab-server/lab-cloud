@@ -1,8 +1,8 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import React, { useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useModal } from 'react-hooks-use-modal';
 import { useDeleteItem } from '../../api/deleteItem';
 import { useStorageImage } from '../../api/getStorageImage';
@@ -36,7 +36,7 @@ export const ResearchItem = ({ item, button }: ResearchItemProps) => {
   const deleteItemMutation = useDeleteItem('researches', 'hp');
   const updateItemMutation = useUpdateItem('researches', 'hp');
 
-  const { control, handleSubmit, getValues } = useForm<FormData>({
+  const { control, getValues } = useForm<FormData>({
     defaultValues: {
       title: item.title,
       description: item.description,
@@ -48,12 +48,14 @@ export const ResearchItem = ({ item, button }: ResearchItemProps) => {
       await deleteItemMutation.mutateAsync({ docId: item.id }).finally(() => closeM());
     }
   };
-  const onSubmit: SubmitHandler<FormData> = async (data) =>
+  const onSubmit = async () => {
+    const data = { title: getValues('title'), description: getValues('description') };
     await updateItemMutation.mutateAsync({
       docId: item.id,
       data: { ...data, links: Object.values(links) },
       file,
     });
+  };
 
   return (
     <>
@@ -62,12 +64,7 @@ export const ResearchItem = ({ item, button }: ResearchItemProps) => {
       </Box>
       <Modal>
         <ModalLayout closeModal={closeM}>
-          <Stack
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            spacing={3}
-            sx={{ width: '100%' }}
-          >
+          <div className="grid grid-cols-1 gap-3">
             <UpdateImageArea url={image.data} fileState={[file, setFile]} edit={edit} />
             <TypographyOrTextField
               sx={{ width: '80%' }}
@@ -98,21 +95,21 @@ export const ResearchItem = ({ item, button }: ResearchItemProps) => {
             <Stack direction="row" spacing={2} justifyContent="space-between">
               <Stack direction="row" spacing={1}>
                 {edit && (
-                  <Button type="submit" variant="contained" color="secondary">
+                  <button onClick={onSubmit} className="btn btn-info text-white">
                     {updateItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                     <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
-                  </Button>
+                  </button>
                 )}
-                <Button onClick={onToggleEdit} variant="contained">
+                <button onClick={onToggleEdit} className="btn btn-info text-white">
                   {edit ? '編集をやめる' : '編集する'}
-                </Button>
+                </button>
               </Stack>
-              <Button onClick={onDeleteDoc} variant="contained" color="error">
+              <button onClick={onDeleteDoc} className="btn btn-error text-white">
                 {deleteItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                 <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>削除</Typography>
-              </Button>
+              </button>
             </Stack>
-          </Stack>
+          </div>
         </ModalLayout>
       </Modal>
     </>
