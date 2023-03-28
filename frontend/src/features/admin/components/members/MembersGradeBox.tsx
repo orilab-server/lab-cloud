@@ -1,4 +1,4 @@
-import { Box, Grid, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { Member } from '../../types';
 import { UserItem } from './MemberItem';
 
@@ -42,16 +42,22 @@ export const UsersGradeBox = ({ members, grade }: UsersGradeBoxProps) => {
     <Stack id="user-contents" spacing={1} sx={{ width: '100%', my: 2 }}>
       <Typography>{gradeStr}</Typography>
       <Box sx={{ width: '100%', borderBottom: '2px rgba(0,0,0,0.5) solid' }} />
-      <Grid container columns={12}>
+      <div className="grid grid-cols-3 gap-3">
         {members.map((member) => (
-          <Grid id={member.id} key={member.id} item sx={gridSx} xs={3}>
+          <div id={member.id} key={member.id}>
             <UserItem
               member={member}
-              button={<Box sx={{ width: '100%', height: '100%', p: 3 }}>{member.name}</Box>}
+              button={
+                <button className="card border bg-gray-200 px-2 w-full h-24 hover:bg-gray-500 hover:text-white">
+                  <div className="card-body">
+                    <div className="text-md font-semibold">{member.name}</div>
+                  </div>
+                </button>
+              }
             />
-          </Grid>
+          </div>
         ))}
-      </Grid>
+      </div>
     </Stack>
   );
 };

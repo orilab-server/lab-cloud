@@ -1,15 +1,15 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
 import { Button, Typography } from '@mui/material';
-import { Box, Stack } from '@mui/system';
+import { Stack } from '@mui/system';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { AiOutlinePlus } from 'react-icons/ai';
 import { useAddNewItem } from '../../api/addNewItem';
 import { ModalLayout } from '../misc/ModalLayout';
 import { TypographyOrTextField } from '../misc/TypographyOrTextField';
 import { UpdateImageArea } from '../misc/UpdateImageArea';
 
 type AddUsersProps = {
-  children: React.ReactNode;
   modals: [
     React.FC<{
       children: React.ReactNode;
@@ -27,7 +27,7 @@ interface FormData {
   year: number;
 }
 
-export const AddUser = ({ children, modals }: AddUsersProps) => {
+export const AddUser = ({ modals }: AddUsersProps) => {
   const [Modal, openM, closeM] = modals;
   const [file, setFile] = useState<File | null>(null);
   const addNewItemMutation = useAddNewItem<FormData & { researches: string[] }>('members', 'hp');
@@ -56,9 +56,10 @@ export const AddUser = ({ children, modals }: AddUsersProps) => {
 
   return (
     <>
-      <Box onClick={openM} sx={{ width: '100%', height: '100%' }}>
-        {children}
-      </Box>
+      <button onClick={openM} className="btn btn-outline btn-primary">
+        <AiOutlinePlus style={{ marginRight: 3 }} />
+        新規メンバーを追加する
+      </button>
       <Modal>
         <ModalLayout closeModal={closeM}>
           <Stack

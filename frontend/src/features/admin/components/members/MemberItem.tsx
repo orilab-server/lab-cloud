@@ -1,7 +1,7 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { ReactNode, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useModal } from 'react-hooks-use-modal';
 import { useDeleteItem } from '../../api/deleteItem';
 import { useStorageImage } from '../../api/getStorageImage';
@@ -33,7 +33,7 @@ export const UserItem = ({ member, button }: UserItemProps) => {
   const deleteItemMutation = useDeleteItem('members', 'hp');
   const updateItemMutation = useUpdateItem('members', 'hp');
 
-  const { control, handleSubmit, getValues } = useForm<FormData>({
+  const { control, getValues } = useForm<FormData>({
     defaultValues: {
       name: member.name,
       name_en: member.name_en,
@@ -47,8 +47,15 @@ export const UserItem = ({ member, button }: UserItemProps) => {
       await deleteItemMutation.mutateAsync({ docId: member.id }).finally(() => closeM());
     }
   };
-  const onSubmit: SubmitHandler<FormData> = async (data) =>
+  const onSubmit = async () => {
+    const data: FormData = {
+      name: getValues('name'),
+      name_en: getValues('name_en'),
+      introduction: getValues('introduction'),
+      year: getValues('year'),
+    };
     await updateItemMutation.mutateAsync({ docId: member.id, data, file });
+  };
 
   return (
     <>
@@ -57,12 +64,7 @@ export const UserItem = ({ member, button }: UserItemProps) => {
       </Box>
       <Modal>
         <ModalLayout closeModal={closeM}>
-          <Stack
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            spacing={3}
-            sx={{ width: '100%' }}
-          >
+          <Stack spacing={3} sx={{ width: '100%' }}>
             <UpdateImageArea url={image.data} edit={edit} fileState={[file, setFile]} />
             <TypographyOrTextField
               sx={{ width: '80%' }}
@@ -104,19 +106,19 @@ export const UserItem = ({ member, button }: UserItemProps) => {
             <Stack direction="row" spacing={2} justifyContent="space-between">
               <Stack direction="row" spacing={1}>
                 {edit && (
-                  <Button type="submit" variant="contained" color="secondary">
+                  <button onClick={onSubmit} className="btn btn-info text-white">
                     {updateItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                     <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
-                  </Button>
+                  </button>
                 )}
-                <Button onClick={onToggleEdit} variant="contained">
+                <button onClick={onToggleEdit} className="btn btn-info text-white">
                   {edit ? '戻る' : '編集する'}
-                </Button>
+                </button>
               </Stack>
-              <Button onClick={onDeleteDoc} variant="contained" color="error">
+              <button onClick={onDeleteDoc} className="btn btn-error text-white">
                 {deleteItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                 <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>削除</Typography>
-              </Button>
+              </button>
             </Stack>
           </Stack>
         </ModalLayout>
