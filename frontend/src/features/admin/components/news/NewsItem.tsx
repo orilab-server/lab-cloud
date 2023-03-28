@@ -1,8 +1,8 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Button, Stack, Typography } from '@mui/material';
+import { Stack, Typography } from '@mui/material';
 import { format } from 'date-fns';
 import { ReactNode, useState } from 'react';
-import { SubmitHandler, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { useModal } from 'react-hooks-use-modal';
 import { useDeleteItem } from '../../api/deleteItem';
 import { useStorageImage } from '../../api/getStorageImage';
@@ -50,8 +50,10 @@ export const NewsItem = ({ item, button }: NewsItemProps) => {
       await deleteItemMutation.mutateAsync({ docId: item.id }).finally(() => closeM());
     }
   };
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    const { dateStr, title, description } = data;
+  const onSubmit = async () => {
+    const dateStr = getValues('dateStr');
+    const title = getValues('title');
+    const description = getValues('description');
     const dispatchData = {
       title,
       description,
@@ -68,12 +70,7 @@ export const NewsItem = ({ item, button }: NewsItemProps) => {
       <div onClick={openM}>{button}</div>
       <Modal>
         <ModalLayout closeModal={closeM}>
-          <Stack
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            spacing={3}
-            sx={{ width: '100%' }}
-          >
+          <Stack spacing={3} sx={{ width: '100%' }}>
             <UpdateImageArea url={image.data} fileState={[file, setFile]} edit={edit} />
             <TypographyOrTextField
               sx={{ width: '80%' }}
@@ -109,19 +106,19 @@ export const NewsItem = ({ item, button }: NewsItemProps) => {
             <Stack direction="row" spacing={2} justifyContent="space-between">
               <Stack direction="row" spacing={1}>
                 {edit && (
-                  <Button type="submit" variant="contained" color="secondary">
+                  <button onClick={onSubmit} className="btn btn-info text-white">
                     {updateItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                     <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
-                  </Button>
+                  </button>
                 )}
-                <Button onClick={onToggleEdit} variant="contained">
+                <button onClick={onToggleEdit} className="btn btn-info text-white">
                   {edit ? '戻る' : '編集する'}
-                </Button>
+                </button>
               </Stack>
-              <Button onClick={onDeleteDoc} variant="contained" color="error">
+              <button onClick={onDeleteDoc} className="btn btn-error text-white">
                 {deleteItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                 <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>削除</Typography>
-              </Button>
+              </button>
             </Stack>
           </Stack>
         </ModalLayout>

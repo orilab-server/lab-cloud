@@ -1,13 +1,11 @@
 import { useCollection } from '@/features/admin/api/getCollection';
-import { AdminLayout } from '@/features/admin/components/layout/AdminLayout';
+import ContentsLayout from '@/features/admin/components/layout/ContentsLayout';
+import MainLayout from '@/features/admin/components/layout/MainLayout';
 import { UserContents } from '@/features/admin/components/members/MemberContents';
 import { NewsContents } from '@/features/admin/components/news/NewsContents';
 import { ResearchContents } from '@/features/admin/components/researches/ResearchContents';
 import { Collections, Member, News, Research } from '@/features/admin/types';
-import { Button } from '@mui/material';
-import { Stack } from '@mui/system';
 import { useRouter } from 'next/router';
-import { MdOutlineArrowBack } from 'react-icons/md';
 
 const extractCorrectTypeData = (data: (News | Research | Member)[] | undefined) => {
   if (!data || data.length === 0) {
@@ -46,15 +44,13 @@ const CollectionEditor = () => {
   };
 
   return (
-    <AdminLayout>
-      <Stack sx={{ width: '100%' }} alignItems="start" spacing={2}>
-        <Button onClick={() => router.push('/admin')}>
-          <MdOutlineArrowBack />
-          戻る
-        </Button>
-        <WhichContents data={correctData} />
-      </Stack>
-    </AdminLayout>
+    <MainLayout>
+      <ContentsLayout>
+        <div className="p-5">
+          <WhichContents data={correctData} />
+        </div>
+      </ContentsLayout>
+    </MainLayout>
   );
 };
 

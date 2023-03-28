@@ -1,8 +1,9 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Box, Button, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import { Stack } from '@mui/system';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
+import { AiOutlinePlus } from 'react-icons/ai';
 import { useAddNewItem } from '../../api/addNewItem';
 import { useAddUpdate } from '../../api/addUpdates';
 import { LinksInput } from '../misc/LinksInput';
@@ -11,7 +12,6 @@ import { TypographyOrTextField } from '../misc/TypographyOrTextField';
 import { UpdateImageArea } from '../misc/UpdateImageArea';
 
 type AddItemProps = {
-  button: React.ReactNode;
   modals: [
     React.FC<{
       children: React.ReactNode;
@@ -30,7 +30,7 @@ interface FormData {
 
 type NewDoc = Omit<FormData, 'dateStr'> & { links: string[]; date: Date; createdat: Date };
 
-export const AddItem = ({ button, modals }: AddItemProps) => {
+export const AddItem = ({ modals }: AddItemProps) => {
   const [Modal, openM, closeM] = modals;
   const [links, setLinks] = useState<{ [key: string]: string }>({ 'link-0': '' });
   const [file, setFile] = useState<File | null>(null);
@@ -68,9 +68,10 @@ export const AddItem = ({ button, modals }: AddItemProps) => {
 
   return (
     <>
-      <Box sx={{ width: '100%', height: '100%' }} onClick={openM}>
-        {button}
-      </Box>
+      <button className="btn btn-outline btn-primary" onClick={openM}>
+        <AiOutlinePlus className="mr-2" />
+        ニュースを追加する
+      </button>
       <Modal>
         <ModalLayout closeModal={closeM}>
           <Stack
@@ -110,10 +111,10 @@ export const AddItem = ({ button, modals }: AddItemProps) => {
             />
             <LinksInput links={links} setLinks={setLinks} />
             <Stack direction="row" spacing={3}>
-              <Button type="submit" variant="contained">
+              <button type="submit" className="btn btn-info text-white">
                 {addNewItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                 <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
-              </Button>
+              </button>
             </Stack>
           </Stack>
         </ModalLayout>

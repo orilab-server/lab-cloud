@@ -1,8 +1,5 @@
-import { Box, Button, Grid, Typography } from '@mui/material';
-import { Stack } from '@mui/system';
 import { format } from 'date-fns';
 import { useModal } from 'react-hooks-use-modal';
-import { AiOutlinePlus } from 'react-icons/ai';
 import { News } from '../../types';
 import { AddItem } from './AddItem';
 import { NewsItem } from './NewsItem';
@@ -24,35 +21,29 @@ type NewsContentsProps = {
 export const NewsContents = ({ data }: NewsContentsProps) => {
   const addModals = useModal('news-contents', { closeOnOverlayClick: false });
   return (
-    <Stack id="news-contents" spacing={2} sx={{ width: '100%' }}>
-      <AddItem
-        button={
-          <Button sx={{ width: '20%', mx: 1 }} variant="outlined">
-            <AiOutlinePlus style={{ marginRight: 3 }} />
-            ニュースを追加する
-          </Button>
-        }
-        modals={addModals}
-      />
-      <Grid container columns={12} sx={{ width: '100%' }}>
+    <div className="grid grid-cols-1 gap-y-5" id="news-contents">
+      <AddItem modals={addModals} />
+      <div className="grid grid-cols-3 gap-3">
         {data.map((item) => {
           return (
-            <Grid item key={item.id} id={item.id} sx={gridSx} xs={3}>
+            <div key={item.id} id={item.id}>
               <NewsItem
                 item={item}
                 button={
-                  <Box sx={{ cursor: 'pointer' }}>
-                    <Typography sx={{ fontSize: 12 }}>
-                      {format(new Date(item.date.seconds * 1000), 'yyyy-MM-dd')}
-                    </Typography>
-                    <Typography sx={{ fontSize: 16 }}>{item.title}</Typography>
-                  </Box>
+                  <button className="card border bg-gray-200 px-2 w-full h-48 hover:bg-gray-500 hover:text-white">
+                    <div className="card-body">
+                      <div className="text-sm">
+                        {format(new Date(item.date.seconds * 1000), 'yyyy-MM-dd')}
+                      </div>
+                      <div className="text-md line-clamp-3">{item.title}</div>
+                    </div>
+                  </button>
                 }
               />
-            </Grid>
+            </div>
           );
         })}
-      </Grid>
-    </Stack>
+      </div>
+    </div>
   );
 };
