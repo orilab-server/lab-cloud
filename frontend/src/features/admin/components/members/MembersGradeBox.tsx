@@ -2,15 +2,6 @@ import { Box, Stack, Typography } from '@mui/material';
 import { Member } from '../../types';
 import { UserItem } from './MemberItem';
 
-const gridSx = {
-  border: '1px solid #ccc',
-  m: 1,
-  borderRadius: 2,
-  '&:hover': {
-    background: '#ccc',
-  },
-};
-
 type UsersGradeBoxProps = {
   members: Member[];
   grade: number;
