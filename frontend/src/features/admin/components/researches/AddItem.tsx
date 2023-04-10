@@ -1,19 +1,19 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Button, FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
-import { Box, Stack } from '@mui/system';
+import { FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
+import { Stack } from '@mui/system';
 import React, { useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { AiOutlinePlus } from 'react-icons/ai';
 import { useAddNewItem } from '../../api/addNewItem';
 import { useAddUpdate } from '../../api/addUpdates';
 import { useCollection } from '../../api/getCollection';
 import { useUpdateItem } from '../../api/updateItem';
-import { LinksInput } from '../misc/LinksInput';
-import { ModalLayout } from '../misc/ModalLayout';
-import { TypographyOrTextField } from '../misc/TypographyOrTextField';
-import { UpdateImageArea } from '../misc/UpdateImageArea';
+import { LinksInput } from '../Misc/LinksInput';
+import { ModalLayout } from '../Misc/ModalLayout';
+import { TypographyOrTextField } from '../Misc/TypographyOrTextField';
+import { UpdateImageArea } from '../Misc/UpdateImageArea';
 
 type AddItemProps = {
-  children: React.ReactNode;
   modals: [
     React.FC<{
       children: React.ReactNode;
@@ -32,7 +32,7 @@ interface FormData {
 
 type NewItem = Omit<FormData, 'memberId'> & { links: string[]; createdat: Date };
 
-export const AddItem = ({ children, modals }: AddItemProps) => {
+export const AddItem = ({ modals }: AddItemProps) => {
   const [Modal, openM, closeM] = modals;
   const [links, setLinks] = useState<{ [key: string]: string }>({ 'link-0': '' });
   const [file, setFile] = useState<File | null>(null);
@@ -77,9 +77,10 @@ export const AddItem = ({ children, modals }: AddItemProps) => {
 
   return (
     <>
-      <Box onClick={openM} sx={{ width: '100%', height: '100%' }}>
-        {children}
-      </Box>
+      <button onClick={openM} className="btn btn-outline btn-primary">
+        <AiOutlinePlus style={{ marginRight: 3 }} />
+        研究を追加する
+      </button>
       <Modal>
         <ModalLayout closeModal={closeM}>
           <Stack
@@ -138,10 +139,10 @@ export const AddItem = ({ children, modals }: AddItemProps) => {
             <LinksInput links={links} setLinks={setLinks} />
             {/* 各種ボタン */}
             <Stack direction="row" spacing={2}>
-              <Button type="submit" variant="contained" color="secondary">
+              <button type="submit" className="btn btn-info">
                 {addNewItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
                 <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
-              </Button>
+              </button>
             </Stack>
           </Stack>
         </ModalLayout>

@@ -29,6 +29,7 @@ export type Member = {
   introduction: string;
   researches: string[];
   year: number;
+  old?: boolean;
 };
 
 export type CollectionTypes = {

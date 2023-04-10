@@ -1,5 +1,5 @@
 import { useAdminLogin } from '@/features/admin/api/adminLogin';
-import { AdminLayout } from '@/features/admin/components/layout/AdminLayout';
+import { AdminLayout } from '@/features/admin/components/Layout/AdminLayout';
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
 import { Container, createTheme, CssBaseline, TextField, ThemeProvider } from '@mui/material';
 import { Box } from '@mui/system';

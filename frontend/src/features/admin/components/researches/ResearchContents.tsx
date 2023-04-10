@@ -1,7 +1,6 @@
-import { Button, Grid, Typography } from '@mui/material';
 import { Stack } from '@mui/system';
+import { format } from 'date-fns';
 import { useModal } from 'react-hooks-use-modal';
-import { AiOutlinePlus } from 'react-icons/ai';
 import { Research } from '../../types';
 import { AddItem } from './AddItem';
 import { ResearchItem } from './ResearchItem';
@@ -25,29 +24,28 @@ export const ResearchContents = ({ data }: ResearchContentsProps) => {
   const addModals = useModal('research-contents', { closeOnOverlayClick: false });
   return (
     <Stack id="research-contents" spacing={5}>
-      <AddItem modals={addModals}>
-        <Button variant="outlined">
-          <AiOutlinePlus style={{ marginRight: 3 }} />
-          研究を追加する
-        </Button>
-      </AddItem>
-      <Grid container columns={12}>
+      <AddItem modals={addModals} />
+      <div className="grid grid-cols-3 gap-3">
         {data.map((item) => {
           return (
-            <Grid id={item.id} item key={item.id} sx={gridSx} xs={3}>
+            <div id={item.id} key={item.id}>
               <ResearchItem
                 item={item}
                 button={
-                  <Stack>
-                    <Typography sx={{ fontSize: 12, my: 0.1 }}>タイトル</Typography>
-                    <Typography sx={{ fontSize: 16 }}>{item.title}</Typography>
-                  </Stack>
+                  <button className="card border bg-gray-200 px-2 w-full h-48 hover:bg-gray-500 hover:text-white">
+                    <div className="card-body">
+                      <div className="text-sm">
+                        作成日 {format(new Date(item.createdat.seconds * 1000), 'yyyy-MM-dd')}
+                      </div>
+                      <div className="text-md line-clamp-3">{item.title}</div>
+                    </div>
+                  </button>
                 }
               />
-            </Grid>
+            </div>
           );
         })}
-      </Grid>
+      </div>
     </Stack>
   );
 };

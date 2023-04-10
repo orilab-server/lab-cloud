@@ -1,7 +1,6 @@
-import { Button, Grid } from '@mui/material';
+import { Grid } from '@mui/material';
 import { Stack } from '@mui/system';
 import { useModal } from 'react-hooks-use-modal';
-import { AiOutlinePlus } from 'react-icons/ai';
 import { Member } from '../../types';
 import { AddUser } from './AddMember';
 import { UsersGradeBox } from './MembersGradeBox';
@@ -36,12 +35,7 @@ export const UserContents = ({ data }: UserContentsProps) => {
 
   return (
     <Stack id="user-contents" spacing={5}>
-      <AddUser modals={addModals}>
-        <Button variant="outlined">
-          <AiOutlinePlus style={{ marginRight: 3 }} />
-          新規メンバーを追加する
-        </Button>
-      </AddUser>
+      <AddUser modals={addModals} />
       <Grid container columns={12}>
         <UsersGradeBox members={m2} grade={5} />
         <UsersGradeBox members={m1} grade={4} />

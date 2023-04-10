@@ -56,6 +56,11 @@ const Header = () => {
                   <a className="text-white no-underline mx-2 text-sm">プロフィール</a>
                 </Link>
               </div>
+              <div className="w-full py-2 hover:bg-gray-600">
+                <Link href="/admin">
+                  <a className="text-white no-underline mx-2 text-sm">HP管理</a>
+                </Link>
+              </div>
               <button
                 onClick={() => logoutMutation.mutate()}
                 className="w-full text-left text-white py-2 hover:bg-gray-600 cursor-pointer"
