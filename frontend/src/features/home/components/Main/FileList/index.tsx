@@ -1,24 +1,20 @@
+import { contextMenuState } from '@/features/home/modules/stores';
 import { parseFileSizeStr } from '@/shared/utils/size';
 import { extractDateInStr } from '@/shared/utils/slice';
 import { useRouter } from 'next/router';
-import React, { useContext, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useContext } from 'react';
 import { AiFillFile, AiFillFolder } from 'react-icons/ai';
 import { BsFillArrowDownCircleFill } from 'react-icons/bs';
-import { useRename } from '../../../api/main/rename';
+import { useRecoilValue } from 'recoil';
 import { useCtxMenu } from '../../../hooks/main/useCtxMenu';
 import { useDropFile } from '../../../hooks/main/useDropFile';
 import { useFileSelect } from '../../../hooks/main/useFileSelect';
-import { useContextMenuContextState } from '../../../modules/contetexts/contextMenu';
 import { StorageContext } from '../../../modules/contetexts/storage';
 import ContextMenu from './../ContextMenu';
 import FloatingButton from './../FloatingButton';
 import BreadCrumbs from './BreadCrumbs';
+import RenameInput from './Elements/RenameInput';
 import UploadList from './UploadList';
-
-interface RenameInputs {
-  name: string;
-}
 
 const FileList = () => {
   const router = useRouter();
@@ -30,49 +26,11 @@ const FileList = () => {
   const { selected, add, onClickWithKey, dropped, dragStart, dropInFolder } =
     useFileSelect(storageItems);
   const { ctxMenuRef, showCtxMenu, setShowCtxMenu, onCtxMenu } = useCtxMenu();
-  const [contextMenuState, setContextMenuState] = useContextMenuContextState();
-  const { register, getValues, setValue, resetField } = useForm<RenameInputs>({
-    defaultValues: {
-      name: '',
-    },
-  });
-  // rename
-  const renameMutation = useRename();
-  const rename = async () => {
-    const name = getValues('name');
-    const oldName = Array.from(selected)[0];
-    if (oldName && name && name.trim()) {
-      const [, createdAt] = extractDateInStr(oldName);
-      const newName = createdAt
-        ? !Array.from(oldName).includes('.')
-          ? `${name}_${createdAt}`
-          : `${name}_${createdAt}${oldName.slice(oldName.indexOf('.'))}`
-        : name;
-      await renameMutation.mutateAsync({
-        path: `/${(router.query.path as string) || ''}`.replaceAll('//', '/'),
-        oldName,
-        newName,
-      });
-      setContextMenuState({ rename: '' });
-      resetField('name');
-    }
-  };
-  const renameCancel = () => setContextMenuState({ rename: '' });
+  const contextMenu = useRecoilValue(contextMenuState);
 
   const moveDir = async (path: string) => {
     await router.push(`/home/?path=${path}`);
   };
-
-  useEffect(() => {
-    const selects = Array.from(selected);
-    if (selects.length === 1) {
-      const [fileName] = extractDateInStr(selects[0]);
-      setValue(
-        'name',
-        Array.from(fileName).includes('.') ? fileName.slice(0, fileName.indexOf('.')) : fileName,
-      );
-    }
-  }, [selected]);
 
   return (
     <div {...getRootProps()}>
@@ -124,30 +82,8 @@ const FileList = () => {
                 <AiFillFile className="mr-2 text-gray-600" />
               )}
               {/* ファイル名変更 */}
-              {item.name === contextMenuState.rename ? (
-                <div className="h-5 flex space-x-2 items-center">
-                  <input
-                    id="name"
-                    className="text-sm input input-ghost px-1 h-5"
-                    type="text"
-                    {...register('name')}
-                  />
-                  {Array.from(item.name).includes('.') && (
-                    <span className="text-sm">{item.name.slice(item.name.indexOf('.'))}</span>
-                  )}
-                  <button
-                    onClick={rename}
-                    className="flex items-center justify-center w-5 h-5 hover:bg-slate-300 rounded-full"
-                  >
-                    ○
-                  </button>
-                  <button
-                    onClick={renameCancel}
-                    className="flex items-center justify-center w-5 h-5 hover:bg-slate-300 rounded-full"
-                  >
-                    ×
-                  </button>
-                </div>
+              {'rename' in contextMenu && item.name === contextMenu.rename ? (
+                <RenameInput storageItem={item} />
               ) : (
                 <span className="truncate">{fileName}</span>
               )}
