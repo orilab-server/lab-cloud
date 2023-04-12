@@ -37,3 +37,8 @@ export const contextMenuState = atom<ContextMenu>({
   key: 'contextMenuState',
   default: {},
 });
+
+export const previewFilePathState = atom<string>({
+  key: 'reviewFilePathState',
+  default: '',
+});

@@ -1,11 +1,11 @@
-import { contextMenuState } from '@/features/home/modules/stores';
+import { contextMenuState, previewFilePathState } from '@/features/home/modules/stores';
 import { parseFileSizeStr } from '@/shared/utils/size';
 import { extractDateInStr } from '@/shared/utils/slice';
 import { useRouter } from 'next/router';
 import React, { useContext } from 'react';
 import { AiFillFile, AiFillFolder } from 'react-icons/ai';
 import { BsFillArrowDownCircleFill } from 'react-icons/bs';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { useCtxMenu } from '../../../hooks/main/useCtxMenu';
 import { useDropFile } from '../../../hooks/main/useDropFile';
 import { useFileSelect } from '../../../hooks/main/useFileSelect';
@@ -27,6 +27,7 @@ const FileList = () => {
     useFileSelect(storageItems);
   const { ctxMenuRef, showCtxMenu, setShowCtxMenu, onCtxMenu } = useCtxMenu();
   const contextMenu = useRecoilValue(contextMenuState);
+  const setPreviewFilePath = useSetRecoilState(previewFilePathState);
 
   const moveDir = async (path: string) => {
     await router.push(`/home/?path=${path}`);
@@ -68,7 +69,9 @@ const FileList = () => {
               add(item.name);
             }}
             onDoubleClick={() =>
-              item.type === 'dir' ? moveDir(`${currentPath}/${item.name}`) : () => {}
+              item.type === 'dir'
+                ? moveDir(`${currentPath}/${item.name}`)
+                : setPreviewFilePath(`${currentPath}/${item.name}`)
             }
             className={`relative grid grid-cols-6 px-2 mx-2 py-1 rounded-md ${
               selected.has(item.name) ? 'bg-blue-300' : (i + 1) % 2 ? '' : 'bg-gray-200'

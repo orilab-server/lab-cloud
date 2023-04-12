@@ -4,6 +4,7 @@ import { UserContext } from '@/features/auth/modules/contexts/user';
 import { useFilePaths } from '@/features/home/api/main/getFilePaths';
 import DownloadToasts from '@/features/home/components/Main/DownloadToasts';
 import FileList from '@/features/home/components/Main/FileList';
+import FilePreview from '@/features/home/components/Main/FilePreview';
 import { StorageContext } from '@/features/home/modules/contetexts/storage';
 import ContentsLayout from '@/shared/components/Layout/ContentsLayout';
 import MainLayout from '@/shared/components/Layout/MainLayout';
@@ -26,6 +27,7 @@ const Home: NextPage = () => {
             {isLoading ? null : <FileList />}
             <DownloadToasts />
           </ContentsLayout>
+          <FilePreview />
         </MainLayout>
       </StorageContext.Provider>
     </UserContext.Provider>
