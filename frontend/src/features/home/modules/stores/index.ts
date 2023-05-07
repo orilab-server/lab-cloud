@@ -1,5 +1,6 @@
 import { atom } from 'recoil';
 import { DownloadFileProgress } from '../../types/download';
+import { ContextMenu } from '../../types/storage';
 import { ExFile, ExFolder, FileUploadProgress, FolderUploadProgress } from '../../types/upload';
 
 export const filesState = atom<ExFile[]>({
@@ -25,4 +26,19 @@ export const folderUploadProgressesState = atom<FolderUploadProgress[]>({
 export const downloadProgressesState = atom<DownloadFileProgress[]>({
   key: 'downloadProgressesState',
   default: [],
+});
+
+export const selectedFilesState = atom<Set<string>>({
+  key: 'selectedFilesState',
+  default: new Set(),
+});
+
+export const contextMenuState = atom<ContextMenu>({
+  key: 'contextMenuState',
+  default: {},
+});
+
+export const previewFilePathState = atom<string>({
+  key: 'reviewFilePathState',
+  default: '',
 });

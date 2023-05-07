@@ -10,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@cyntler/react-doc-viewer": "1.13.0",
     "@emotion/react": "11.10.0",
     "@emotion/styled": "11.10.0",
     "@mui/material": "5.10.2",
