@@ -56,20 +56,29 @@ func main() {
 	router.Use(middlewares.CorsMiddleWare(siteUrl))
 	store := cookie.NewStore([]byte(secret))
 	mailInfo := tools.MailRequest{Name: mailName, From: from, To: to, Teacher: teacher, Password: mailPassword, SmtpSrv: smtpServ, SmtpPort: smtpPort}
-	auth := auth.Authcontroller{MyDB: myDB, SessionKey: sessionKey, MailInfo: mailInfo, SiteUrl: siteUrl+"/login"}
+	auth := auth.Authcontroller{MyDB: myDB, SessionKey: sessionKey, MailInfo: mailInfo, SiteUrl: siteUrl + "/login"}
 	user := user.UserController{ShareDir: shareDirPath, MyDB: myDB, SessionKey: sessionKey, Url: siteUrl, MailInfo: mailInfo}
 	router.Use(sessions.Sessions("mysession", store))
 
 	/*
 	* Static HTML files
-	*/ 
+	 */
 	// 404
 	router.NoRoute(func(ctx *gin.Context) {
 		ctx.HTML(200, "404.html", nil)
 	})
 	// home
-	router.GET("/", func(ctx *gin.Context) {
-		ctx.HTML(200, "index.html", nil)
+	router.GET("/home", func(ctx *gin.Context) {
+		ctx.HTML(200, "home.html", nil)
+	})
+	router.GET("/home/profile", func(ctx *gin.Context) {
+		ctx.HTML(200, "profile.html", nil)
+	})
+	router.GET("/home/recent", func(ctx *gin.Context) {
+		ctx.HTML(200, "recent.html", nil)
+	})
+	router.GET("/home/trash", func(ctx *gin.Context) {
+		ctx.HTML(200, "trash.html", nil)
 	})
 	// login
 	router.GET("/login", func(ctx *gin.Context) {
@@ -92,8 +101,8 @@ func main() {
 	router.GET("/reviews/[review_id]", func(ctx *gin.Context) {
 		ctx.HTML(200, "[review_id].html", nil)
 	})
-	router.GET("/reviews/[review_id]/[reviewed_id]", func(ctx *gin.Context) {
-		ctx.HTML(200, "[reviewed_id].html", nil)
+	router.GET("/reviews/[review_id]/[file_id]", func(ctx *gin.Context) {
+		ctx.HTML(200, "[file_id].html", nil)
 	})
 	// profile
 	router.GET("/profile", func(ctx *gin.Context) {
@@ -109,7 +118,7 @@ func main() {
 
 	/*
 	* APIs
-	*/
+	 */
 	router.GET("/user", user.GetUser)
 	router.POST("/user/reset-password/request", user.ResetPasswordRequest)
 	router.PATCH("/user/reset-password", user.ResetPassword)
@@ -142,7 +151,7 @@ func main() {
 			homeGroup.POST("/trash/files/restore", home.RestoreItems)
 			homeGroup.POST("/trash/files/remove", home.RemoveAll)
 		}
-		
+
 		// userエンドポイント
 		authGroup.GET("/users", user.GetUsers)
 		authGroup.PATCH("/user/password", user.ChangePassword)
@@ -163,16 +172,16 @@ func main() {
 		}
 
 		reviews := reviews.ReviewsController{
-			MyDB: myDB,
-			ModelCtx: modelContext,
-			ReviewDirPath: reviewDirPath,
+			MyDB:            myDB,
+			ModelCtx:        modelContext,
+			ReviewDirPath:   reviewDirPath,
 			LineNotifyToken: lineNotifyToken,
-			MailInfo: mailInfo,
+			MailInfo:        mailInfo,
 		}
 		// reviewエンドポイント
 		reviewsGroup := authGroup.Group("/reviews")
 		{
-			reviewsGroup.GET("", reviews.GetReviews) // レビュー全件取得
+			reviewsGroup.GET("", reviews.GetReviews)    // レビュー全件取得
 			reviewsGroup.POST("", reviews.CreateReview) // 新規レビュー作成
 			reviewsGroup.GET("/:review-id/is-target/:user-id", reviews.GetIsTarget)
 			reviewsGroup.GET("/:review-id/files", reviews.GetReviewFiles) // 対象のレビューのファイルを全件取得
@@ -186,7 +195,7 @@ func main() {
 			reviewsGroup.GET("/:review-id/files/:file-id/own/:user-id/comments/share", reviews.PostShareReview) // レビューをメールで通知
 			reviewedGroup := reviewsGroup.Group("/:review-id/reviewed")
 			{
-				reviewedGroup.GET("/:reviewed-id/teacher/files", reviews.GetTeacherFiles) // レビュー対象ファイル全件取得
+				reviewedGroup.GET("/:reviewed-id/teacher/files", reviews.GetTeacherFiles)                   // レビュー対象ファイル全件取得
 				reviewedGroup.POST("/:reviewed-id/teacher/files/upload", reviews.UploadTeacherReviewedFile) // 新しいファイルをアップロード
 			}
 		}
