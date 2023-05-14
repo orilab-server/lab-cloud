@@ -1,12 +1,9 @@
-import { sleep } from '@/shared/utils/sleep';
-import { useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { contextMenuState, selectedFilesState } from '../../modules/stores';
-import { FileOrDir, StorageItem } from '../../types/storage';
+import { StorageItem } from '../../types/storage';
 
 export const useFileSelect = (fileList: StorageItem[]) => {
   const [selected, setSelected] = useRecoilState(selectedFilesState);
-  const [dropped, setDropped] = useState<string>('');
   const contextMenu = useRecoilValue(contextMenuState);
 
   const one = (name: string) =>
@@ -52,23 +49,9 @@ export const useFileSelect = (fileList: StorageItem[]) => {
     }
   };
 
-  const dragStart = (name: string) => {
-    if (Array.from(selected).length === 0) {
-      setSelected(new Set([name]));
-    }
+  return {
+    selected,
+    add,
+    onClickWithKey,
   };
-
-  const dropInFolder = async (name: string, type: FileOrDir) => {
-    if (selected.has(name)) {
-      return;
-    }
-    if (type === 'dir') {
-      setDropped(name);
-    }
-    // ファイル移動ロジックをここに記述
-    await sleep(1);
-    setDropped('');
-  };
-
-  return { selected, add, onClickWithKey, dropped, dragStart, dropInFolder };
 };

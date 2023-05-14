@@ -1,3 +1,4 @@
+import { useMoveFilesWithDrop } from '@/features/home/hooks/main/useMoveFilesWithDrop';
 import { contextMenuState, previewFilePathState } from '@/features/home/modules/stores';
 import { parseFileSizeStr } from '@/shared/utils/size';
 import { extractDateInStr } from '@/shared/utils/slice';
@@ -23,8 +24,15 @@ const FileList = () => {
   const storage = useContext(StorageContext);
   const storageItems = storage?.fileNames || [];
   const important = Boolean(storage?.important);
-  const { selected, add, onClickWithKey, dropped, dragStart, dropInFolder } =
-    useFileSelect(storageItems);
+  const { selected, add, onClickWithKey } = useFileSelect(storageItems);
+  const {
+    dragStart,
+    dropInFolder,
+    moveFilesMutation,
+    droppable,
+    saveDroppableDir,
+    resetDroppable,
+  } = useMoveFilesWithDrop();
   const { ctxMenuRef, showCtxMenu, setShowCtxMenu, onCtxMenu } = useCtxMenu();
   const contextMenu = useRecoilValue(contextMenuState);
   const setPreviewFilePath = useSetRecoilState(previewFilePathState);
@@ -53,53 +61,69 @@ const FileList = () => {
       <div className="pt-9"></div>
       <UploadList />
       {storageItems.map((item, i) => {
-        const nameArray = Array.from(item.name);
-        const [fileName, createdAt] = extractDateInStr(item.name);
-        const fileType =
+        const { name: fileName } = item;
+        const nameArray = Array.from(fileName);
+        const [displayName, createdAt] = extractDateInStr(fileName);
+        const fileExtension =
           nameArray[0] !== '.' && nameArray.includes('.')
-            ? `${item.name.slice(item.name.lastIndexOf('.') + 1)}ファイル`
+            ? `${fileName.slice(fileName.lastIndexOf('.') + 1)}ファイル`
             : '-';
 
         return (
           <div
-            key={item.name}
-            onClick={(e) => onClickWithKey(e, item.name)}
+            key={fileName}
+            onClick={(e) => onClickWithKey(e, fileName)}
             onContextMenu={(e) => {
-              onCtxMenu(e, item.name);
-              add(item.name);
+              onCtxMenu(e, fileName);
+              add(fileName);
             }}
             onDoubleClick={() =>
               item.type === 'dir'
-                ? moveDir(`${currentPath}/${item.name}`)
-                : setPreviewFilePath(`${currentPath}/${item.name}`)
+                ? moveDir(`${currentPath}/${fileName}`)
+                : setPreviewFilePath(`${currentPath}/${fileName}`)
             }
-            className={`relative grid grid-cols-6 px-2 mx-2 py-1 rounded-md ${
-              selected.has(item.name) ? 'bg-blue-300' : (i + 1) % 2 ? '' : 'bg-gray-200'
-            } cursor-pointer text-gray-800`}
+            className={`relative grid grid-cols-6 px-2 mx-2 py-1 rounded-md transition duration-500 ${
+              droppable === fileName
+                ? 'bg-gray-400'
+                : selected.has(fileName)
+                ? 'bg-blue-300'
+                : (i + 1) % 2
+                ? ''
+                : 'bg-gray-200'
+            } cursor-pointer text-gray-800 ${droppable === fileName ? 'scale-[101%]' : ''}`}
             ref={ctxMenuRef}
           >
-            <div className="col-span-3 flex items-center">
+            <div
+              // ファイル移動関連
+              draggable
+              onDragStart={() => dragStart(fileName)}
+              onDrop={() => dropInFolder(fileName, item.type)}
+              onDragEnter={() => saveDroppableDir(fileName, item.type)}
+              onDragLeave={resetDroppable}
+              onDragEnd={resetDroppable}
+              className="col-span-3 flex items-center"
+            >
               {item.type === 'dir' ? (
                 <AiFillFolder className="mr-2 text-gray-600" />
               ) : (
                 <AiFillFile className="mr-2 text-gray-600" />
               )}
               {/* ファイル名変更 */}
-              {'rename' in contextMenu && item.name === contextMenu.rename ? (
+              {'rename' in contextMenu && fileName === contextMenu.rename ? (
                 <RenameInput storageItem={item} />
               ) : (
-                <span className="truncate">{fileName}</span>
+                <span className="truncate">{displayName}</span>
               )}
             </div>
             <div className="pl-3 text-sm flex items-center">{parseFileSizeStr(item.size)}</div>
             <div className="pl-3 truncate text-sm flex items-center">
-              {item.type === 'dir' ? 'フォルダ' : fileType}
+              {item.type === 'dir' ? 'フォルダ' : fileExtension}
             </div>
             <div className="pl-3 text-sm truncate">
               {createdAt.length !== 16 ? '-' : createdAt.replaceAll('-', '/')}
             </div>
             {/* context menu */}
-            <div className={`${showCtxMenu && showCtxMenu === item.name ? '' : 'hidden'}`}>
+            <div className={`${showCtxMenu && showCtxMenu === fileName ? '' : 'hidden'}`}>
               <ContextMenu selected={selected} />
             </div>
           </div>

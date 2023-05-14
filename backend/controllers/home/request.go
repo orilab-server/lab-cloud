@@ -36,4 +36,45 @@ func (r HomeController) Rename(ctx *gin.Context) {
 		ctx.JSON(http.StatusInternalServerError, gin.H{})
 		return
 	}
+	ctx.JSON(http.StatusOK, gin.H{})
+}
+
+func (r HomeController) Move(ctx *gin.Context) {
+	path := ctx.Query("path")
+	if path == "/" {
+		path = r.ShareDir
+	} else {
+		path = r.ShareDir+path
+	}
+	targetPaths := ctx.Query("targetPaths")
+	targetPathList := strings.Split(targetPaths, "/")
+	targetPathList = tools.Filter(targetPathList, "")
+	toFolder := ctx.Query("toFolder")
+	for _, t := range targetPathList {
+		if err := os.Rename(path+"/"+t, path+"/"+toFolder+"/"+t); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{})
+			return
+		}
+	}
+	ctx.JSON(http.StatusOK, gin.H{})
+}
+
+func (r HomeController) MoveHigher(ctx *gin.Context) {
+	path := ctx.Query("path")
+	if path == "/" {
+		path = r.ShareDir
+	} else {
+		path = r.ShareDir+path
+	}
+	targetPaths := ctx.Query("targetPaths")
+	targetPathList := strings.Split(targetPaths, "/")
+	targetPathList = tools.Filter(targetPathList, "")
+	fromFolder := ctx.Query("fromFolder")
+	for _, t := range targetPathList {
+		if err := os.Rename(r.ShareDir+"/"+fromFolder+"/"+t, path+"/"+t); err != nil {
+			ctx.JSON(http.StatusBadRequest, gin.H{})
+			return
+		}
+	}
+	ctx.JSON(http.StatusOK, gin.H{})
 }
