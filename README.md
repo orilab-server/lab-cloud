@@ -12,6 +12,7 @@ Google Drive をちょっと参考にしています。
 - 認証
 - ファイル・フォルダのアップロード(ドラッグ&ドロップ可能)
 - ファイル・フォルダのダウンロード
+- ドラッグ&ドロップによるフォルダ間移動
 - フォルダの作成
 - 基本的な種類(pdf, png とか)のファイルの閲覧
 - リンクコピー&共有
@@ -34,6 +35,7 @@ Google Drive をちょっと参考にしています。
 - Next.js
 - React
 - Material UI, Icons
+- TailwindCSS
 - Recoil
 - React Router, React Router DOM
 - React Query
@@ -52,13 +54,3 @@ Google Drive をちょっと参考にしています。
 - google/uuid
 - sqlboiler
 - その他
-
-# 環境変数
-
-## フロントエンド
-
-```env
-NEXT_PUBLIC_CLIENT_URL=
-NEXT_PUBLIC_SERVER_URL=
-``
-```
