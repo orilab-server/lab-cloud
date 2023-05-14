@@ -169,6 +169,8 @@ func main() {
 		{
 			requestGroup.GET("/mkdir", home.MkDir)
 			requestGroup.GET("/rename", home.Rename)
+			requestGroup.GET("/move", home.Move)
+			requestGroup.GET("/move/higher", home.MoveHigher)
 		}
 
 		reviews := reviews.ReviewsController{
