@@ -1,8 +1,8 @@
-import { myAuthAxiosPost } from '@/shared/lib/axios';
+import { myAxiosPost } from '@/shared/lib/axios';
 import { useMutation } from 'react-query';
 
 export const requestRegister = async (formData: FormData) => {
-  await myAuthAxiosPost('/register-requests', formData, {
+  await myAxiosPost('/register-requests', formData, {
     xsrfHeaderName: 'X-CSRF-Token',
   });
 };
