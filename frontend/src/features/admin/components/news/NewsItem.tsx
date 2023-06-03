@@ -1,5 +1,4 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Stack, Typography } from '@mui/material';
 import { format } from 'date-fns';
 import { ReactNode, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -9,6 +8,7 @@ import { useStorageImage } from '../../api/getStorageImage';
 import { useUpdateItem } from '../../api/updateItem';
 import { News } from '../../types';
 import { LinksInput } from '../Misc/LinksInput';
+import ModalForm from '../Misc/ModalForm';
 import { ModalLayout } from '../Misc/ModalLayout';
 import { TypographyOrTextField } from '../Misc/TypographyOrTextField';
 import { UpdateImageArea } from '../Misc/UpdateImageArea';
@@ -70,11 +70,10 @@ export const NewsItem = ({ item, button }: NewsItemProps) => {
       <div onClick={openM}>{button}</div>
       <Modal>
         <ModalLayout closeModal={closeM}>
-          <Stack spacing={3} sx={{ width: '100%' }}>
+          <ModalForm>
             <UpdateImageArea url={image.data} fileState={[file, setFile]} edit={edit} />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={<Typography sx={{ mx: 1, fontSize: 20 }}>日付</Typography>}
+              titleElement="日付"
               control={control}
               name="dateStr"
               value={getValues('dateStr')}
@@ -82,45 +81,40 @@ export const NewsItem = ({ item, button }: NewsItemProps) => {
               type="date"
             />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={<Typography sx={{ mx: 1, fontSize: 20 }}>タイトル</Typography>}
+              titleElement="タイトル"
               control={control}
               name="title"
               value={getValues('title')}
               edit={edit}
             />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={
-                <Typography sx={{ mx: 1, fontSize: 20, whiteSpace: 'nowrap' }}>内容</Typography>
-              }
+              titleElement="内容"
               control={control}
               name="description"
               value={getValues('description')}
               edit={edit}
               multiline
-              rows={5}
             />
             <LinksInput links={links} setLinks={setLinks} edit={edit} />
             {/* 各種ボタン */}
-            <Stack direction="row" spacing={2} justifyContent="space-between">
-              <Stack direction="row" spacing={1}>
+            <div className="w-full flex justify-between space-x-2">
+              <div className="flex space-x-2">
                 {edit && (
-                  <button onClick={onSubmit} className="btn btn-info text-white">
+                  <button type="button" onClick={onSubmit} className="btn btn-info text-white">
                     {updateItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
-                    <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
+                    <span className="whitespace-nowrap">送信</span>
                   </button>
                 )}
-                <button onClick={onToggleEdit} className="btn btn-info text-white">
+                <button type="button" onClick={onToggleEdit} className="btn text-white">
                   {edit ? '戻る' : '編集する'}
                 </button>
-              </Stack>
-              <button onClick={onDeleteDoc} className="btn btn-error text-white">
+              </div>
+              <button type="button" onClick={onDeleteDoc} className="btn btn-error text-white">
                 {deleteItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
-                <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>削除</Typography>
+                <span className="whitespace-nowrap">削除</span>
               </button>
-            </Stack>
-          </Stack>
+            </div>
+          </ModalForm>
         </ModalLayout>
       </Modal>
     </>

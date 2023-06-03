@@ -1,4 +1,3 @@
-import { Box, Stack, Typography } from '@mui/material';
 import { Member } from '../../types';
 import { UserItem } from './MemberItem';
 
@@ -30,9 +29,9 @@ export const UsersGradeBox = ({ members, grade }: UsersGradeBoxProps) => {
   const gradeStr = extractGradeStr(grade);
 
   return (
-    <Stack id="user-contents" spacing={1} sx={{ width: '100%', my: 2 }}>
-      <Typography>{gradeStr}</Typography>
-      <Box sx={{ width: '100%', borderBottom: '2px rgba(0,0,0,0.5) solid' }} />
+    <div className="w-full my-6 space-y-3">
+      <span>{gradeStr}</span>
+      <div className="w-full border-b" />
       <div className="grid grid-cols-3 gap-3">
         {members.map((member) => (
           <div id={member.id} key={member.id}>
@@ -49,6 +48,6 @@ export const UsersGradeBox = ({ members, grade }: UsersGradeBoxProps) => {
           </div>
         ))}
       </div>
-    </Stack>
+    </div>
   );
 };

@@ -1,5 +1,3 @@
-import { Box, Typography } from '@mui/material';
-import { Stack } from '@mui/system';
 import React, { ChangeEventHandler, useEffect, useRef } from 'react';
 import { AiOutlineArrowRight } from 'react-icons/ai';
 
@@ -35,55 +33,51 @@ export const UpdateImageArea = ({ url, edit, fileState }: ResearchItemProps) => 
   }, []);
 
   return (
-    <Stack direction="row" justifyContent="start" alignItems="center" sx={{ py: 2 }}>
-      <Stack>
-        <Typography sx={{ fontSize: 20 }}>画像</Typography>
+    <div className="w-full flex flex-col">
+      <span className="label w-full text-sm bg-gray-200 text-gray-900 rounded my-1">画像</span>
+      <div
+        className={`relative flex items-center ${
+          !edit ? 'justify-start' : url ? 'justify-around' : ''
+        }`}
+      >
         {url ? (
-          <img width="300px" src={url} alt="" />
+          <img width="300px" src={url} alt="現在の画像" />
         ) : (
-          <Stack
-            justifyContent="center"
-            alignItems="center"
-            sx={{
-              fontSize: 42,
-              width: '280px',
-              aspectRatio: '1/1',
-              border: '1px dotted #333',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            なし
-          </Stack>
+          !edit && (
+            <div className="w-[300px] aspect-square bg-gray-400 animate-pulse flex items-center justify-center">
+              画像ダウンロード中
+            </div>
+          )
         )}
-      </Stack>
-      {edit && (
-        <>
-          <Box sx={{ mx: 2 }}>
-            <AiOutlineArrowRight size={50} />
-          </Box>
-          <Box
-            onClick={clickFileUploadButton}
-            sx={{
-              width: '300px',
-              aspectRatio: '1/1',
-              border: '1px dotted #333',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              fontSize: 24,
-              cursor: 'pointer',
-              '&:hover': {
-                background: '#ccc',
-              },
-            }}
-          >
-            {file ? <img width="300px" src={URL.createObjectURL(file)} alt="" /> : '画像を選択'}
-            <input type="file" hidden ref={inputRef} onChange={onFileInputChange} />
-          </Box>
-        </>
-      )}
-    </Stack>
+        {edit && (
+          <>
+            {url && (
+              <div>
+                <AiOutlineArrowRight size={40} />
+              </div>
+            )}
+            <div className="flex flex-col items-center space-y-3">
+              <button
+                type="button"
+                onClick={clickFileUploadButton}
+                className="w-[300px] aspect-square border border-gray-800 border-dotted flex justify-center items-center"
+              >
+                {file ? <img width="300px" src={URL.createObjectURL(file)} alt="" /> : '画像を選択'}
+                <input type="file" hidden ref={inputRef} onChange={onFileInputChange} />
+              </button>
+              {file && (
+                <button
+                  onClick={() => setFile(null)}
+                  type="button"
+                  className="btn btn-error btn-sm w-full"
+                >
+                  削除
+                </button>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </div>
   );
 };

@@ -1,5 +1,4 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Box, Stack, Typography } from '@mui/material';
 import { ReactNode, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useModal } from 'react-hooks-use-modal';
@@ -9,6 +8,7 @@ import { useStorageImage } from '../../api/getStorageImage';
 import { useUpdateItem } from '../../api/updateItem';
 import { useUpdateOld } from '../../api/updateToOld';
 import { Member } from '../../types';
+import ModalForm from '../Misc/ModalForm';
 import { ModalLayout } from '../Misc/ModalLayout';
 import { TypographyOrTextField } from '../Misc/TypographyOrTextField';
 import { UpdateImageArea } from '../Misc/UpdateImageArea';
@@ -62,12 +62,12 @@ export const UserItem = ({ member, button }: UserItemProps) => {
 
   return (
     <>
-      <Box sx={{ width: '100%', height: '100%', cursor: 'pointer' }} onClick={openM}>
+      <button className="w-full h-full" onClick={openM}>
         {button}
-      </Box>
+      </button>
       <Modal>
         <ModalLayout closeModal={closeM}>
-          <Stack spacing={3} sx={{ width: '100%' }}>
+          <ModalForm>
             {member.old && (
               <div className="flex space-x-3 mt-5">
                 <FaUserGraduate size={30} className="text-red-500" />
@@ -76,56 +76,50 @@ export const UserItem = ({ member, button }: UserItemProps) => {
             )}
             <UpdateImageArea url={image.data} edit={edit} fileState={[file, setFile]} />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={<Typography sx={{ mx: 1, fontSize: 16 }}>氏名</Typography>}
+              titleElement="氏名"
               control={control}
               name="name"
               value={getValues('name')}
               edit={edit}
             />
             <TypographyOrTextField
-              sx={{ width: '30%' }}
-              titleElement={<Typography sx={{ mx: 1, fontSize: 16 }}>入学年</Typography>}
+              titleElement="入学年"
               control={control}
               name="year"
               value={getValues('year')}
               edit={edit}
             />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={<Typography sx={{ mx: 1, fontSize: 16 }}>英語氏名</Typography>}
+              titleElement="英語氏名"
               control={control}
               name="name_en"
               value={getValues('name_en')}
               edit={edit}
             />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={
-                <Typography sx={{ mx: 1, fontSize: 16, whiteSpace: 'nowrap' }}>自己紹介</Typography>
-              }
+              titleElement="自己紹介"
               control={control}
               name="introduction"
               value={getValues('introduction')}
-              multiline={true}
+              multiline
               edit={edit}
-              rows={5}
             />
             {/* 各種ボタン */}
-            <Stack direction="row" spacing={2} justifyContent="space-between">
-              <Stack direction="row" spacing={1}>
+            <div className="flex justify-between w-full">
+              <div className="flex space-x-2">
                 {edit && (
-                  <button onClick={onSubmit} className="btn btn-info text-white">
+                  <button type="button" onClick={onSubmit} className="btn btn-info text-white">
                     {updateItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
-                    <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
+                    <span className="px-1 whitespace-nowrap">送信</span>
                   </button>
                 )}
-                <button onClick={onToggleEdit} className="btn btn-info text-white">
+                <button type="button" onClick={onToggleEdit} className="btn text-white">
                   {edit ? '戻る' : '編集する'}
                 </button>
-              </Stack>
+              </div>
               <div className="flex space-x-3">
                 <button
+                  type="button"
                   onClick={async () =>
                     await updateOldMutation.mutateAsync({
                       id: member.id,
@@ -136,13 +130,13 @@ export const UserItem = ({ member, button }: UserItemProps) => {
                 >
                   {member.old ? 'OB・OGを解除' : 'OB・OGに設定'}
                 </button>
-                <button onClick={onDeleteDoc} className="btn btn-error text-white">
+                <button type="button" onClick={onDeleteDoc} className="btn btn-error text-white">
                   {deleteItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
-                  <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>削除</Typography>
+                  <span className="px-1 whitespace-nowrap">削除</span>
                 </button>
               </div>
-            </Stack>
-          </Stack>
+            </div>
+          </ModalForm>
         </ModalLayout>
       </Modal>
     </>

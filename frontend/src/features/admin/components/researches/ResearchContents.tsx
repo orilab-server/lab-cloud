@@ -1,20 +1,8 @@
-import { Stack } from '@mui/system';
 import { format } from 'date-fns';
 import { useModal } from 'react-hooks-use-modal';
 import { Research } from '../../types';
 import { AddItem } from './AddItem';
 import { ResearchItem } from './ResearchItem';
-
-const gridSx = {
-  border: '1px solid #ccc',
-  borderRadius: 2,
-  height: '12rem',
-  m: 1,
-  p: 3,
-  '&:hover': {
-    background: '#ccc',
-  },
-};
 
 type ResearchContentsProps = {
   data: Research[];
@@ -23,7 +11,7 @@ type ResearchContentsProps = {
 export const ResearchContents = ({ data }: ResearchContentsProps) => {
   const addModals = useModal('research-contents', { closeOnOverlayClick: false });
   return (
-    <Stack id="research-contents" spacing={5}>
+    <div className="flex flex-col space-y-6" id="research-contents">
       <AddItem modals={addModals} />
       <div className="grid grid-cols-3 gap-3">
         {data.map((item) => {
@@ -46,6 +34,6 @@ export const ResearchContents = ({ data }: ResearchContentsProps) => {
           );
         })}
       </div>
-    </Stack>
+    </div>
   );
 };

@@ -1,6 +1,4 @@
 import Modal from '@/shared/components/Elements/Modal';
-import { Checkbox, FormControlLabel, FormGroup, Typography } from '@mui/material';
-import { Stack } from '@mui/system';
 import { format } from 'date-fns';
 import React from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -21,7 +19,7 @@ const ConfirmRequestsModal = ({ isOpen, close }: ConfirmRequestsModalProps) => {
   const acceptRequestMutation = useAcceptRegisterRequests();
   const requests = registerRequests.data?.requests || [];
 
-  const { control, handleSubmit, getValues, setValue } = useForm<ConfirmRequestsModalInput>({
+  const { control, getValues, setValue } = useForm<ConfirmRequestsModalInput>({
     defaultValues: {
       accepts: '',
     },
@@ -40,19 +38,14 @@ const ConfirmRequestsModal = ({ isOpen, close }: ConfirmRequestsModalProps) => {
     return newValues.join(',');
   };
 
-  const handleCheckAll = (event: React.SyntheticEvent<Element, Event>, checked: boolean) => {
-    if (
-      getValues('accepts')
-        .split(',')
-        .filter((v) => v).length === requests.length
-    ) {
-      if (checked) return getValues('accepts');
+  const handleCheckAll = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { checked } = event.target;
+    if (checked) {
+      const all = requests.map((request) => request.email).join(',');
+      setValue('accepts', all);
+    } else {
       setValue('accepts', '');
-      return '';
     }
-    const all = requests.map((request) => request.email).join(',');
-    setValue('accepts', all);
-    return all;
   };
 
   const onSubmit = async () => {
@@ -67,40 +60,39 @@ const ConfirmRequestsModal = ({ isOpen, close }: ConfirmRequestsModalProps) => {
 
   return (
     <Modal isOpen={isOpen} title="登録申請" buttonTxt="承認" go={onSubmit} close={close}>
-      <FormGroup>
-        <FormControlLabel label="All" control={<Checkbox />} onChange={handleCheckAll} />
+      <div>
+        <div className="form-control">
+          <label className="w-min space-x-6 label cursor-pointer">
+            <input type="checkbox" className="checkbox" onChange={handleCheckAll} />
+            <span className="label-text text-lg">All</span>
+          </label>
+        </div>
         <Controller
           name="accepts"
           control={control}
           rules={{ required: '選択してください。' }}
-          render={({ field }) => (
+          render={() => (
             <>
               {requests.map((request) => (
-                <FormControlLabel
-                  {...field}
-                  key={request.id}
-                  checked={getValues('accepts').split(',').includes(request.email)}
-                  label={
-                    <Stack
-                      sx={{ width: '100%' }}
-                      direction="row"
-                      alignItems="center"
-                      justifyContent="space-between"
-                    >
-                      <Typography sx={{ mx: 1, fontSize: 18 }}>{request.name}</Typography>
-                      <Typography sx={{ mx: 1, fontSize: 14 }}>
-                        申請日 : {format(new Date(request.created_at), 'yyyy年MM月dd日')}
-                      </Typography>
-                    </Stack>
-                  }
-                  control={<Checkbox />}
-                  onChange={(event) => field.onChange(handleCheck(request, event))}
-                />
+                <div className="form-control" key={request.id}>
+                  <label className="w-min whitespace-nowrap space-x-6 label cursor-pointer">
+                    <input
+                      type="checkbox"
+                      className="checkbox"
+                      checked={getValues('accepts').split(',').includes(request.email)}
+                      onChange={(e) => handleCheck({ email: request.email }, e)}
+                    />
+                    <span className="label-text text-lg">{request.name}</span>
+                    <span className="label-text text-xs">
+                      申請日 : {format(new Date(request.created_at), 'yyyy年MM月dd日')}
+                    </span>
+                  </label>
+                </div>
               ))}
             </>
           )}
         />
-      </FormGroup>
+      </div>
     </Modal>
   );
 };

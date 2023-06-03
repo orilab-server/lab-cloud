@@ -1,5 +1,3 @@
-import { Grid } from '@mui/material';
-import { Stack } from '@mui/system';
 import { useModal } from 'react-hooks-use-modal';
 import { Member } from '../../types';
 import { AddUser } from './AddMember';
@@ -34,15 +32,15 @@ export const UserContents = ({ data }: UserContentsProps) => {
   const graduate = createGradeMembers(data, GRADUATION);
 
   return (
-    <Stack id="user-contents" spacing={5}>
+    <div className="flex flex-col space-y-6" id="user-contents">
       <AddUser modals={addModals} />
-      <Grid container columns={12}>
+      <div className="w-full">
         <UsersGradeBox members={m2} grade={5} />
         <UsersGradeBox members={m1} grade={4} />
         <UsersGradeBox members={b4} grade={3} />
         <UsersGradeBox members={b3} grade={2} />
         <UsersGradeBox members={graduate} grade={6} />
-      </Grid>
-    </Stack>
+      </div>
+    </div>
   );
 };
