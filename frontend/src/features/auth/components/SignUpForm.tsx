@@ -1,18 +1,6 @@
-import { ThemeProvider } from '@emotion/react';
-import {
-  Avatar,
-  Box,
-  Container,
-  createTheme,
-  CssBaseline,
-  TextField,
-  Typography,
-} from '@mui/material';
+import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
 import React, { useEffect, useState } from 'react';
-import { MdOutlineAccountCircle } from 'react-icons/md';
 import { useRegister } from '../api/register';
-
-const theme = createTheme();
 
 export const SignUpComplete = () => {
   const registerMutation = useRegister();
@@ -40,40 +28,27 @@ export const SignUpComplete = () => {
   }
 
   return (
-    <ThemeProvider theme={theme}>
-      <Container component="main" maxWidth="xs">
-        <CssBaseline />
-        <Box
-          sx={{
-            marginTop: 8,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <Avatar sx={{ m: 1, bgcolor: 'primary.main' }}>
-            <MdOutlineAccountCircle />
-          </Avatar>
-          <Typography component="h1" variant="h5">
-            Sign Up
-          </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
+    <main className="w-full max-w-md mx-auto mt-24">
+      <div className="w-full flex flex-col items-center">
+        <span className="w-full text-2xl font-medium text-center">Sign Up</span>
+        <form className="w-full" onSubmit={handleSubmit}>
+          <div className="form-control mb-3">
+            <label className="label text-sm text-gray-600">New Password</label>
+            <input
               name="password"
-              label="New Password"
               type="password"
-              id="password"
-              autoComplete="current-password"
-            />
-            <button type="submit" className="btn btn-primary w-full my-1">
-              Send
-            </button>
-          </Box>
-        </Box>
-      </Container>
-    </ThemeProvider>
+              placeholder="パスワードを入力"
+              className="input input-bordered w-full"
+              autoComplete="password"
+              required
+            ></input>
+          </div>
+          <button type="submit" className="btn btn-primary w-full my-1">
+            <span className="mr-2">送信</span>
+            {registerMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
+          </button>
+        </form>
+      </div>
+    </main>
   );
 };

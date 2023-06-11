@@ -1,9 +1,7 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
 import { useMailSender } from '@/shared/hooks/useMailSender';
-import { Avatar, Box, TextField, Typography } from '@mui/material';
 import { Dispatch, SetStateAction, useState } from 'react';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
-import { MdLockOutline } from 'react-icons/md';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { useRequestRegister } from '../api/request-register';
 
 type RegisterFormProps = {
@@ -26,7 +24,7 @@ export const RegisterForm = ({ setIsRegisterForm }: RegisterFormProps) => {
     setIsRegisterSend(false);
   };
 
-  const { control, handleSubmit } = useForm<RegisterFormInputs>({
+  const { handleSubmit, register } = useForm<RegisterFormInputs>({
     defaultValues: {
       name: '',
       email: '',
@@ -64,81 +62,68 @@ export const RegisterForm = ({ setIsRegisterForm }: RegisterFormProps) => {
 
   if (isRegisterSend) {
     return (
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-          <MdLockOutline />
-        </Avatar>
-        <Typography component="h1" variant="h5">
-          Orilab Cloud Storage V 1.1
-        </Typography>
-        <Box sx={{ mt: 1 }}>
-          <Typography component="h1" variant="h5">
-            登録申請メールを送信しました
-          </Typography>
-          <button onClick={confirmSendAndBack} className="btn btn-secondary w-full my-1">
-            ログイン画面に戻る
-          </button>
-        </Box>
-      </Box>
+      <div className="mt-10 w-full h-full flex flex-col items-center">
+        <span className="w-full text-center py-6 rounded text-xl mb-10 font-bold bg-neutral/20">
+          登録申請メールを送信しました
+        </span>
+        <button
+          type="button"
+          onClick={confirmSendAndBack}
+          className="btn btn-secondary w-full my-1"
+        >
+          ログイン画面に戻る
+        </button>
+      </div>
     );
   }
 
   return (
-    <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate sx={{ mt: 1 }}>
-      <Controller
-        control={control}
-        name="email"
-        rules={{ required: true }}
-        render={({ field }) => (
-          <TextField
-            id="email"
-            margin="normal"
-            fullWidth
-            label="Email Address"
-            autoComplete="email"
-            autoFocus
-            {...field}
-          />
-        )}
-      />
-      <Controller
-        control={control}
-        name="name"
-        rules={{ required: true }}
-        render={({ field }) => (
-          <TextField id="name" margin="normal" fullWidth label="Your Name" {...field} />
-        )}
-      />
-      <Controller
-        control={control}
-        name="grade"
-        rules={{ required: true }}
-        render={({ field }) => (
-          <TextField
-            id="grade"
-            margin="normal"
-            fullWidth
-            label="Your Grade"
-            placeholder="入学年度を入力 (例) 2019"
-            {...field}
-          />
-        )}
-      />
-      <div className="text-sm mt-[-4px]">※教職員の方は数字の1を入力してください</div>
+    <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
+      <div className="form-control">
+        <label className="label text-sm text-gray-600">Email</label>
+        <input
+          {...register('email')}
+          type="text"
+          placeholder="Eメールを入力"
+          className="input input-bordered w-full"
+          autoComplete="email"
+          required
+          autoFocus
+        ></input>
+      </div>
+      <div className="form-control">
+        <label className="label text-sm text-gray-600">Name</label>
+        <input
+          {...register('name')}
+          type="text"
+          placeholder="名前を入力"
+          className="input input-bordered w-full"
+          autoComplete="name"
+          required
+          autoFocus
+        ></input>
+      </div>
+      <div className="form-control">
+        <label className="label text-sm text-gray-600">Grade</label>
+        <input
+          {...register('grade')}
+          type="text"
+          placeholder="入学年を入力"
+          className="input input-bordered w-full"
+          required
+          autoFocus
+        ></input>
+        <label className="label text-sm mt-[-4px] text-gray-600">
+          ※教職員の方は数字の1を入力してください
+        </label>
+      </div>
       <button type="submit" className="btn btn-primary w-full mt-3 my-1">
-        <span className="w-full px-3">送信</span>
+        <span className="mr-2">送信</span>
         {sendMailMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
       </button>
       <button onClick={backLoginForm} className="btn btn-secondary w-full my-1">
         戻る
       </button>
-    </Box>
+    </form>
   );
 };
