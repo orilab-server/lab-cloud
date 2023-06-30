@@ -23,6 +23,7 @@ type ReviewsController struct {
 	ReviewDirPath string
 	LineNotifyToken string
 	MailInfo tools.MailRequest
+	SessionKey string
 }
 
 type ResponseReview struct {
@@ -31,6 +32,8 @@ type ResponseReview struct {
 	Target int `json:"target"`
 	Year int `json:"year"`
 }
+
+var loginUser models.User
 
 func (r ReviewsController) GetIsTarget(ctx *gin.Context) {
 	reviewId := ctx.Param("review-id")

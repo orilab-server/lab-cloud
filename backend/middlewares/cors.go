@@ -18,6 +18,7 @@ func CorsMiddleWare(allowOrigin string) gin.HandlerFunc {
 			"POST",
 			"GET",
 			"PATCH",
+			"DELETE",
 			"OPTIONS",
 		},
 		// 許可したいHTTPリクエストヘッダ

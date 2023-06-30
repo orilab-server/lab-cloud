@@ -3,7 +3,6 @@ package auth
 import (
 	"backend/models"
 	"context"
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -31,7 +30,6 @@ func (a Authcontroller) RequestRegister(ctx *gin.Context) {
 
 func (a Authcontroller) GetRegisterRequests(ctx *gin.Context) {
 	requests, err := models.RegisterRequests().All(context.Background(), a.MyDB)
-	fmt.Println(err)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return

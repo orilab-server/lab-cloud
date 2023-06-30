@@ -179,6 +179,7 @@ func main() {
 			ReviewDirPath:   reviewDirPath,
 			LineNotifyToken: lineNotifyToken,
 			MailInfo:        mailInfo,
+			SessionKey: 		 sessionKey,
 		}
 		// reviewエンドポイント
 		reviewsGroup := authGroup.Group("/reviews")
@@ -188,6 +189,7 @@ func main() {
 			reviewsGroup.GET("/:review-id/is-target/:user-id", reviews.GetIsTarget)
 			reviewsGroup.GET("/:review-id/files", reviews.GetReviewFiles) // 対象のレビューのファイルを全件取得
 			reviewsGroup.POST("/:review-id/files/upload", reviews.Upload)
+			reviewsGroup.DELETE("/:review-id/files/:file-id", reviews.DeleteReviewFile) // 対象のレビューファイルを削除
 			reviewsGroup.GET("/:review-id/files/:file-id/download", reviews.DownloadReviewFile)
 			reviewsGroup.GET("/:review-id/files/:file-id/is-host/:user-id", reviews.GetIsReviewHost)
 			reviewsGroup.GET("/:review-id/files/:file-id/reviewers", reviews.GetReviewers)
