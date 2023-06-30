@@ -17,7 +17,7 @@ func (a Authcontroller) RequestRegister(ctx *gin.Context) {
 	grade, _ := strconv.Atoi(ctx.PostForm("grade"))
 	m_ctx := context.Background()
 	request := models.RegisterRequest{
-		Name: name,
+		Name:  name,
 		Email: email,
 		Grade: grade,
 	}

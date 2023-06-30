@@ -24,7 +24,7 @@ func (g HomeController) Main(ctx *gin.Context) {
 	if err != nil {
 		path = g.ShareDir
 	} else {
-		path = g.ShareDir+"/"+path 
+		path = g.ShareDir + "/" + path
 	}
 	fileNames, err := tools.GetDirAndFileNames(path)
 	if err != nil {
@@ -36,4 +36,3 @@ func (g HomeController) Main(ctx *gin.Context) {
 		"important": important,
 	})
 }
-

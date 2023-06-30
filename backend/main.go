@@ -179,7 +179,7 @@ func main() {
 			ReviewDirPath:   reviewDirPath,
 			LineNotifyToken: lineNotifyToken,
 			MailInfo:        mailInfo,
-			SessionKey: 		 sessionKey,
+			SessionKey:      sessionKey,
 		}
 		// reviewエンドポイント
 		reviewsGroup := authGroup.Group("/reviews")

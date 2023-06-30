@@ -26,18 +26,18 @@ func (r ReviewsController) PostComment(ctx *gin.Context) {
 	if !reviewerExist {
 		reviewerId, _ := uuid.NewUUID()
 		newReviewer := models.Reviewer{
-			ID: reviewerId.String(),
+			ID:             reviewerId.String(),
 			ReviewedFileID: fileId,
-			UserID: userId,
+			UserID:         userId,
 		}
 		newReviewer.Insert(r.ModelCtx, r.MyDB, boil.Infer())
 		id, _ := uuid.NewUUID()
 		reviewComment := models.ReviewComment{
-			ID: id.String(),
+			ID:             id.String(),
 			ReviewedFileID: fileId,
-			ReviewerID: reviewerId.String(),
-			Comment: comment,
-			PageNumber: pageNumber,
+			ReviewerID:     reviewerId.String(),
+			Comment:        comment,
+			PageNumber:     pageNumber,
 		}
 		err := reviewComment.Insert(r.ModelCtx, r.MyDB, boil.Infer())
 		if err != nil {
@@ -67,11 +67,11 @@ func (r ReviewsController) PostComment(ctx *gin.Context) {
 		return
 	}
 	reviewComment := models.ReviewComment{
-		ID: id.String(),
+		ID:             id.String(),
 		ReviewedFileID: fileId,
-		ReviewerID: reviewer.ID,
-		Comment: comment,
-		PageNumber: pageNumber,
+		ReviewerID:     reviewer.ID,
+		Comment:        comment,
+		PageNumber:     pageNumber,
 	}
 	err = reviewComment.Insert(r.ModelCtx, r.MyDB, boil.Infer())
 	if err != nil {
@@ -82,10 +82,10 @@ func (r ReviewsController) PostComment(ctx *gin.Context) {
 }
 
 type ResponseComment struct {
-	ID string `json:"id"`
-	PageNumber int `json:"index"`
-	Comment string `json:"comment"`
-	CreatedAt string `json:"created_at"`
+	ID         string `json:"id"`
+	PageNumber int    `json:"index"`
+	Comment    string `json:"comment"`
+	CreatedAt  string `json:"created_at"`
 }
 
 func (r ReviewsController) GetComment(ctx *gin.Context) {

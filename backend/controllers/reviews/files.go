@@ -10,12 +10,12 @@ import (
 )
 
 type ResponseFileType struct {
-	ID string `json:"id"`
-	UserID int `json:"user_id"`
-	UserName string `json:"user_name"`
-	CreatedAt string `json:"created_at"`
-	FileName string `json:"file_name"`
-	ReviewerCount int `json:"reviewer_count"`
+	ID            string `json:"id"`
+	UserID        int    `json:"user_id"`
+	UserName      string `json:"user_name"`
+	CreatedAt     string `json:"created_at"`
+	FileName      string `json:"file_name"`
+	ReviewerCount int    `json:"reviewer_count"`
 }
 
 func (r ReviewsController) GetReviewFiles(ctx *gin.Context) {
@@ -40,11 +40,11 @@ func (r ReviewsController) GetReviewFiles(ctx *gin.Context) {
 			createdAtJst, _ := tools.FixToJstLocale(file.CreatedAt)
 			createdAt := createdAtJst.Format("2006/01/02 15:04")
 			responseFile := ResponseFileType{
-				ID: file.ID,
-				UserID: user.ID,
-				UserName: user.Name,
-				CreatedAt: createdAt,
-				FileName: file.FileName,
+				ID:            file.ID,
+				UserID:        user.ID,
+				UserName:      user.Name,
+				CreatedAt:     createdAt,
+				FileName:      file.FileName,
 				ReviewerCount: int(reviewerCount),
 			}
 			responseFiles = append(responseFiles, responseFile)
@@ -62,13 +62,13 @@ func (r ReviewsController) GetTeacherFiles(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
-	reviewed, err:= models.Revieweds(qm.Select("user_id"), qm.Where("id=?", reviewedId)).One(r.ModelCtx, r.MyDB)
+	reviewed, err := models.Revieweds(qm.Select("user_id"), qm.Where("id=?", reviewedId)).One(r.ModelCtx, r.MyDB)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
 	ctx.JSON(http.StatusOK, gin.H{
-		"files": files,
+		"files":   files,
 		"user_id": reviewed.UserID,
 	})
 }

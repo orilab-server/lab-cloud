@@ -16,10 +16,10 @@ type DownloadController struct {
 }
 
 func (d DownloadController) DownloadFile(ctx *gin.Context) {
-	path := d.ShareDir+ctx.Query("path")
-	path, _ = url.QueryUnescape(path) 
+	path := d.ShareDir + ctx.Query("path")
+	path, _ = url.QueryUnescape(path)
 	name := ctx.Query("name")
-	filePath := path+"/"+name
+	filePath := path + "/" + name
 	ctx.Header("Content-Description", "File Transfer")
 	ctx.Header("Content-Transfer-Encoding", "binary")
 	ctx.Header("Content-Disposition", "attachment; filename="+name)
@@ -28,11 +28,11 @@ func (d DownloadController) DownloadFile(ctx *gin.Context) {
 }
 
 func (d DownloadController) DownloadFolder(ctx *gin.Context) {
-	path := d.ShareDir+ctx.Query("path")
-	path, _ = url.QueryUnescape(path) 
+	path := d.ShareDir + ctx.Query("path")
+	path, _ = url.QueryUnescape(path)
 	name := ctx.Query("name")
-	dirPath := path+"/"+name
-	zipPath := dirPath+".zip"
+	dirPath := path + "/" + name
+	zipPath := dirPath + ".zip"
 	out, err := os.Create(zipPath)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{})

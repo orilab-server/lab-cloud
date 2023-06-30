@@ -12,11 +12,11 @@ import (
 )
 
 type RecentFileResponse struct {
-	ID string `json:"id"`
-	UserID int `json:"user_id"`
-	FileName string `json:"file_name"`
-	Location string `json:"location"`
-	Type string `json:"type"`
+	ID        string `json:"id"`
+	UserID    int    `json:"user_id"`
+	FileName  string `json:"file_name"`
+	Location  string `json:"location"`
+	Type      string `json:"type"`
 	CreatedAt string `json:"created_at"`
 }
 

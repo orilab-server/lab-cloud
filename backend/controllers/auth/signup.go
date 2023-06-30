@@ -34,10 +34,10 @@ func (a Authcontroller) SignUp(ctx *gin.Context) {
 		return
 	}
 	user := models.User{
-		Name: requestUser.Name,
-		Password: string(hashed),
-		Email: emailAdd,
-		Grade: requestUser.Grade,
+		Name:        requestUser.Name,
+		Password:    string(hashed),
+		Email:       emailAdd,
+		Grade:       requestUser.Grade,
 		IsTemporary: true,
 	}
 	if err := user.Insert(m_ctx, a.MyDB, boil.Infer()); err != nil {
@@ -53,8 +53,8 @@ func (a Authcontroller) SignUp(ctx *gin.Context) {
 		"============================" +
 		"\r\n" +
 		"\r\n" +
-		"氏名 : " + requestUser.Name +  "\r\n" +
-		"メールアドレス : " + emailAdd +  "\r\n" +
+		"氏名 : " + requestUser.Name + "\r\n" +
+		"メールアドレス : " + emailAdd + "\r\n" +
 		"入学年度 : " + strconv.Itoa(requestUser.Grade) + "\r\n" +
 		"\r\n" +
 		"こちらの仮パスワードからログインして, 新しくパスワードを設定してください" + "\r\n" +
@@ -64,7 +64,7 @@ func (a Authcontroller) SignUp(ctx *gin.Context) {
 		"\r\n" +
 		"リンク : " + a.SiteUrl +
 		"\r\n" +
-	""
+		""
 	a.MailInfo.SendMail("[仮登録完了のお知らせ]", msg, emailAdd, []string{})
 	_, err = requestUser.Delete(m_ctx, a.MyDB)
 	if err != nil {
