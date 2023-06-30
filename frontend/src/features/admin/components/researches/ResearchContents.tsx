@@ -19,15 +19,15 @@ export const ResearchContents = ({ data }: ResearchContentsProps) => {
             <div id={item.id} key={item.id}>
               <ResearchItem
                 item={item}
-                button={
-                  <button className="card border bg-gray-200 px-2 w-full h-48 hover:bg-gray-500 hover:text-white">
+                buttonChild={
+                  <div className="card border bg-gray-200 px-2 w-full h-48 hover:bg-gray-500 hover:text-white">
                     <div className="card-body">
                       <div className="text-sm">
                         作成日 {format(new Date(item.createdat.seconds * 1000), 'yyyy-MM-dd')}
                       </div>
                       <div className="text-md line-clamp-3">{item.title}</div>
                     </div>
-                  </button>
+                  </div>
                 }
               />
             </div>

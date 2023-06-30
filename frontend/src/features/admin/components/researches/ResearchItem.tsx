@@ -14,7 +14,7 @@ import { UpdateImageArea } from '../Misc/UpdateImageArea';
 
 type ResearchItemProps = {
   item: Research;
-  button: React.ReactNode;
+  buttonChild: React.ReactNode;
 };
 
 interface FormData {
@@ -22,7 +22,7 @@ interface FormData {
   description: string;
 }
 
-export const ResearchItem = ({ item, button }: ResearchItemProps) => {
+export const ResearchItem = ({ item, buttonChild }: ResearchItemProps) => {
   const [Modal, openM, closeM] = useModal(item.id, { closeOnOverlayClick: true });
   const [edit, setEdit] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
@@ -58,8 +58,8 @@ export const ResearchItem = ({ item, button }: ResearchItemProps) => {
 
   return (
     <>
-      <button className="w-full h-full" onClick={openM}>
-        {button}
+      <button type="button" className="w-full h-full" onClick={openM}>
+        {buttonChild}
       </button>
       <Modal>
         <ModalLayout closeModal={closeM}>

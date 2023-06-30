@@ -15,7 +15,7 @@ import { UpdateImageArea } from '../Misc/UpdateImageArea';
 
 type UserItemProps = {
   member: Member;
-  button: ReactNode;
+  buttonChild: ReactNode;
 };
 
 interface FormData {
@@ -25,7 +25,7 @@ interface FormData {
   year: number;
 }
 
-export const UserItem = ({ member, button }: UserItemProps) => {
+export const MemberItem = ({ member, buttonChild }: UserItemProps) => {
   const [Modal, openM, closeM] = useModal(member.id);
   const [edit, setEdit] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
@@ -62,8 +62,8 @@ export const UserItem = ({ member, button }: UserItemProps) => {
 
   return (
     <>
-      <button className="w-full h-full" onClick={openM}>
-        {button}
+      <button type="button" className="w-full h-full" onClick={openM}>
+        {buttonChild}
       </button>
       <Modal>
         <ModalLayout closeModal={closeM}>
