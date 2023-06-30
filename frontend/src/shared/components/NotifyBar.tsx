@@ -1,12 +1,6 @@
 import { notifyState } from '@/shared/stores';
-import MuiAlert, { AlertProps } from '@mui/material/Alert';
-import Snackbar from '@mui/material/Snackbar';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
-
-const Alert = React.forwardRef<HTMLDivElement, AlertProps>(function Alert(props, ref) {
-  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
-});
 
 export const NotifyBar = () => {
   const [open, setOpen] = useState(false);
@@ -16,25 +10,33 @@ export const NotifyBar = () => {
     if (notify !== null) {
       setOpen(true);
     }
+
+    const hideTimer = setTimeout(() => setOpen(false), 6000);
+    return () => {
+      clearTimeout(hideTimer);
+    };
   }, [notify]);
 
-  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
-    if (reason === 'clickaway') {
-      return;
-    }
+  const handleClose = () => {
     setOpen(false);
   };
 
   return (
-    <Snackbar
-      anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-      open={open}
-      autoHideDuration={6000}
-      onClose={handleClose}
-    >
-      <Alert onClose={handleClose} severity={notify?.severity} sx={{ width: '100%' }}>
-        {notify?.text}
-      </Alert>
-    </Snackbar>
+    <>
+      <div
+        className={`z-[9999] toast toast-start max-w-xl transition-all ${
+          open ? 'scale-100' : 'scale-0'
+        }`}
+      >
+        <div className={`alert alert-${notify?.severity}`}>
+          <span className="truncate font-semibold text-gray-600">{notify?.text}</span>
+          <div>
+            <button onClick={handleClose} className="text-xl p-1">
+              ×
+            </button>
+          </div>
+        </div>
+      </div>
+    </>
   );
 };

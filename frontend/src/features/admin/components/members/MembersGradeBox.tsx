@@ -1,6 +1,5 @@
-import { Box, Stack, Typography } from '@mui/material';
 import { Member } from '../../types';
-import { UserItem } from './MemberItem';
+import { MemberItem } from './MemberItem';
 
 type UsersGradeBoxProps = {
   members: Member[];
@@ -22,7 +21,7 @@ const extractGradeStr = (grade: number) => {
   }
 };
 
-export const UsersGradeBox = ({ members, grade }: UsersGradeBoxProps) => {
+export const MembersGradeBox = ({ members, grade }: UsersGradeBoxProps) => {
   if (members.length === 0) {
     return null;
   }
@@ -30,25 +29,25 @@ export const UsersGradeBox = ({ members, grade }: UsersGradeBoxProps) => {
   const gradeStr = extractGradeStr(grade);
 
   return (
-    <Stack id="user-contents" spacing={1} sx={{ width: '100%', my: 2 }}>
-      <Typography>{gradeStr}</Typography>
-      <Box sx={{ width: '100%', borderBottom: '2px rgba(0,0,0,0.5) solid' }} />
+    <div className="w-full my-6 space-y-3">
+      <span>{gradeStr}</span>
+      <div className="w-full border-b" />
       <div className="grid grid-cols-3 gap-3">
         {members.map((member) => (
           <div id={member.id} key={member.id}>
-            <UserItem
+            <MemberItem
               member={member}
-              button={
-                <button className="card border bg-gray-200 px-2 w-full h-24 hover:bg-gray-500 hover:text-white">
+              buttonChild={
+                <div className="card border bg-gray-200 px-2 w-full h-24 hover:bg-gray-500 hover:text-white">
                   <div className="card-body">
                     <div className="text-md font-semibold">{member.name}</div>
                   </div>
-                </button>
+                </div>
               }
             />
           </div>
         ))}
       </div>
-    </Stack>
+    </div>
   );
 };

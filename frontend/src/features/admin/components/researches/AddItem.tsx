@@ -1,6 +1,4 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { FormControl, InputLabel, MenuItem, Select, Typography } from '@mui/material';
-import { Stack } from '@mui/system';
 import React, { useState } from 'react';
 import { Controller, SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlinePlus } from 'react-icons/ai';
@@ -9,6 +7,7 @@ import { useAddUpdate } from '../../api/addUpdates';
 import { useCollection } from '../../api/getCollection';
 import { useUpdateItem } from '../../api/updateItem';
 import { LinksInput } from '../Misc/LinksInput';
+import ModalForm from '../Misc/ModalForm';
 import { ModalLayout } from '../Misc/ModalLayout';
 import { TypographyOrTextField } from '../Misc/TypographyOrTextField';
 import { UpdateImageArea } from '../Misc/UpdateImageArea';
@@ -83,68 +82,55 @@ export const AddItem = ({ modals }: AddItemProps) => {
       </button>
       <Modal>
         <ModalLayout closeModal={closeM}>
-          <Stack
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            alignItems="start"
-            spacing={3}
-            sx={{ width: '100%' }}
-          >
+          <ModalForm onSubmit={handleSubmit(onSubmit)}>
             <UpdateImageArea edit={true} fileState={[file, setFile]} url={undefined} />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={<Typography sx={{ mx: 1, fontSize: 16 }}>タイトル</Typography>}
+              titleElement="タイトル"
               control={control}
               name="title"
               value={getValues('title')}
               edit
             />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={
-                <Typography sx={{ mx: 1, fontSize: 16, whiteSpace: 'nowrap' }}>内容</Typography>
-              }
+              titleElement="内容"
               control={control}
               name="description"
               value={getValues('description')}
-              multiline={true}
+              multiline
               edit
-              rows={5}
             />
-            <Stack direction="row" spacing={1} sx={{ width: '100%' }}>
-              <Typography sx={{ whiteSpace: 'nowrap' }}>研究者</Typography>
-              <Controller
-                name="memberId"
-                control={control}
-                rules={{ required: true }}
-                render={({ field }) => (
-                  <FormControl fullWidth>
-                    <InputLabel id="researching-member">名前</InputLabel>
-                    <Select
-                      labelId="researching-member"
-                      label="名前"
-                      sx={{ width: '50%', color: 'black' }}
-                      {...field}
-                    >
-                      {members.map((member) => (
-                        <MenuItem key={member.id} value={member.id}>
-                          {member.name}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                )}
-              />
-            </Stack>
+            <Controller
+              name="memberId"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <div className="form-control w-full">
+                  <label className="label" id="researching-member">
+                    名前
+                  </label>
+                  <select
+                    id="researching-member"
+                    className="select select-bordered w-full"
+                    {...field}
+                  >
+                    {members.map((member) => (
+                      <option key={member.id} value={member.id}>
+                        {member.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            />
             <LinksInput links={links} setLinks={setLinks} />
             {/* 各種ボタン */}
-            <Stack direction="row" spacing={2}>
+            <div className="flex space-x-2">
               <button type="submit" className="btn btn-info">
                 {addNewItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
-                <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
+                <span className="whitespace-nowrap">送信</span>
               </button>
-            </Stack>
-          </Stack>
+            </div>
+          </ModalForm>
         </ModalLayout>
       </Modal>
     </>

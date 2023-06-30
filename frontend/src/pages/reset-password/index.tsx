@@ -1,10 +1,9 @@
 import { useResetPassword } from '@/features/auth/api/reset-password';
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Box, FormControl, TextField, Typography } from '@mui/material';
-import { Stack } from '@mui/system';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React, { useState } from 'react';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 interface ResetPasswordInputs {
   password: string;
@@ -15,7 +14,7 @@ const ResetPassword = () => {
   const token = router.query.token;
   const [send, setSend] = useState<boolean>(false);
   const resetPasswordMutation = useResetPassword();
-  const { control, handleSubmit } = useForm<ResetPasswordInputs>({
+  const { register, handleSubmit } = useForm<ResetPasswordInputs>({
     defaultValues: {
       password: '',
     },
@@ -32,86 +31,66 @@ const ResetPassword = () => {
 
   if (!token) {
     return (
-      <Stack
-        sx={{ width: '90vw', height: '100vh', mx: 'auto', py: 1 }}
-        alignItems="center"
-        justifyContent="start"
-      >
-        <Stack
-          direction="row"
-          sx={{ width: '100%', borderBottom: '2px solid rgba(0,0,0,0.5)', py: 2 }}
-          justifyContent="space-between"
-        >
-          <Typography sx={{ fontSize: 24, color: 'rgba(0, 0, 0, 0.6)' }}>
-            パスワードリセット
-          </Typography>
-          <button className="btn btn-link" onClick={() => router.push('/login')}>
-            戻る
-          </button>
-        </Stack>
-        <Box sx={{ width: '100%', py: 3 }}>
-          <Typography sx={{ fontSize: 24, my: 1 }}>このページは利用できません</Typography>
-          <button className="btn btn-link" onClick={() => router.push('/login')}>
-            ログイン画面に戻る
-          </button>
-        </Box>
-      </Stack>
+      <div className="w-[90vw] h-screen mx-auto flex flex-col items-center">
+        {/* ヘッダー(的存在) */}
+        <div className="flex items-center justify-around w-full border-b my-3 py-1">
+          <span className="w-full text-lg">パスワードリセット</span>
+          <Link href="/login">
+            <a className="btn btn-link">戻る</a>
+          </Link>
+        </div>
+        <div className="w-full flex flex-col items-start space-y-3">
+          <span className="text-lg">このページは利用できません</span>
+          <Link href="/login">
+            <a className="link link-primary">ログイン画面に戻る</a>
+          </Link>
+        </div>
+      </div>
     );
   }
 
   return (
-    <Stack
-      sx={{ width: '90vw', height: '100vh', mx: 'auto', py: 1 }}
-      alignItems="center"
-      justifyContent="start"
-    >
-      <Stack
-        direction="row"
-        sx={{ width: '100%', borderBottom: '2px solid rgba(0,0,0,0.5)', py: 2 }}
-        justifyContent="space-between"
-      >
-        <Typography sx={{ fontSize: 24, color: 'rgba(0, 0, 0, 0.6)' }}>
-          パスワードリセット
-        </Typography>
-        <button className="btn btn-link" onClick={() => router.push('/login')}>
-          戻る
-        </button>
-      </Stack>
+    <div className="w-[90vw] h-screen mx-auto flex flex-col items-center">
+      {/* ヘッダー(的存在) */}
+      <div className="flex items-center justify-around w-full border-b my-3 py-1">
+        <span className="w-full text-lg">パスワードリセット</span>
+        <Link href="/login">
+          <a className="btn btn-link">戻る</a>
+        </Link>
+      </div>
       {send ? (
-        <Box sx={{ width: '100%', py: 3 }}>
-          <Typography sx={{ fontSize: 24, my: 1 }}>変更しました！</Typography>
-          <button className="btn btn-link" onClick={() => router.push('/login')}>
-            ログイン画面に戻る
-          </button>
-        </Box>
+        <div className="w-full flex flex-col items-start space-y-3">
+          <span className="text-lg">変更しました！</span>
+          <Link href="/login">
+            <a className="link link-primary">ログイン画面に戻る</a>
+          </Link>
+        </div>
       ) : (
-        <Stack
-          component="form"
+        <form
+          className="w-full flex flex-col items-start space-y-3"
           onSubmit={handleSubmit(onSubmit)}
-          sx={{ width: '100%', height: '100%', my: 3 }}
-          alignItems="start"
-          spacing={1}
         >
-          <Typography sx={{ color: 'rgba(0,0,0,0.5)' }}>
-            新しいパスワードを記入してください
-          </Typography>
-          <Controller
-            name="password"
-            control={control}
-            rules={{ required: true }}
-            render={({ field }) => (
-              <FormControl sx={{ width: '50%' }}>
-                <TextField id="password" label="Password" type="password" {...field} />
-              </FormControl>
-            )}
-          />
+          <div className="w-1/3 form-control">
+            <label className="label text-sm text-gray-600">
+              登録しているメールアドレスを入力してください
+            </label>
+            <input
+              {...register('password')}
+              type="password"
+              placeholder="パスワードを入力"
+              className="input input-bordered w-full min-w-md"
+              autoComplete="password"
+              required
+              autoFocus
+            ></input>
+          </div>
           <button type="submit" className="btn btn-primary">
             {resetPasswordMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
             <span className="px-3">送信</span>
           </button>
-        </Stack>
+        </form>
       )}
-    </Stack>
+    </div>
   );
 };
 

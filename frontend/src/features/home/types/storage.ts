@@ -25,3 +25,7 @@ export type Storage = {
   isTop: boolean;
   important: boolean;
 };
+
+export type ContextMenu = Partial<{
+  rename: string;
+}>;

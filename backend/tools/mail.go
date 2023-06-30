@@ -8,13 +8,13 @@ import (
 )
 
 type MailRequest struct {
-	Name      string
-	From     	string
-	To       	string
-	Teacher   string
-	Password  string
-	SmtpSrv  	string
-	SmtpPort  string
+	Name     string
+	From     string
+	To       string
+	Teacher  string
+	Password string
+	SmtpSrv  string
+	SmtpPort string
 }
 
 func (m MailRequest) SendMail(title string, msg string, to string, cc []string) error {
@@ -34,7 +34,7 @@ func (m MailRequest) SendMailWithFiles(title string, msg string, to string, cc [
 			return err
 		}
 	}
-  em.From = mail.Address{Name: m.Name, Address: m.From}
+	em.From = mail.Address{Name: m.Name, Address: m.From}
 	em.To = []string{to}
 	em.Cc = cc
 	auth := smtp.PlainAuth("", m.From, m.Password, m.SmtpSrv)

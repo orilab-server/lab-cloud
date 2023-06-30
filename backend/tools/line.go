@@ -21,7 +21,7 @@ func LineNotify(token string, msg []byte) {
 	body := strings.NewReader(form.Encode())
 	req, err := http.NewRequest("POST", u.String(), body)
 	if err != nil {
-			log.Fatal(err)
+		log.Fatal(err)
 	}
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
@@ -29,6 +29,6 @@ func LineNotify(token string, msg []byte) {
 
 	_, err = c.Do(req)
 	if err != nil {
-			log.Fatal(err)
+		log.Fatal(err)
 	}
 }

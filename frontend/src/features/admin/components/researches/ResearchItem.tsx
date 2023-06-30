@@ -1,6 +1,4 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Box, Typography } from '@mui/material';
-import { Stack } from '@mui/system';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useModal } from 'react-hooks-use-modal';
@@ -9,13 +7,14 @@ import { useStorageImage } from '../../api/getStorageImage';
 import { useUpdateItem } from '../../api/updateItem';
 import { Research } from '../../types';
 import { LinksInput } from '../Misc/LinksInput';
+import ModalForm from '../Misc/ModalForm';
 import { ModalLayout } from '../Misc/ModalLayout';
 import { TypographyOrTextField } from '../Misc/TypographyOrTextField';
 import { UpdateImageArea } from '../Misc/UpdateImageArea';
 
 type ResearchItemProps = {
   item: Research;
-  button: React.ReactNode;
+  buttonChild: React.ReactNode;
 };
 
 interface FormData {
@@ -23,7 +22,7 @@ interface FormData {
   description: string;
 }
 
-export const ResearchItem = ({ item, button }: ResearchItemProps) => {
+export const ResearchItem = ({ item, buttonChild }: ResearchItemProps) => {
   const [Modal, openM, closeM] = useModal(item.id, { closeOnOverlayClick: true });
   const [edit, setEdit] = useState<boolean>(false);
   const [file, setFile] = useState<File | null>(null);
@@ -59,57 +58,49 @@ export const ResearchItem = ({ item, button }: ResearchItemProps) => {
 
   return (
     <>
-      <Box sx={{ width: '100%', height: '100%', cursor: 'pointer' }} onClick={openM}>
-        {button}
-      </Box>
+      <button type="button" className="w-full h-full" onClick={openM}>
+        {buttonChild}
+      </button>
       <Modal>
         <ModalLayout closeModal={closeM}>
-          <div className="grid grid-cols-1 gap-3">
+          <ModalForm>
             <UpdateImageArea url={image.data} fileState={[file, setFile]} edit={edit} />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={
-                <Typography sx={{ mx: 1, fontSize: 20, whiteSpace: 'nowrap' }}>タイトル</Typography>
-              }
+              titleElement="タイトル"
               control={control}
               name="title"
               value={getValues('title')}
               edit={edit}
-              multiline={true}
-              rows={4}
+              multiline
             />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={
-                <Typography sx={{ mx: 1, fontSize: 20, whiteSpace: 'nowrap' }}>内容</Typography>
-              }
+              titleElement="内容"
               control={control}
               name="description"
               value={getValues('description')}
               edit={edit}
               multiline
-              rows={10}
             />
             <LinksInput links={links} setLinks={setLinks} edit={edit} />
             {/* 各種ボタン */}
-            <Stack direction="row" spacing={2} justifyContent="space-between">
-              <Stack direction="row" spacing={1}>
+            <div className="w-full flex justify-between space-x-2">
+              <div className="flex space-x-2">
                 {edit && (
-                  <button onClick={onSubmit} className="btn btn-info text-white">
+                  <button type="button" onClick={onSubmit} className="btn btn-info text-white">
                     {updateItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
-                    <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
+                    <span className="whitespace-nowrap">送信</span>
                   </button>
                 )}
-                <button onClick={onToggleEdit} className="btn btn-info text-white">
+                <button type="button" onClick={onToggleEdit} className="btn text-white">
                   {edit ? '編集をやめる' : '編集する'}
                 </button>
-              </Stack>
-              <button onClick={onDeleteDoc} className="btn btn-error text-white">
+              </div>
+              <button type="button" onClick={onDeleteDoc} className="btn btn-error text-white">
                 {deleteItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
-                <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>削除</Typography>
+                <span className="whitespace-nowrap">削除</span>
               </button>
-            </Stack>
-          </div>
+            </div>
+          </ModalForm>
         </ModalLayout>
       </Modal>
     </>

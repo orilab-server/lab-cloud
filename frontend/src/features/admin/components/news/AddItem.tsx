@@ -1,12 +1,11 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Typography } from '@mui/material';
-import { Stack } from '@mui/system';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { useAddNewItem } from '../../api/addNewItem';
 import { useAddUpdate } from '../../api/addUpdates';
 import { LinksInput } from '../Misc/LinksInput';
+import ModalForm from '../Misc/ModalForm';
 import { ModalLayout } from '../Misc/ModalLayout';
 import { TypographyOrTextField } from '../Misc/TypographyOrTextField';
 import { UpdateImageArea } from '../Misc/UpdateImageArea';
@@ -74,49 +73,40 @@ export const AddItem = ({ modals }: AddItemProps) => {
       </button>
       <Modal>
         <ModalLayout closeModal={closeM}>
-          <Stack
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            spacing={2}
-            sx={{ width: '100%' }}
-          >
-            <UpdateImageArea edit={true} fileState={[file, setFile]} url={undefined} />
+          <ModalForm onSubmit={handleSubmit(onSubmit)}>
+            <UpdateImageArea edit fileState={[file, setFile]} url={undefined} />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={<Typography sx={{ mx: 2, fontSize: 20 }}>日付</Typography>}
+              titleElement="日付"
               control={control}
               value={getValues('dateStr')}
               name="dateStr"
-              edit={true}
+              edit
               placeholder="例 2000-01-01"
               type="date"
             />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={<Typography sx={{ mx: 2, fontSize: 20 }}>タイトル</Typography>}
+              titleElement="タイトル"
               control={control}
               value={getValues('title')}
               name="title"
-              edit={true}
+              edit
             />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={<Typography sx={{ mx: 2, fontSize: 20 }}>内容</Typography>}
+              titleElement="内容"
               control={control}
               value={getValues('description')}
               name="description"
-              edit={true}
-              multiline={true}
-              rows={5}
+              edit
+              multiline
             />
             <LinksInput links={links} setLinks={setLinks} />
-            <Stack direction="row" spacing={3}>
+            <div className="flex">
               <button type="submit" className="btn btn-info text-white">
                 {addNewItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
-                <Typography sx={{ px: 1, whiteSpace: 'nowrap' }}>送信</Typography>
+                <span className="whitespace-nowrap">送信</span>
               </button>
-            </Stack>
-          </Stack>
+            </div>
+          </ModalForm>
         </ModalLayout>
       </Modal>
     </>

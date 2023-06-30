@@ -19,12 +19,12 @@ type Users = struct {
 }
 
 type FilesTrash = struct {
-	Id     		   		string
-	UserId       		string
-	Type         		string
+	Id              string
+	UserId          string
+	Type            string
 	CurrentLocation string
-  PastLocation 		string
-	CreatedAt    		string
+	PastLocation    string
+	CreatedAt       string
 }
 
 type ResetTokens = struct {

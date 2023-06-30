@@ -1,6 +1,5 @@
-import { Button, Typography } from '@mui/material';
-import { Stack } from '@mui/system';
 import { NextPage } from 'next';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 
@@ -50,15 +49,12 @@ const NotFound: NextPage = () => {
   }, []);
 
   return (
-    <Stack
-      spacing={1}
-      sx={{ width: '100vw', height: '100vh' }}
-      justifyContent="center"
-      alignItems="center"
-    >
-      <Typography>404 | Not Found</Typography>
-      <Button onClick={() => router.push('/home')}>ホームへ</Button>
-    </Stack>
+    <div className="w-full h-screen flex flex-col items-center justify-center">
+      <span className="text-2xl font-bold">404 | Not Found</span>
+      <Link href="/home">
+        <a>ホームへ</a>
+      </Link>
+    </div>
   );
 };
 

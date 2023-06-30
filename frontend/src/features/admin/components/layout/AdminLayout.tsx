@@ -1,7 +1,5 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Button, Typography } from '@mui/material';
-import { Stack } from '@mui/system';
-import { useRouter } from 'next/router';
+import Link from 'next/link';
 import { ReactNode } from 'react';
 import { useAdminLogout } from '../../api/adminLogout';
 import { useAuth } from '../../hooks/useAuth';
@@ -12,28 +10,25 @@ type AdminLayoutProps = {
 };
 
 export const AdminLayout = ({ children, isUnLogin }: AdminLayoutProps) => {
-  const router = useRouter();
   const logoutMutation = useAdminLogout();
   const { authorized } = useAuth();
 
   return (
-    <Stack sx={{ width: '90vw', height: '100vh', mx: 'auto' }} alignItems="center">
+    <div className="w-[90vw] h-screen mx-auto flex flex-col items-center">
       {/* ヘッダー(的存在) */}
-      <Stack
-        direction="row"
-        justifyContent="space-around"
-        sx={{ width: '100%', borderBottom: '2px rgba(0,0,0,0.5) solid', my: 3, py: 1 }}
-      >
-        <Typography sx={{ width: '80%', fontSize: 24 }}>HP管理画面</Typography>
-        <Button onClick={() => router.push('/home')}>ホームへ</Button>
+      <div className="flex items-center justify-around w-full border-b my-3 py-1">
+        <span className="w-full text-lg">HP管理画面</span>
+        <Link href="/home">
+          <a className="btn btn-link">ホームへ</a>
+        </Link>
         {!isUnLogin && (
-          <Button color="secondary" onClick={() => logoutMutation.mutate()}>
+          <button className="btn btn-link" onClick={() => logoutMutation.mutate()}>
             {logoutMutation.isLoading && <LoadingSpinner />}
             ログアウト
-          </Button>
+          </button>
         )}
-      </Stack>
+      </div>
       {authorized ? children : <LoadingSpinner />}
-    </Stack>
+    </div>
   );
 };

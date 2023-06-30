@@ -1,15 +1,13 @@
 import { BeforeLoginForms } from '@/features/auth/components/BeforeLoginForms';
-import { Button } from '@mui/material';
 import { NextPage } from 'next';
-import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const Login: NextPage = () => {
-  const router = useRouter();
   return (
     <>
-      <Button sx={{ position: 'absolute', top: 0, right: 0 }} onClick={() => router.push('/admin')}>
-        管理者ページ
-      </Button>
+      <Link href="/admin">
+        <a className="absolute top-2 right-2 link link-primary">管理者ページ</a>
+      </Link>
       <BeforeLoginForms />
     </>
   );

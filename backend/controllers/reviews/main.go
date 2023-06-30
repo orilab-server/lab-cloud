@@ -18,19 +18,22 @@ import (
 )
 
 type ReviewsController struct {
-	MyDB * sql.DB
-	ModelCtx context.Context
-	ReviewDirPath string
+	MyDB            *sql.DB
+	ModelCtx        context.Context
+	ReviewDirPath   string
 	LineNotifyToken string
-	MailInfo tools.MailRequest
+	MailInfo        tools.MailRequest
+	SessionKey      string
 }
 
 type ResponseReview struct {
-	ID string `json:"id"`
-	Name string `json:"name"`
-	Target int `json:"target"`
-	Year int `json:"year"`
+	ID     string `json:"id"`
+	Name   string `json:"name"`
+	Target int    `json:"target"`
+	Year   int    `json:"year"`
 }
+
+var loginUser models.User
 
 func (r ReviewsController) GetIsTarget(ctx *gin.Context) {
 	reviewId := ctx.Param("review-id")
@@ -94,12 +97,12 @@ func (r ReviewsController) GetReviews(ctx *gin.Context) {
 	})
 }
 
-// param : reviewName(レビュー名), userIds(対象者のid), targetGrade(対象学年) 
+// param : reviewName(レビュー名), userIds(対象者のid), targetGrade(対象学年)
 func (r ReviewsController) CreateReview(ctx *gin.Context) {
 	reviewName := ctx.PostForm("reviewName")
 	targetGrade, _ := strconv.Atoi(ctx.PostForm("targetGrade"))
 	reviewId, _ := uuid.NewUUID()
-	newReviewName := reviewName+"_"+tools.GradeStrFromNumber(targetGrade)
+	newReviewName := reviewName + "_" + tools.GradeStrFromNumber(targetGrade)
 	review := models.Review{ID: reviewId.String(), Name: newReviewName, Target: targetGrade}
 	err := review.Insert(r.ModelCtx, r.MyDB, boil.Infer())
 	if err != nil {
@@ -108,7 +111,7 @@ func (r ReviewsController) CreateReview(ctx *gin.Context) {
 		})
 		return
 	}
-	newReview := r.ReviewDirPath+"/"+reviewId.String()
+	newReview := r.ReviewDirPath + "/" + reviewId.String()
 	if err := os.Mkdir(newReview, 0777); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "failed to create review dir",
@@ -123,9 +126,9 @@ func (r ReviewsController) CreateReview(ctx *gin.Context) {
 			user, _ := models.FindUser(r.ModelCtx, r.MyDB, userId)
 			reviewedId, _ := uuid.NewUUID()
 			reviewed := models.Reviewed{
-				ID: reviewedId.String(),
+				ID:       reviewedId.String(),
 				ReviewID: reviewId.String(),
-				UserID: userId,
+				UserID:   userId,
 			}
 			// 各個人ディレクトリの名前はユーザIDにする(名前変更した際にも対応するため)
 			if err := os.Mkdir(newReview+"/"+strUserId, 0777); err != nil {
@@ -145,7 +148,7 @@ func (r ReviewsController) CreateReview(ctx *gin.Context) {
 		ctx.JSON(http.StatusOK, gin.H{})
 		return
 	}
-	now:= time.Now()
+	now := time.Now()
 	year := now.Year()
 	// month -> Febrary, January, ... のフォーマット
 	month := int(now.Month())
@@ -158,9 +161,9 @@ func (r ReviewsController) CreateReview(ctx *gin.Context) {
 	for _, user := range users {
 		reviewedId, _ := uuid.NewUUID()
 		reviewed := models.Reviewed{
-			ID: reviewedId.String(),
+			ID:       reviewedId.String(),
 			ReviewID: reviewId.String(),
-			UserID: user.ID,
+			UserID:   user.ID,
 		}
 		if err := os.Mkdir(newReview+"/"+strconv.Itoa(user.ID), 0777); err != nil {
 			ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -187,6 +190,6 @@ func (r ReviewsController) CreateReview(ctx *gin.Context) {
 }
 
 type Reviewed struct {
-	Id string `json:"id"`
+	Id   string `json:"id"`
 	Name string `json:"name"`
 }

@@ -7,19 +7,19 @@ import (
 )
 
 type StorageItem struct {
-	Name  string `json:"name"`
-	Size  int64  `json:"size"`
-	Type 	string `json:"type"`
+	Name string `json:"name"`
+	Size int64  `json:"size"`
+	Type string `json:"type"`
 }
 
 func GetFileSize(path string) (int64, error) {
 	f, err := os.Open(path)
-	
+
 	if err != nil {
 		f.Close()
 		return 0, err
 	}
-	
+
 	fi, err := f.Stat()
 	f.Close()
 
@@ -69,7 +69,7 @@ func GetDirAndFileNames(dir string) ([]StorageItem, error) {
 
 	var items []StorageItem
 	for _, file := range files {
-		size, err := GetFileSize(dir+"/"+file.Name())
+		size, err := GetFileSize(dir + "/" + file.Name())
 		if err != nil {
 			size = 0
 		}

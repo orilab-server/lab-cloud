@@ -36,7 +36,7 @@ func (u UserController) GetUser(ctx *gin.Context) {
 	}
 	json.Unmarshal([]byte(jsonLoginUser), &loginUser)
 	m_ctx := context.Background()
-	user, err :=  models.Users(models.UserWhere.Email.EQ(loginUser.Email)).One(m_ctx, u.MyDB)
+	user, err := models.Users(models.UserWhere.Email.EQ(loginUser.Email)).One(m_ctx, u.MyDB)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"error": "user not found",

@@ -1,10 +1,9 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Button, Typography } from '@mui/material';
-import { Stack } from '@mui/system';
 import React, { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { AiOutlinePlus } from 'react-icons/ai';
 import { useAddNewItem } from '../../api/addNewItem';
+import ModalForm from '../Misc/ModalForm';
 import { ModalLayout } from '../Misc/ModalLayout';
 import { TypographyOrTextField } from '../Misc/TypographyOrTextField';
 import { UpdateImageArea } from '../Misc/UpdateImageArea';
@@ -62,58 +61,45 @@ export const AddUser = ({ modals }: AddUsersProps) => {
       </button>
       <Modal>
         <ModalLayout closeModal={closeM}>
-          <Stack
-            component="form"
-            onSubmit={handleSubmit(onSubmit)}
-            alignItems="start"
-            spacing={3}
-            sx={{ width: '100%' }}
-          >
+          <ModalForm onSubmit={handleSubmit(onSubmit)}>
             <UpdateImageArea edit={true} fileState={[file, setFile]} url={undefined} />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={<Typography sx={{ mx: 1, fontSize: 16 }}>氏名</Typography>}
+              titleElement="氏名"
               control={control}
               name="name"
               value={getValues('name')}
               edit
             />
             <TypographyOrTextField
-              sx={{ width: '30%' }}
-              titleElement={<Typography sx={{ mx: 1, fontSize: 16 }}>入学年</Typography>}
+              titleElement="入学年"
               control={control}
               name="year"
               value={getValues('year')}
               edit
             />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={<Typography sx={{ mx: 1, fontSize: 16 }}>英語氏名</Typography>}
+              titleElement="英語氏名"
               control={control}
               name="name_en"
               value={getValues('name_en')}
               edit
             />
             <TypographyOrTextField
-              sx={{ width: '80%' }}
-              titleElement={
-                <Typography sx={{ mx: 1, fontSize: 16, whiteSpace: 'nowrap' }}>自己紹介</Typography>
-              }
+              titleElement="自己紹介"
               control={control}
               name="introduction"
               value={getValues('introduction')}
-              multiline={true}
+              multiline
               edit
-              rows={5}
             />
             {/* 各種ボタン */}
-            <Stack direction="row" spacing={2}>
-              <Button type="submit" variant="contained" color="secondary">
+            <div className="flex space-x-3">
+              <button className="btn btn-primary" type="submit">
                 {addNewItemMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
-                <Typography sx={{ pl: 1, whiteSpace: 'nowrap' }}>送信</Typography>
-              </Button>
-            </Stack>
-          </Stack>
+                <span className="pl-1 whitespace-nowrap">送信</span>
+              </button>
+            </div>
+          </ModalForm>
         </ModalLayout>
       </Modal>
     </>

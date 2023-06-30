@@ -1,22 +1,18 @@
 import { useAdminLogin } from '@/features/admin/api/adminLogin';
 import { AdminLayout } from '@/features/admin/components/Layout/AdminLayout';
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Container, createTheme, CssBaseline, TextField, ThemeProvider } from '@mui/material';
-import { Box } from '@mui/system';
 import { NextPage } from 'next';
-import { Controller, SubmitHandler, useForm } from 'react-hook-form';
+import { SubmitHandler, useForm } from 'react-hook-form';
 
 interface AdminLoginInputs {
   email: string;
   password: string;
 }
 
-const theme = createTheme();
-
 const AdminLogin: NextPage = () => {
   const loginMutation = useAdminLogin();
 
-  const { handleSubmit, control } = useForm<AdminLoginInputs>({
+  const { handleSubmit, register } = useForm<AdminLoginInputs>({
     defaultValues: {
       email: '',
       password: '',
@@ -29,50 +25,37 @@ const AdminLogin: NextPage = () => {
 
   return (
     <AdminLayout isUnLogin={true}>
-      <ThemeProvider theme={theme}>
-        <Container component="main" maxWidth="xs">
-          <CssBaseline />
-          <Box component="form" onSubmit={handleSubmit(onLogin)} noValidate sx={{ mt: 1 }}>
-            <Controller
-              name="email"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <TextField
-                  id="email"
-                  label="Email Address"
-                  autoComplete="email"
-                  autoFocus
-                  margin="normal"
-                  fullWidth
-                  {...field}
-                />
-              )}
-            />
-            <Controller
-              name="password"
-              control={control}
-              rules={{ required: true }}
-              render={({ field }) => (
-                <TextField
-                  margin="normal"
-                  required
-                  fullWidth
-                  label="Password"
-                  type="password"
-                  id="password"
-                  autoComplete="current-password"
-                  {...field}
-                />
-              )}
-            />
-            <button type="submit" className="btn btn-primary w-full my-2">
-              <span className="text-center px-3">ログイン</span>
-              {loginMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
-            </button>
-          </Box>
-        </Container>
-      </ThemeProvider>
+      <main className="w-full max-w-md">
+        <form className="w-full" onSubmit={handleSubmit(onLogin)}>
+          <div className="form-control">
+            <label className="label text-sm">Email</label>
+            <input
+              {...register('email')}
+              type="text"
+              placeholder="Eメールを入力"
+              className="input input-bordered w-full"
+              autoComplete="email"
+              required
+              autoFocus
+            ></input>
+          </div>
+          <div className="form-control mb-3">
+            <label className="label text-sm">Password</label>
+            <input
+              {...register('password')}
+              type="password"
+              placeholder="パスワードを入力"
+              className="input input-bordered w-full"
+              autoComplete="password"
+              required
+            ></input>
+          </div>
+          <button type="submit" className="btn btn-primary w-full my-2">
+            <span className="mr-2">ログイン</span>
+            {loginMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
+          </button>
+        </form>
+      </main>
     </AdminLayout>
   );
 };

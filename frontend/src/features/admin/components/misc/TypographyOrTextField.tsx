@@ -1,6 +1,4 @@
-import { TextField, TextFieldProps, Typography } from '@mui/material';
-import { Stack } from '@mui/system';
-import React from 'react';
+import React, { InputHTMLAttributes } from 'react';
 import { Control, Controller } from 'react-hook-form';
 
 type TypographyOrTextFieldProps = {
@@ -8,28 +6,56 @@ type TypographyOrTextFieldProps = {
   control: Control<any, any>;
   edit: boolean;
   value: string | number;
-} & TextFieldProps;
+  multiline?: boolean;
+} & InputHTMLAttributes<HTMLInputElement> &
+  InputHTMLAttributes<HTMLTextAreaElement>;
 
 export const TypographyOrTextField = ({
   titleElement,
   control,
   edit,
-  value,
-  name = '',
+  multiline,
   ...props
 }: TypographyOrTextFieldProps) => {
   return (
-    <Stack direction="row" sx={{ width: '100%' }}>
-      {titleElement}
+    <>
       {edit ? (
-        <Controller
-          name={name}
-          control={control}
-          render={({ field }) => <TextField {...props} {...field} />}
-        />
+        <>
+          <div className="form-control w-full">
+            <label
+              className="w-full text-sm label bg-gray-200 text-gray-900 rounded my-1"
+              htmlFor={props.name!}
+            >
+              {titleElement}
+            </label>
+            <Controller
+              name={props.name!}
+              control={control}
+              render={({ field }) => (
+                <>
+                  {multiline ? (
+                    <textarea
+                      className="textarea textarea-bordered"
+                      rows={5}
+                      {...props}
+                      {...field}
+                    ></textarea>
+                  ) : (
+                    <input className="w-full input input-bordered" {...props} {...field} />
+                  )}
+                </>
+              )}
+            />
+          </div>
+        </>
       ) : (
-        <Typography sx={{ mx: 1, fontSize: 20 }}>{value}</Typography>
+        <div className="w-full flex flex-col items-start">
+          <span className="label w-full text-sm bg-gray-200 text-gray-900 rounded my-1">
+            {titleElement}
+          </span>
+          <span className="text-lg">{props.value}</span>
+        </div>
       )}
-    </Stack>
+    </>
   );
 };

@@ -1,4 +1,5 @@
-import { useContextMenuContextState } from '@/features/home/modules/contetexts/contextMenu';
+import { contextMenuState } from '@/features/home/modules/stores';
+import { useSetRecoilState } from 'recoil';
 
 type DLButtonProps = {
   selected: string;
@@ -9,12 +10,12 @@ interface NewNameInputs {
 }
 
 const RenameButton = ({ selected }: DLButtonProps) => {
-  const [, setContextMenuState] = useContextMenuContextState();
+  const setContextMenu = useSetRecoilState(contextMenuState);
 
   return (
     <>
       <button
-        onClick={() => setContextMenuState({ rename: selected })}
+        onClick={() => setContextMenu({ rename: selected })}
         className="text-white hover:bg-gray-700 px-3 py-1"
       >
         名前を変更

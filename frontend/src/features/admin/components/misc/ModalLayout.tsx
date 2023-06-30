@@ -1,5 +1,3 @@
-import { IconButton } from '@mui/material';
-import { Box } from '@mui/system';
 import { AiFillCloseCircle } from 'react-icons/ai';
 
 type ModalLayoutProps = {
@@ -10,34 +8,15 @@ type ModalLayoutProps = {
 export const ModalLayout = ({ children, closeModal }: ModalLayoutProps) => {
   return (
     <>
-      <IconButton
+      <button
         onClick={closeModal}
-        sx={{
-          position: 'absolute',
-          cursor: 'pointer',
-          zIndex: 1000,
-          top: 0,
-          left: 0,
-          '&:hover': {
-            background: '#ccc',
-          },
-        }}
+        className="absolute z-[1000] top-0 left-0 p-2 hover:bg-gray-200 rounded-full"
       >
         <AiFillCloseCircle size={30} />
-      </IconButton>
-      <Box
-        sx={{
-          position: 'relative',
-          width: '80vw',
-          height: '80vh',
-          background: '#fff',
-          borderRadius: 1,
-          p: 5,
-          overflow: 'scroll',
-        }}
-      >
+      </button>
+      <div className="relative w-[80vw] min-w-[720px] h-[80vh] bg-white rounded p-12 overflow-scroll">
         {children}
-      </Box>
+      </div>
     </>
   );
 };

@@ -1,12 +1,16 @@
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useGetReviewFiles } from '../../api/files/getReviewFiles';
+import { useCtxMenu } from '../../hooks/useCtxMenu';
+import { ReviewFileIDContext } from '../../modules/contexts/reviewFileID';
+import { ReviewIDContext } from '../../modules/contexts/reviewID';
 import { ReviewFile } from '../../types/review';
+import ContextMenu from '../ContextMenu';
 
 const FileList = () => {
   const router = useRouter();
   const [openAcc, setOpenAcc] = useState<string[]>([]);
+  const { ctxMenuRef, showCtxMenu, onCtxMenu } = useCtxMenu();
   const reviewId = ((id: string) =>
     id ? id : location.pathname.slice(location.pathname.lastIndexOf('/') + 1))(
     router.query.review_id as string,
@@ -33,7 +37,7 @@ const FileList = () => {
   });
 
   return (
-    <>
+    <ReviewIDContext.Provider value={reviewId}>
       <div className="fixed grid grid-cols-6 w-[calc(100vw_-_16rem)] min-w-[800px] z-[2] px-2 py-1 divide-x border-b top-14 bg-white">
         <div className="col-span-3 pl-2">名前</div>
         <div className="pl-2">追加日</div>
@@ -45,7 +49,7 @@ const FileList = () => {
         const top = v[0];
         const nexts = v.length > 1 ? v.slice(1) : null;
         return (
-          <div key={top.id} className="relative">
+          <div key={top.id} ref={ctxMenuRef} className="relative">
             {nexts && (
               <button
                 onClick={() =>
@@ -57,11 +61,13 @@ const FileList = () => {
                   openAcc.includes(k) ? 'rotate-90' : ''
                 }`}
               >
-                {'>'}
+                &gt;
               </button>
             )}
-            <Link href={filePageOpt(top.id, top.file_name)}>
-              <a
+            <ReviewFileIDContext.Provider value={top.id}>
+              <button
+                onContextMenu={(e) => onCtxMenu(e, top.id)}
+                onDoubleClick={() => router.push(filePageOpt(top.id, top.file_name))}
                 className={`relative w-full grid grid-cols-6 px-2 mx-2 py-1 text-left rounded-md items-center ${
                   (i + 1) % 2 ? '' : 'bg-gray-200'
                 } text-gray-800 hover:bg-blue-200`}
@@ -73,30 +79,38 @@ const FileList = () => {
                 <div className="pl-2 truncate text-sm">{top.created_at}</div>
                 <div className="pl-2 text-sm">{top.user_name}</div>
                 <div className="pl-2 text-sm">{fileGroups[k].length}</div>
-              </a>
-            </Link>
+              </button>
+              <div className={`${showCtxMenu && showCtxMenu === top.id ? '' : 'hidden'}`}>
+                <ContextMenu />
+              </div>
+            </ReviewFileIDContext.Provider>
             {nexts &&
               openAcc.includes(k) &&
-              nexts.map((n, n_i) => {
+              nexts.map(({ id, file_name, created_at, user_name }, n_i) => {
                 return (
-                  <Link key={n.id} href={filePageOpt(n.id, n.file_name)}>
-                    <a
+                  <ReviewFileIDContext.Provider key={id} value={id}>
+                    <button
+                      onContextMenu={(e) => onCtxMenu(e, id)}
+                      onDoubleClick={() => router.push(filePageOpt(id, file_name))}
                       className={`relative w-full grid grid-cols-6 px-2 mx-2 py-1 rounded-md items-center text-left ${
                         (n_i + 1) % 2 ? 'bg-gray-100' : ''
                       } text-gray-800 hover:bg-blue-100`}
                     >
-                      <div className="col-span-3 truncate text-sm pl-3">{n.file_name}</div>
-                      <div className="pl-2 truncate text-sm">{n.created_at}</div>
-                      <div className="pl-2 text-sm">{n.user_name}</div>
+                      <div className="col-span-3 truncate text-sm pl-3">{file_name}</div>
+                      <div className="pl-2 truncate text-sm">{created_at}</div>
+                      <div className="pl-2 text-sm">{user_name}</div>
                       <div className="pl-2 text-sm"></div>
-                    </a>
-                  </Link>
+                    </button>
+                    <div className={`${showCtxMenu && showCtxMenu === id ? '' : 'hidden'}`}>
+                      <ContextMenu />
+                    </div>
+                  </ReviewFileIDContext.Provider>
                 );
               })}
           </div>
         );
       })}
-    </>
+    </ReviewIDContext.Provider>
   );
 };
 

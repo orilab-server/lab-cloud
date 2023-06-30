@@ -1,21 +1,28 @@
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
-import { Box, TextField } from '@mui/material';
 import { Dispatch, SetStateAction } from 'react';
+import { SubmitHandler, useForm } from 'react-hook-form';
 import { useLogin } from '../api/login';
 
 type LoginFormProps = {
   setIsRegisterForm: Dispatch<SetStateAction<boolean>>;
 };
 
+interface LoginInputs {
+  email: string;
+  password: string;
+}
+
 export const LoginForm = ({ setIsRegisterForm }: LoginFormProps) => {
   const loginMutation = useLogin();
   const goRegisterForm = () => setIsRegisterForm(true);
+  const { handleSubmit, register } = useForm<LoginInputs>({
+    defaultValues: {
+      email: '',
+      password: '',
+    },
+  });
 
-  const onLogin = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const email = data.get('email')?.toString();
-    const password = data.get('password')?.toString();
+  const onSubmit: SubmitHandler<LoginInputs> = ({ email, password }) => {
     if (email && password) {
       loginMutation.mutate({ email, password });
     } else {
@@ -24,34 +31,37 @@ export const LoginForm = ({ setIsRegisterForm }: LoginFormProps) => {
   };
 
   return (
-    <Box component="form" onSubmit={onLogin} noValidate sx={{ mt: 1 }}>
-      <TextField
-        margin="normal"
-        required
-        fullWidth
-        id="email"
-        label="Email Address"
-        name="email"
-        autoComplete="email"
-        autoFocus
-      />
-      <TextField
-        margin="normal"
-        required
-        fullWidth
-        name="password"
-        label="Password"
-        type="password"
-        id="password"
-        autoComplete="current-password"
-      />
-      <button type="submit" className="btn btn-primary w-full my-1">
-        <span className="w-full px-3">ログイン</span>
+    <form className="w-full" onSubmit={handleSubmit(onSubmit)}>
+      <div className="form-control">
+        <label className="label text-sm">Email</label>
+        <input
+          {...register('email')}
+          type="text"
+          placeholder="Eメールを入力"
+          className="input input-bordered w-full"
+          autoComplete="email"
+          required
+          autoFocus
+        ></input>
+      </div>
+      <div className="form-control mb-3">
+        <label className="label text-sm">Password</label>
+        <input
+          {...register('password')}
+          type="password"
+          placeholder="パスワードを入力"
+          className="input input-bordered w-full"
+          autoComplete="password"
+          required
+        ></input>
+      </div>
+      <button type="submit" className="btn btn-primary w-full my-1 flex items-center">
+        <span className="mr-2">ログイン</span>
         {loginMutation.isLoading && <LoadingSpinner size="sm" variant="inherit" />}
       </button>
-      <button className="btn btn-secondary w-full my-1" onClick={goRegisterForm}>
+      <button type="button" className="btn btn-secondary w-full my-1" onClick={goRegisterForm}>
         登録申請フォームへ
       </button>
-    </Box>
+    </form>
   );
 };
