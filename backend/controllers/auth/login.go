@@ -19,7 +19,7 @@ func (a Authcontroller) Login(ctx *gin.Context) {
 		ctx.Status(http.StatusBadRequest)
 	} else {
 		m_ctx := context.Background()
-		user, err :=  models.Users(models.UserWhere.Email.EQ(email)).One(m_ctx, a.MyDB)
+		user, err := models.Users(models.UserWhere.Email.EQ(email)).One(m_ctx, a.MyDB)
 		if err != nil {
 			ctx.Status(http.StatusBadRequest)
 			return

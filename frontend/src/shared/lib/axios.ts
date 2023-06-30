@@ -55,3 +55,13 @@ export const myAuthAxiosPatch = (
 ) => {
   return myAxios.patch(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth${endPoint}`, data, config);
 };
+
+export const myAuthAxiosDelete = <T extends any>(
+  endPoint: string,
+  config?: AxiosRequestConfig<FormData> | undefined,
+) => {
+  return myAxios.delete<any, AxiosResponse<T, any>, any>(
+    `${process.env.NEXT_PUBLIC_SERVER_URL}/auth${endPoint}`,
+    config,
+  );
+};

@@ -9,9 +9,9 @@ import (
 )
 
 type ReviewerResponse struct {
-	Id string `json:"id"`
-	UserId int `json:"userId"`
-	Name string `json:"name"`
+	Id     string `json:"id"`
+	UserId int    `json:"userId"`
+	Name   string `json:"name"`
 }
 
 func (r ReviewsController) GetReviewers(ctx *gin.Context) {

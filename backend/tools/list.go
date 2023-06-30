@@ -23,14 +23,13 @@ func Contains(list interface{}, elm interface{}) (bool, int) {
 	return false, -1
 }
 
-// 
 func Filter[T comparable](slice []T, elm T) []T {
 	var ret []T
 	for _, v := range slice {
-			if v == elm {
-				continue
-			}
-			ret = append(ret, v)
+		if v == elm {
+			continue
+		}
+		ret = append(ret, v)
 	}
 	return ret
 }

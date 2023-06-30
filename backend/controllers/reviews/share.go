@@ -29,7 +29,7 @@ func (r ReviewsController) PostShareReview(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
 	}
-	reviewed, _ := models.Revieweds(qm.Where("review_id=?", ctx.Param("review-id")),qm.Where("user_id=?", userId)).One(r.ModelCtx, r.MyDB)
+	reviewed, _ := models.Revieweds(qm.Where("review_id=?", ctx.Param("review-id")), qm.Where("user_id=?", userId)).One(r.ModelCtx, r.MyDB)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{})
 		return
@@ -61,7 +61,7 @@ func (r ReviewsController) PostShareReview(ctx *gin.Context) {
 		"\r\n" +
 		""
 	for _, comment := range comments {
-		page := strconv.Itoa(comment.PageNumber)+"ページ目のコメント\r\n\r\n"
+		page := strconv.Itoa(comment.PageNumber) + "ページ目のコメント\r\n\r\n"
 		msgBody += page + comment.Comment + "\r\n\r\n" + "-----------------------------" + "\r\n\r\n"
 	}
 	r.MailInfo.SendMail("["+reviewName+"]", msgBody, reviewedUser.Email, []string{})

@@ -15,7 +15,6 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-
 func (u UserController) ResetPasswordRequest(ctx *gin.Context) {
 	emailAdd := strings.TrimSpace(ctx.PostForm("email"))
 	if emailAdd == "" {
@@ -34,7 +33,7 @@ func (u UserController) ResetPasswordRequest(ctx *gin.Context) {
 	id, _ := uuid.NewUUID()
 	token, _ := tools.GetRandomStr(254)
 	resetToken := models.ResetToken{
-		ID: id.String(),
+		ID:    id.String(),
 		Email: emailAdd,
 		Token: token,
 	}
@@ -45,20 +44,20 @@ func (u UserController) ResetPasswordRequest(ctx *gin.Context) {
 	}
 	// リセット用リンクメールを送信
 	msg := "" +
-			"\r\n" +
-			"\r\n" +
-			"============================" +
-			"\r\n" +
-			"\r\n" +
-			"こちらのリンクからパスワードを変更してください" +
-			"\r\n" +
-			u.Url + "/reset-password?token=" + token +
-			"\r\n" +
-			"\r\n" +
-			"※このリンクにアクセスするには大学のネットワークに接続している必要があります" +
-			"\r\n" +
-	""
-  if err := u.MailInfo.SendMail("[件名] パスワード変更メール", msg, emailAdd, []string{}); err != nil {
+		"\r\n" +
+		"\r\n" +
+		"============================" +
+		"\r\n" +
+		"\r\n" +
+		"こちらのリンクからパスワードを変更してください" +
+		"\r\n" +
+		u.Url + "/reset-password?token=" + token +
+		"\r\n" +
+		"\r\n" +
+		"※このリンクにアクセスするには大学のネットワークに接続している必要があります" +
+		"\r\n" +
+		""
+	if err := u.MailInfo.SendMail("[件名] パスワード変更メール", msg, emailAdd, []string{}); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "mail send error",
 		})

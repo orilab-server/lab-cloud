@@ -28,7 +28,7 @@ func (r ReviewsController) Upload(ctx *gin.Context) {
 		return
 	}
 	reviewed, _ := models.Revieweds(qm.Where("review_id=?", reviewId), qm.Where("user_id=?", userId)).One(r.ModelCtx, r.MyDB)
-	targetDir := reviewed.ReviewID+"/"+strconv.Itoa(reviewed.UserID)
+	targetDir := reviewed.ReviewID + "/" + strconv.Itoa(reviewed.UserID)
 	extension := filepath.Ext(file.Filename)
 	id, _ := uuid.NewUUID()
 	if err = ctx.SaveUploadedFile(file, r.ReviewDirPath+"/"+targetDir+"/"+id.String()+extension); err != nil {
@@ -42,12 +42,12 @@ func (r ReviewsController) Upload(ctx *gin.Context) {
 	user, _ := models.FindUser(r.ModelCtx, r.MyDB, reviewed.UserID)
 	reviewDir := ctx.PostForm("reviewDir")
 	URL := ctx.PostForm("url")
-	tools.LineNotify(r.LineNotifyToken, []byte(""+ "\r\n" +
-		user.Name+"が 「" + reviewDir + "」 に新規ファイルをアップロードしました" + "\r\n" +
-		"\r\n" +
-		"ファイル名 : " + file.Filename + "\r\n" + "\r\n" +
-		"URL : " + URL +
-	""))
+	tools.LineNotify(r.LineNotifyToken, []byte(""+"\r\n"+
+		user.Name+"が 「"+reviewDir+"」 に新規ファイルをアップロードしました"+"\r\n"+
+		"\r\n"+
+		"ファイル名 : "+file.Filename+"\r\n"+"\r\n"+
+		"URL : "+URL+
+		""))
 
 	// アップロードファイルをrecent_filesに登録 & 50件超過の場合は古いものから削除する
 	recentFileCount, _ := models.RecentFiles(qm.OrderBy("created_at desc")).Count(r.ModelCtx, r.MyDB)
@@ -55,12 +55,12 @@ func (r ReviewsController) Upload(ctx *gin.Context) {
 		delCount := recentFileCount - 49
 		delFiles, _ := models.RecentFiles(qm.Limit(int(delCount)), qm.OrderBy("created_at desc")).All(r.ModelCtx, r.MyDB)
 		for _, f := range delFiles {
-			delFile, _ := models.FindRecentFile(r.ModelCtx,r.MyDB,f.ID)
-			delFile.Delete(r.ModelCtx,r.MyDB)
+			delFile, _ := models.FindRecentFile(r.ModelCtx, r.MyDB, f.ID)
+			delFile.Delete(r.ModelCtx, r.MyDB)
 		}
 	}
 	recentFileIid, _ := uuid.NewUUID()
-	recents := models.RecentFile{ID: recentFileIid.String(),UserID: userId,Location: reviewId+"?review_name="+reviewDir,FileName: file.Filename,Type: "review"}
+	recents := models.RecentFile{ID: recentFileIid.String(), UserID: userId, Location: reviewId + "?review_name=" + reviewDir, FileName: file.Filename, Type: "review"}
 	err = recents.Insert(r.ModelCtx, r.MyDB, boil.Infer())
 	fmt.Println(err)
 
@@ -69,7 +69,7 @@ func (r ReviewsController) Upload(ctx *gin.Context) {
 
 func (r ReviewsController) UploadTeacherReviewedFile(ctx *gin.Context) {
 	targetDir := ctx.PostForm("targetDir")
-	reviewDirPath := r.ReviewDirPath+"/"+targetDir
+	reviewDirPath := r.ReviewDirPath + "/" + targetDir
 	if _, err := os.Stat(reviewDirPath); err != nil {
 		os.MkdirAll(reviewDirPath, 0777)
 	}
@@ -84,8 +84,8 @@ func (r ReviewsController) UploadTeacherReviewedFile(ctx *gin.Context) {
 		return
 	}
 	extension := file.Filename[strings.LastIndex(file.Filename, "."):]
-	countInFileName := file.Filename[0:strings.LastIndex(file.Filename, ".")]+"_"+strconv.FormatInt(reviewCount+1, 10)+extension
-	filePath := reviewDirPath+"/"+countInFileName
+	countInFileName := file.Filename[0:strings.LastIndex(file.Filename, ".")] + "_" + strconv.FormatInt(reviewCount+1, 10) + extension
+	filePath := reviewDirPath + "/" + countInFileName
 	err = ctx.SaveUploadedFile(file, filePath)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
@@ -95,9 +95,9 @@ func (r ReviewsController) UploadTeacherReviewedFile(ctx *gin.Context) {
 	}
 	id, _ := uuid.NewUUID()
 	teacher_reviewed_file := models.TeacherReviewedFile{
-		ID: id.String(),
+		ID:         id.String(),
 		ReviewedID: reviewedId,
-		FileName: countInFileName,
+		FileName:   countInFileName,
 	}
 	teacher_reviewed_file.Insert(r.ModelCtx, r.MyDB, boil.Infer())
 	userName := ctx.PostForm("userName")
@@ -105,19 +105,19 @@ func (r ReviewsController) UploadTeacherReviewedFile(ctx *gin.Context) {
 	message := ctx.PostForm("message")
 	msg := "" +
 		"" + userName + "が <" + file.Filename + "> をアップロードしました" + "\r\n" + "\r\n" +
-		"計" + strconv.FormatInt(reviewCount + 1, 10) + "回目のアップロードです" + "\r\n" + "\r\n" +
+		"計" + strconv.FormatInt(reviewCount+1, 10) + "回目のアップロードです" + "\r\n" + "\r\n" +
 		"----- " + userName + "からのメッセージ -----" + "\r\n" +
 		message + "\r\n" + "\r\n" +
 		"==============================" + "\r\n" +
 		"\r\n" +
-	""
+		""
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "failed to upload file",
 		})
 		return
 	}
-	err = r.MailInfo.SendMailWithFiles("[" + userName + "]", msg, r.MailInfo.Teacher, []string{userEmail}, []string{filePath})
+	err = r.MailInfo.SendMailWithFiles("["+userName+"]", msg, r.MailInfo.Teacher, []string{userEmail}, []string{filePath})
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"message": "failed to upload file",

@@ -11,7 +11,7 @@ import (
 
 func (r HomeController) MkDir(ctx *gin.Context) {
 	path := ctx.Query("path") // get Qury Parameter
-	path = r.ShareDir+"/"+path
+	path = r.ShareDir + "/" + path
 	// cannot access important dir or file
 	if err := os.Mkdir(path, 0777); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{})
@@ -24,8 +24,8 @@ func (r HomeController) Rename(ctx *gin.Context) {
 	path := ctx.Query("path")
 	oldName := ctx.Query("oldName") // get Query Parameter
 	newName := ctx.Query("newName") // get Query Parameter
-	oldName = r.ShareDir+path+"/"+oldName
-	newName = r.ShareDir+path+"/"+newName
+	oldName = r.ShareDir + path + "/" + oldName
+	newName = r.ShareDir + path + "/" + newName
 	// cannot access important dir or file
 	important, _ := tools.Contains(r.ImportantDirs, oldName[strings.LastIndex(oldName, "/")+1:])
 	if important {
@@ -44,7 +44,7 @@ func (r HomeController) Move(ctx *gin.Context) {
 	if path == "/" {
 		path = r.ShareDir
 	} else {
-		path = r.ShareDir+path
+		path = r.ShareDir + path
 	}
 	targetPaths := ctx.Query("targetPaths")
 	targetPathList := strings.Split(targetPaths, "/")
@@ -64,7 +64,7 @@ func (r HomeController) MoveHigher(ctx *gin.Context) {
 	if path == "/" {
 		path = r.ShareDir
 	} else {
-		path = r.ShareDir+path
+		path = r.ShareDir + path
 	}
 	targetPaths := ctx.Query("targetPaths")
 	targetPathList := strings.Split(targetPaths, "/")
