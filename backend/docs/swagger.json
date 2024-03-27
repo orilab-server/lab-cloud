@@ -1,0 +1,851 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "contact": {}
+    },
+    "paths": {
+        "/filesystem/download/dirs/{dirId}": {
+            "get": {
+                "description": "Download zip file converted from dir",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Filesystem"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dir ID",
+                        "name": "dirId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            }
+        },
+        "/filesystem/download/files": {
+            "get": {
+                "description": "Download file or zip file if request to download multiple files",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Filesystem"
+                ],
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "File IDs",
+                        "name": "fileIds",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            }
+        },
+        "/filesystem/rename/{id}": {
+            "put": {
+                "description": "Change dir or file name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Filesystem"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "File or Dir ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/filesystem.ChangeNameRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            }
+        },
+        "/filesystem/upload/{dirId}/dir": {
+            "post": {
+                "description": "Upload dir",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Filesystem"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dir ID",
+                        "name": "dirId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/filesystem.UploadDirRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            }
+        },
+        "/filesystem/upload/{dirId}/files": {
+            "post": {
+                "description": "Upload files",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Filesystem"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dir ID",
+                        "name": "dirId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/filesystem.UploadFilesRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            }
+        },
+        "/filesystem/{dirId}": {
+            "get": {
+                "description": "get file system objects",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Filesystem"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dir ID",
+                        "name": "dirId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/filesystem.FileSystemObjectsResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create new Dir",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Filesystem"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dir ID",
+                        "name": "dirId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/filesystem.CreateDirRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            }
+        },
+        "/filesystem/{dirId}/location": {
+            "put": {
+                "description": "Move dir to another dir",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Filesystem"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dir ID",
+                        "name": "dirId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Request body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/filesystem.MoveDirRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            }
+        },
+        "/trashes": {
+            "get": {
+                "description": "\"Get trash objects\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trash"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/trash.TrashObjectsResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "\"Delete objects from trashes\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trash"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/trash.MoveToTrashRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "\"Delete objects from trashes\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trash"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/trash.DeleteRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            }
+        },
+        "/trashes/restore": {
+            "post": {
+                "description": "\"Restore objects from trashes\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trash"
+                ],
+                "parameters": [
+                    {
+                        "description": "Request body",
+                        "name": "requestBody",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/trash.RestoreRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            }
+        },
+        "/trashes/{dirId}": {
+            "get": {
+                "description": "\"Get files in dir of trash objects(dir)\"",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Trash"
+                ],
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Dir ID",
+                        "name": "dirId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/trash.TrashObjectsResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httpUtils.MessageResponseType"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "filesystem.ChangeNameRequest": {
+            "type": "object",
+            "required": [
+                "newName"
+            ],
+            "properties": {
+                "newName": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/filesystem.ObjectType"
+                }
+            }
+        },
+        "filesystem.CreateDirRequest": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "filesystem.DirResponse": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "id",
+                "name",
+                "userName"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "filesystem.FileResponse": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "dirId",
+                "id",
+                "name",
+                "size",
+                "userName"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "dirId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "filesystem.FileSystemObjectsResponse": {
+            "type": "object",
+            "required": [
+                "dirs",
+                "files"
+            ],
+            "properties": {
+                "dirs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/filesystem.DirResponse"
+                    }
+                },
+                "files": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/filesystem.FileResponse"
+                    }
+                }
+            }
+        },
+        "filesystem.MoveDirRequest": {
+            "type": "object",
+            "required": [
+                "dirIds",
+                "fileIds",
+                "toDirId"
+            ],
+            "properties": {
+                "dirIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "fileIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "toDirId": {
+                    "type": "string"
+                }
+            }
+        },
+        "filesystem.ObjectType": {
+            "type": "integer",
+            "enum": [
+                0,
+                1
+            ],
+            "x-enum-varnames": [
+                "FILE",
+                "DIR"
+            ]
+        },
+        "filesystem.UploadDirRequest": {
+            "type": "object"
+        },
+        "filesystem.UploadFilesRequest": {
+            "type": "object"
+        },
+        "httpUtils.MessageResponseType": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
+        "trash.DeleteRequest": {
+            "type": "object",
+            "required": [
+                "trashIds"
+            ],
+            "properties": {
+                "trashIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "trash.DirResponse": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "id",
+                "name",
+                "userName"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "parentId": {
+                    "type": "string"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "trash.FileResponse": {
+            "type": "object",
+            "required": [
+                "createdAt",
+                "dirId",
+                "id",
+                "name",
+                "size",
+                "userName"
+            ],
+            "properties": {
+                "createdAt": {
+                    "type": "string"
+                },
+                "dirId": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "size": {
+                    "type": "integer"
+                },
+                "userName": {
+                    "type": "string"
+                }
+            }
+        },
+        "trash.MoveToTrashRequest": {
+            "type": "object",
+            "required": [
+                "dirIds",
+                "fileIds"
+            ],
+            "properties": {
+                "dirIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "fileIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "trash.RestoreRequest": {
+            "type": "object",
+            "required": [
+                "trashIds"
+            ],
+            "properties": {
+                "trashIds": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "trash.TrashObjectsResponse": {
+            "type": "object",
+            "properties": {
+                "dirs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/trash.DirResponse"
+                    }
+                },
+                "files": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/trash.FileResponse"
+                    }
+                }
+            }
+        }
+    }
+}

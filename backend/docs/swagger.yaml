@@ -1,0 +1,560 @@
+definitions:
+  filesystem.ChangeNameRequest:
+    properties:
+      newName:
+        type: string
+      type:
+        $ref: '#/definitions/filesystem.ObjectType'
+    required:
+    - newName
+    type: object
+  filesystem.CreateDirRequest:
+    properties:
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  filesystem.DirResponse:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      parentId:
+        type: string
+      userName:
+        type: string
+    required:
+    - createdAt
+    - id
+    - name
+    - userName
+    type: object
+  filesystem.FileResponse:
+    properties:
+      createdAt:
+        type: string
+      dirId:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      size:
+        type: integer
+      userName:
+        type: string
+    required:
+    - createdAt
+    - dirId
+    - id
+    - name
+    - size
+    - userName
+    type: object
+  filesystem.FileSystemObjectsResponse:
+    properties:
+      dirs:
+        items:
+          $ref: '#/definitions/filesystem.DirResponse'
+        type: array
+      files:
+        items:
+          $ref: '#/definitions/filesystem.FileResponse'
+        type: array
+    required:
+    - dirs
+    - files
+    type: object
+  filesystem.MoveDirRequest:
+    properties:
+      dirIds:
+        items:
+          type: string
+        type: array
+      fileIds:
+        items:
+          type: string
+        type: array
+      toDirId:
+        type: string
+    required:
+    - dirIds
+    - fileIds
+    - toDirId
+    type: object
+  filesystem.ObjectType:
+    enum:
+    - 0
+    - 1
+    type: integer
+    x-enum-varnames:
+    - FILE
+    - DIR
+  filesystem.UploadDirRequest:
+    type: object
+  filesystem.UploadFilesRequest:
+    type: object
+  httpUtils.MessageResponseType:
+    properties:
+      message:
+        type: string
+    type: object
+  trash.DeleteRequest:
+    properties:
+      trashIds:
+        items:
+          type: string
+        type: array
+    required:
+    - trashIds
+    type: object
+  trash.DirResponse:
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      parentId:
+        type: string
+      userName:
+        type: string
+    required:
+    - createdAt
+    - id
+    - name
+    - userName
+    type: object
+  trash.FileResponse:
+    properties:
+      createdAt:
+        type: string
+      dirId:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      size:
+        type: integer
+      userName:
+        type: string
+    required:
+    - createdAt
+    - dirId
+    - id
+    - name
+    - size
+    - userName
+    type: object
+  trash.MoveToTrashRequest:
+    properties:
+      dirIds:
+        items:
+          type: string
+        type: array
+      fileIds:
+        items:
+          type: string
+        type: array
+    required:
+    - dirIds
+    - fileIds
+    type: object
+  trash.RestoreRequest:
+    properties:
+      trashIds:
+        items:
+          type: string
+        type: array
+    required:
+    - trashIds
+    type: object
+  trash.TrashObjectsResponse:
+    properties:
+      dirs:
+        items:
+          $ref: '#/definitions/trash.DirResponse'
+        type: array
+      files:
+        items:
+          $ref: '#/definitions/trash.FileResponse'
+        type: array
+    type: object
+info:
+  contact: {}
+paths:
+  /filesystem/{dirId}:
+    get:
+      consumes:
+      - application/json
+      description: get file system objects
+      parameters:
+      - description: Dir ID
+        in: path
+        name: dirId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/filesystem.FileSystemObjectsResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Filesystem
+    post:
+      consumes:
+      - application/json
+      description: Create new Dir
+      parameters:
+      - description: Dir ID
+        in: path
+        name: dirId
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/filesystem.CreateDirRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Filesystem
+  /filesystem/{dirId}/location:
+    put:
+      consumes:
+      - application/json
+      description: Move dir to another dir
+      parameters:
+      - description: Dir ID
+        in: path
+        name: dirId
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/filesystem.MoveDirRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Filesystem
+  /filesystem/download/dirs/{dirId}:
+    get:
+      consumes:
+      - application/json
+      description: Download zip file converted from dir
+      parameters:
+      - description: Dir ID
+        in: path
+        name: dirId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Filesystem
+  /filesystem/download/files:
+    get:
+      consumes:
+      - application/json
+      description: Download file or zip file if request to download multiple files
+      parameters:
+      - description: File IDs
+        in: query
+        name: fileIds
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Filesystem
+  /filesystem/rename/{id}:
+    put:
+      consumes:
+      - application/json
+      description: Change dir or file name
+      parameters:
+      - description: File or Dir ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/filesystem.ChangeNameRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Filesystem
+  /filesystem/upload/{dirId}/dir:
+    post:
+      consumes:
+      - application/json
+      description: Upload dir
+      parameters:
+      - description: Dir ID
+        in: path
+        name: dirId
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/filesystem.UploadDirRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Filesystem
+  /filesystem/upload/{dirId}/files:
+    post:
+      consumes:
+      - application/json
+      description: Upload files
+      parameters:
+      - description: Dir ID
+        in: path
+        name: dirId
+        required: true
+        type: integer
+      - description: Request body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/filesystem.UploadFilesRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Filesystem
+  /trashes:
+    delete:
+      consumes:
+      - application/json
+      description: '"Delete objects from trashes"'
+      parameters:
+      - description: Request body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/trash.DeleteRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Trash
+    get:
+      consumes:
+      - application/json
+      description: '"Get trash objects"'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/trash.TrashObjectsResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Trash
+    post:
+      consumes:
+      - application/json
+      description: '"Delete objects from trashes"'
+      parameters:
+      - description: Request body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/trash.MoveToTrashRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Trash
+  /trashes/{dirId}:
+    get:
+      consumes:
+      - application/json
+      description: '"Get files in dir of trash objects(dir)"'
+      parameters:
+      - description: Dir ID
+        in: path
+        name: dirId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/trash.TrashObjectsResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Trash
+  /trashes/restore:
+    post:
+      consumes:
+      - application/json
+      description: '"Restore objects from trashes"'
+      parameters:
+      - description: Request body
+        in: body
+        name: requestBody
+        required: true
+        schema:
+          $ref: '#/definitions/trash.RestoreRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httpUtils.MessageResponseType'
+      tags:
+      - Trash
+swagger: "2.0"
