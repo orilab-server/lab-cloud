@@ -64,7 +64,7 @@ func GetDirs(dir string) ([]string, error) {
 func GetDirAndFileNames(dir string) ([]StorageItem, error) {
 	files, err := os.ReadDir(dir)
 	if err != nil {
-		return nil, err
+		return []StorageItem{}, err
 	}
 
 	var items []StorageItem

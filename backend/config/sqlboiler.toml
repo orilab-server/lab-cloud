@@ -1,0 +1,8 @@
+[psql]
+  dbname = "lab_cloud"
+  host   = "db"
+  port   = 5432
+  user   = "postgres"
+  pass   = "postgres"
+  sslmode = "disable"
+  schema = "public"
